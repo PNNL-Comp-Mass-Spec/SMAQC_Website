@@ -1,0 +1,23 @@
+<html>
+ <head>
+ <script type="text/javascript" src="jquery.min.js"></script>
+ <script type="text/javascript" src="jquery.jqplot.min.js"></script>
+ <link rel="stylesheet" href="jquery.jqplot.min.css" type="text/css" media="all" />
+ <!--[if IE]><script language="javascript" type="text/javascript" src="./scripts/jqplot/excanvas.js"></script><![endif]-->
+ <script>
+
+ $(document).ready(function() {
+ $.jqplot.config.enablePlugins = true;
+// alert('1');
+ $.jqplot('chartdiv',  [[[1, 2],[3,15],[5,25],[7,50],[9,75],[11,100]]], {});
+ });
+
+ </script>
+ </head>
+ <body>
+--Chart---
+ <div id="chartdiv" style="height:400px;width:800px;"></div>
+------ 
+</body>
+
+</html>

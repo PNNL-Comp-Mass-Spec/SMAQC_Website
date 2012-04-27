@@ -1,0 +1,50 @@
+Current Version: 1.0
+
+------------------------------------------------------------------------------
+Version 1.0 - May 7, 2012
+------------------------------------------------------------------------------
+This version is primarily a proof of concept version. Our goal was to get all
+of the various pieces working together, but not necessarily 100% complete.
+
+Specifically, these are the following things that have been accomplished:
+-Navigation between pages
+-Displaying a list of instruments
+-Displaying a list of metrics for each instrument
+-Viewing the most recent values for each metric/instrument
+-Viewing an average over a specified date range for each metric
+-Passing date ranges between pages/views
+-Graphing the values over the given date range
+
+Non-feature Goals for Future Versions:
+  -Refactor Controllers
+    Currently, there is only one controller which does all of the work for
+    every page.
+    
+    Specifically, splitting the instrument() function into it's own controller
+    would probably be an improvement in design. It currently loads different
+    views based on the optional parameters passed to it, which works, but
+    increases code complexity.
+    
+  -Organize Javascript Into File(s)
+    Currently, some javascript is located in assets/js/<file>, while some of
+    it is just written straight into the views.
+    
+  -Add a controller for AJAX requests
+    Some data doesn't need to be recalculated every page load (I'm looking at
+    you #left-menu...). Also, future feature items such as the status of each
+    instrument may require a fair amount of calculation, like when determining
+    the status for every single instrument on the main page. Loading each one
+    using an AJAX request would be the best way to avoid long page loads or 
+    time outs.
+    
+  -Cleanup Views
+    Views are currently a little messy, see what can be done to clean and
+    simplify the code if possible. Mostly has to do with link generation, could
+    probably build the urls more succinctly.
+
+Feature Goals for Future Versions:
+  -Display the status of each instrument on the front page
+  -Display 2x and 3x the standard deviation on the graphs
+  -Calculate standard deviation over a specific window size (user selected)
+  -Multiple metrics/instruments on a single graph
+-------------------------------------------------------------------------------
