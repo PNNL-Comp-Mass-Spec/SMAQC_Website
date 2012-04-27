@@ -41,18 +41,18 @@
             // metricplot.js will use them
 
             // we need to get the date in milliseconds for jqplot
-            /*
-            $tempStartDate = explode('-', $startdate);
-            $tempStartDate = $tempStartDate[2] . '-' . $tempStartDate[0] . '-' . $tempStartDate[1];
-            $jqStartdate = new DateTime($tempStartDate);
+            $temp = explode('-', $startdate);
+            $temp = $temp[2] . '-' . $temp[0] . '-' . $temp[1];
+            $jqStartdate = new DateTime($temp);
             
-            $tempEndDate = explode('-', $enddate);
-            $tempEndDate = $tempEndDate[2] . '-' . $tempEndDate[0] . '-' . $tempEndDate[1] . ' 23:59:59';
-            $jqEnddate = new DateTime($tempEndDate);
-            */
+            $temp = explode('-', $enddate);
+            $temp = $temp[2] . '-' . $temp[0] . '-' . $temp[1] . ' 23:59:59';
+            $jqEnddate = new DateTime($temp);
         ?>
         var Settings = {
             title: '<?=$title?>',
+            startdate: <?=$jqStartdate->getTimeStamp() * 1000?>,
+            enddate: <?=$jqEnddate->getTimeStamp() * 1000?>,
             plotdata: <?=$plotdata?>,
             plotdata_average: <?=$plotdata_average?>,
             stddevupper: <?=$stddevupper?>,

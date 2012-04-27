@@ -82,6 +82,30 @@ class Metricmodel extends CI_Model
     private $plotdata;
 
     /**
+     * A JSON encoded array of (x,y) values for jqplot to use.
+     * The x value is a time/date in milliseconds.
+     * The type is what is returned by a call to CI's Active Record db->get().
+     * @var string
+     */
+	private $plotdata_average;
+
+    /**
+     * A JSON encoded array of (x,y) values for jqplot to use.
+     * The x value is a time/date in milliseconds.
+     * The type is what is returned by a call to CI's Active Record db->get().
+     * @var string
+     */
+    private $stddevupper;
+
+    /**
+     * A JSON encoded array of (x,y) values for jqplot to use.
+     * The x value is a time/date in milliseconds.
+     * The type is what is returned by a call to CI's Active Record db->get().
+     * @var string
+     */
+    private $stddevlower;
+
+    /**
      * Constructor
      *
      * The contructor for Metricmodel simply calls the constructor for the base
@@ -129,6 +153,12 @@ class Metricmodel extends CI_Model
                 return $this->$what;
             case 'plotdata':
                 return $this->$what;
+			case 'plotdata_average':
+				return $this->$what;
+            case 'stddevupper':
+                return $this->$what;
+            case 'stddevlower':
+                return $this->$what;
             default:
                 return $CI->$what;  // check base class CI_Model for member
         }
@@ -151,7 +181,7 @@ class Metricmodel extends CI_Model
      * an error, FALSE otherwise.
      * Error Array Format: ['type' => string, 'value' => string]
      */
-    public function initialize($instrument, $metric, $start, $end)
+    public function initialize($instrument, $metric, $start, $end, $windowsize = 20)
     {
         // change the string format of the dates, as strtotime doesn't work
         // right with -'s
@@ -192,7 +222,7 @@ class Metricmodel extends CI_Model
         $this->db->from('V_Dataset_QC_Metrics');
         $this->db->where('Instrument =', $this->instrument);
         $this->db->where('Acq_Time_Start >=', $this->startdate);
-        $this->db->where('Acq_Time_Start <=', $this->enddate);
+        $this->db->where('Acq_Time_Start <=', $this->enddate . 'T23:59:59.999');
         $this->db->order_by('Acq_Time_Start', 'asc');
 
         // run the query, we may not actually need to store this in the model,
@@ -226,7 +256,63 @@ class Metricmodel extends CI_Model
             // add the value to the plotdata array
             $this->plotdata[] = array($date, $row->$metric);
         }
-    
+
+        $this->plotdata_average = array();
+        $this->stddevupper = array();
+        $this->stddevlower = array();
+
+		$s0 = count($this->plotdata);
+
+		// calculate stddev using the provided window size
+		if($s0 > 0)
+		{
+			// windowradius is how many points to the left/right to check (not including mid)
+			$windowradius = (int)($windowsize / 2);
+			$total = 0;
+			$s1 = 0; // s1 is the running total of the squared differences
+			$avg = 0;
+
+			for($i = 0; $i < $s0; $i++)
+			{
+				// get the date to the left by the window radius
+				$sqlDateTimeLeft = strtotime('-' . $windowradius . ' day', $this->plotdata[$i][0]/1000);
+				$sqlDateTimeLeft = date('Y-m-d H:i:s', $sqlDateTimeLeft);
+				
+				// get the date to the right by the window radius
+				$sqlDateTimeRight = strtotime($windowradius . ' day', $this->plotdata[$i][0]/1000);
+				$sqlDateTimeRight = date('Y-m-d H:i:s', $sqlDateTimeRight);
+
+				// get the average over the date range
+				$this->db->select_avg($metric, 'avg');
+				$this->db->where('Instrument', $instrument);
+				$this->db->where('Acq_Time_Start >=', $sqlDateTimeLeft);
+				$this->db->where('Acq_Time_Start <=', $sqlDateTimeRight);
+				$avg = $this->db->get('V_Dataset_QC_Metrics')->row()->avg;
+
+				$this->plotdata_average[] = array(
+					$this->plotdata[$i][0],
+					$avg
+					);
+
+				// get the standard deviation over the date range
+				$this->db->select('STDEV(' . $metric . ') as stddev');
+				$this->db->where('Instrument', $instrument);
+				$this->db->where('Acq_Time_Start >=', $sqlDateTimeLeft);
+				$this->db->where('Acq_Time_Start <=', $sqlDateTimeRight);
+				$stddev = $this->db->get('V_Dataset_QC_Metrics')->row()->stddev;
+
+				$this->stddevupper[] = array(
+					$this->plotdata[$i][0],
+					$avg + (2 * $stddev)
+					);
+
+				$this->stddevlower[] = array(
+					$this->plotdata[$i][0],
+					$avg - (2 * $stddev)
+					);
+			} // end of loop
+		} // end of calculating stddev
+		
         // check to see if there were any data points in the date range
         if(count($this->plotdata) < 1)
         {
@@ -235,15 +321,19 @@ class Metricmodel extends CI_Model
             $this->plotdata[] = array();
         }
     
-        // put it into a json encoded array
+        // put everything for jqplot into a json encoded array
         $this->plotdata = json_encode($this->plotdata);
+        $this->plotdata_average = json_encode($this->plotdata_average);
+        $this->stddevupper = json_encode($this->stddevupper);
+        $this->stddevlower = json_encode($this->stddevlower);
 
         /* get the average (we'll use the select_avg() call for now, as it
            deals with nulls, but we may want to do this in php instead of using
            the db */
         $this->db->select_avg($metric, 'avg');
         $this->db->where('Acq_Time_Start >=', $this->startdate);
-        $this->db->where('Acq_Time_Start <=', $this->enddate);
+        $this->db->where('Acq_Time_Start <=', $this->enddate . 'T23:59:59.999');
+		$this->db->where('Instrument', $instrument);
         $this->average = $this->db->get('V_Dataset_QC_Metrics')->row()->avg;
 
         // we'll set the definition here to lorem ipsum

@@ -23,7 +23,7 @@
 	<tr>
 		<td align="right"><label for="to">To</label></td>
 		<td><input type="text" id="to" name="to" value="<?=$enddate?>" /></td>
-    <td><a href="<?= site_url(join('/', array("smaqc", "instrument", $instrument, "all", $startdate, $enddate))) ?>" class="customdate button">Update</a></td>
+    <td><a href="<?= site_url(join('/', array("smaqc", "instrument", $instrument, "all", $startdate, $enddate, $windowsize))) ?>" class="customdate button">Update</a></td>
 	</tr>
 </table>
 
@@ -36,7 +36,7 @@
 <?php foreach($metriclist as $metricname): ?>
 	<tr>
 		<td>
-			<a class="customdate" href="<?= site_url(join('/', array("smaqc", "instrument", $title, $metricname, $startdate, $enddate))) ?>"><?=$metricname?></a>
+			<a class="customdate" href="<?= site_url(join('/', array("smaqc", "instrument", $title, $metricname, $startdate, $enddate, $windowsize))) ?>"><?=$metricname?></a>
 		</td>
 		<td align="right">
 			<?=$averagedmetrics->row()->$metricname?>

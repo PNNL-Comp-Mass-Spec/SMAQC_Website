@@ -27,6 +27,7 @@ class Smaqc extends CI_Controller
 {
     var $defaultstartdate;
     var $defaultenddate;
+	var $DEFAULTWINDOWSIZE = 20;
 
     function __construct()
     {
@@ -80,6 +81,7 @@ class Smaqc extends CI_Controller
         $data['enddate']        = $this->defaultenddate;
         $data['metriclist']     = $this->metriclist;
         $data['instrumentlist'] = $this->instrumentlist;
+        $data['windowsize']     = $this->DEFAULTWINDOWSIZE;
         $data['includegraph']   = FALSE;
 
         $this->load->view('headView.php', $data);
@@ -89,7 +91,7 @@ class Smaqc extends CI_Controller
         $this->load->view('footView.php', $data);
     }
 
-    public function instrument($name, $metric = NULL, $start = NULL, $end = NULL)
+    public function instrument($name, $metric = NULL, $start = NULL, $end = NULL, $windowsize = NULL)
     {
         // if name is empty, redirect to home
         if(empty($name))
@@ -136,6 +138,19 @@ class Smaqc extends CI_Controller
         $data['startdate'] = $startdate;
         $data['enddate']   = $enddate;
 
+		// see if we need to use the default windowsize
+		if(!is_numeric($windowsize) || $windowsize < 1)
+		{
+			$windowsize = $this->DEFAULTWINDOWSIZE;
+		}
+		else
+		{
+			// if they somehow entered a float, cut off the decimal
+			$windowsize = (int)$windowsize;
+		}
+
+		$data['windowsize'] = $windowsize;
+
         // see if a specific metric was asked for
         if($metric == "all" or empty($metric))
         {
@@ -171,12 +186,13 @@ class Smaqc extends CI_Controller
         else
         {
             $this->load->model('Metricmodel', '', TRUE);
-            
+
             $error = $this->Metricmodel->initialize(
                 $name,
                 $metric,
                 $startdate,
-                $enddate
+                $enddate,
+				$windowsize
             );
         
             if($error)
@@ -195,7 +211,10 @@ class Smaqc extends CI_Controller
             $data['title']      = $data['title'] . ' - ' . $metric;
             $data['metrics']    = $this->Metricmodel->data;
             $data['definition'] = $this->Metricmodel->definition;
-            $data['plotdata']   = $this->Metricmodel->plotdata;
+            $data['plotdata']         = $this->Metricmodel->plotdata;
+            $data['plotdata_average'] = $this->Metricmodel->plotdata_average;
+            $data['stddevupper']      = $this->Metricmodel->stddevupper;
+            $data['stddevlower']      = $this->Metricmodel->stddevlower;
             
             $data['includegraph'] = TRUE;
         }

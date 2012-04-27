@@ -238,7 +238,7 @@ class Instrumentmodel extends CI_Model
         /* build the where clause to select averages only from the correct 
            date range */
         $this->db->where('Acq_Time_start >=', $this->startdate);
-        $this->db->where('Acq_Time_start <=', $this->enddate);
+        $this->db->where('Acq_Time_start <=', $this->enddate . 'T23:59:59.999');
 
         $this->db->where('Instrument', $instrument);
         $this->averagedmetrics = $this->db->get('V_Dataset_QC_Metrics');

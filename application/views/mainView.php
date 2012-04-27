@@ -46,7 +46,7 @@
 			<a href="<?= site_url(join('/', array("smaqc", "instrument", $row, "all", date("m-d-Y", strtotime("-3 weeks")), date("m-d-Y", time())))) ?>">3 Weeks</a>
 		</td>
 		<td>
-			<a class="customdate" href="<?= site_url(join('/', array("smaqc", "instrument", $row, "all", $startdate,$enddate))) ?>">Custom</a>
+			<a class="customdate" href="<?= site_url(join('/', array("smaqc", "instrument", $row, "all", $startdate, $enddate, $windowsize))) ?>">Current</a>
 		</td>
 	</tr>
 <?php endforeach; ?>

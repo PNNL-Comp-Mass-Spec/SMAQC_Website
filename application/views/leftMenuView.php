@@ -28,7 +28,7 @@ if(empty($metric))
         <ul class="menulinks">
           <li><a href="<?= site_url(join('/', array("smaqc", "instrument", $row, $metric, date("m-d-Y", strtotime("-24 hours")), date("m-d-Y", time())))) ?>">24 Hours</a></li>
           <li><a href="<?= site_url(join('/', array("smaqc", "instrument", $row, $metric, date("m-d-Y", strtotime("-3 weeks")), date("m-d-Y", time())))) ?>">3 Weeks</a></li>
-          <li><a class="customdate" href="<?= site_url(join('/', array("smaqc", "instrument", $row, $metric, $startdate, $enddate))) ?>">Current Custom</a></li>
+          <li><a class="customdate" href="<?= site_url(join('/', array("smaqc", "instrument", $row, $metric, $startdate, $enddate, $windowsize))) ?>">Current</a></li>
         </ul>
       </li>
   <?php endforeach; ?>
@@ -41,7 +41,7 @@ if(empty($metric))
         <ul class="menulinks">
           <li><a href="<?= site_url(join('/', array("smaqc", "instrument", $instrument, "all", date("m-d-Y", strtotime("-24 hours")), date("m-d-Y", time())))) ?>">24 Hours</a></li>
           <li><a href="<?= site_url(join('/', array("smaqc", "instrument", $instrument, "all", date("m-d-Y", strtotime("-3 weeks")), date("m-d-Y", time())))) ?>">3 Weeks</a></li>
-          <li><a class="customdate" href="<?= site_url(join('/', array("smaqc", "instrument", $instrument, "all", $startdate,$enddate))) ?>">Current Custom</a></li>
+          <li><a class="customdate" href="<?= site_url(join('/', array("smaqc", "instrument", $instrument, "all", $startdate, $enddate, $windowsize))) ?>">Current</a></li>
         </ul>
       </li>
   <?php foreach($metriclist as $row): ?>
@@ -49,7 +49,7 @@ if(empty($metric))
         <ul class="menulinks">
           <li><a href="<?= site_url(join('/', array("smaqc", "instrument", $instrument, $row, date("m-d-Y", strtotime("-24 hours")), date("m-d-Y", time())))) ?>">24 Hours</a></li>
           <li><a href="<?= site_url(join('/', array("smaqc", "instrument", $instrument, $row, date("m-d-Y", strtotime("-3 weeks")), date("m-d-Y", time())))) ?>">3 Weeks</a></li>
-          <li><a class="customdate" href="<?= site_url(join('/', array("smaqc", "instrument", $instrument, $row, $startdate, $enddate))) ?>">Current Custom</a></li>
+          <li><a class="customdate" href="<?= site_url(join('/', array("smaqc", "instrument", $instrument, $row, $startdate, $enddate, $windowsize))) ?>">Current</a></li>
         </ul>
       </li>
   <?php endforeach; ?>
@@ -68,7 +68,7 @@ if(empty($metric))
     // set the onclick function for dropdown buttons
     $(".dropdownbutton").click(function() {        
         // show or hide all subitems
-        $(this).next().slideToggle();
+        $(this).next().toggle();
         
         // change the arrow direction on the button
         if($(this).hasClass('selected'))

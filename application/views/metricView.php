@@ -23,12 +23,16 @@
   <tr>
     <td align="right"><label for="to">To</label></td>
     <td><input type="text" id="to" name="to" value="<?=$enddate?>" /></td>
-    <td><a href="<?= site_url(join('/', array("smaqc", "instrument", $instrument, $metric, $startdate, $enddate))) ?>" class="customdate button">Update</a></td>
+    <td><a href="<?= site_url(join('/', array("smaqc", "instrument", $instrument, $metric, $startdate, $enddate, $windowsize))) ?>" class="customdate button">Update</a></td>
+  </tr>
+  <tr>
+    <td colspan=2 align="right"><label for="windowsize">StdDev Window Size (days)</label></td>
+    <td><input type="text" id="windowsize" name="windowsize" value="<?=$windowsize?>" /></td>
   </tr>
 </table>
 
-
-<div id="chartdiv" style="height:400px;width:100%;"></div>
+<div style="text-align: right"><a class="customdate button" href="<?= site_url(join('/', array("smaqc", "instrument", $instrument, "all", $startdate, $enddate))) ?>">View All Metrics</a></div>
+<div id="chartdiv" style="height:480px;width:100%;"></div>
   <table border=1 >
     <tr>
       <th>Dataset ID</th>
@@ -41,7 +45,7 @@
       <td><?=$row->Dataset_ID?></td>
       <td><?=preg_replace('/:[0-9][0-9][0-9]/', '', $row->Acq_Time_Start)?></td>
       <td><?=$row->$metric?></td>
-      <td><?=$row->Dataset?></td>
+      <td><a href="http://dms2.pnl.gov/dataset/show/<?=$row->Dataset?>"><?=$row->Dataset?></a></td>
     </tr>
 <?php endforeach; ?>
   </table>
