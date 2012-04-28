@@ -34,16 +34,21 @@ class Metricmodel extends CI_Model
      * @var string
      */
     private $metric;
+
+    /**
+     * The units for the metric
+     * A string that is retrieved from a database.
+     * @var string
+     */
+    private $metric_units;
     
     /**
      * The definition of the instrument.
      * A string that is retrieved from a database.
      * @var string
-     *
-     * @todo Needs implementing (the string is just set to lorem ipsum).
      */
     private $definition;
-     
+    
     /**
      * The start date for grabbing metrics.
      * This should be a human readable string of the format m-d-Y.
@@ -141,6 +146,8 @@ class Metricmodel extends CI_Model
                 return $this->$what;
             case 'metric':
                 return $this->$what;
+            case 'metric_units':
+                return $this->$what;
             case 'definition':
                 return $this->$what;
             case 'startdate':
@@ -206,7 +213,24 @@ class Metricmodel extends CI_Model
         if(!$this->db->field_exists($metric, 'V_Dataset_QC_Metrics'))
         {
             return array("type" => "metric", "value" => $metric);
+        }    
+    
+   		// Lookup the definition, purpose, and units for this metric
+        $this->db->select('Description, Purpose, Units');
+        $this->db->where('Metric', $metric);
+        $query = $this->db->get('V_Dataset_QC_Metric_Definitions', 1);
+
+        if($query->num_rows() < 1)
+        {
+            $this->definition = $metric . " (definition not found in DB)";
         }
+		else 
+		{
+			$row = $query->row();
+			$this->definition = $metric . ": " . $row->Description . "; " . $row->Purpose;
+			
+			$this->metric_units =$row->Units;
+		}
     
         // build the query to get all the metric points in the specified range
         $columns = array(
@@ -326,6 +350,7 @@ class Metricmodel extends CI_Model
         $this->plotdata_average = json_encode($this->plotdata_average);
         $this->stddevupper = json_encode($this->stddevupper);
         $this->stddevlower = json_encode($this->stddevlower);
+        $this->metric_units = json_encode($this->metric_units);
 
         /* get the average (we'll use the select_avg() call for now, as it
            deals with nulls, but we may want to do this in php instead of using
@@ -336,18 +361,14 @@ class Metricmodel extends CI_Model
 		$this->db->where('Instrument', $instrument);
         $this->average = $this->db->get('V_Dataset_QC_Metrics')->row()->avg;
 
-        // we'll set the definition here to lorem ipsum
-        // but we'll eventually want to grab it from a db or something
-        $this->definition = "Lorem ipsum dolor sit amet, consectetur adipis" .
-                            "icing elit, sed do eiusmod tempor incididunt u" .
-                            "t labore et dolore magna aliqua. Ut enim ad mi" .
-                            "nim veniam, quis nostrud exercitation ullamco " .
-                            "laboris nisi ut aliquip ex ea commodo consequa" .
-                            "t. Duis aute irure dolor in reprehenderit in v" .
-                            "oluptate velit esse cillum dolore eu fugiat nu" .
-                            "lla pariatur. Excepteur sint occaecat cupidata" .
-                            "t non proident, sunt in culpa qui officia dese" .
-                            "runt mollit anim id est laborum.";
+          /* get the average (we'll use the select_avg() call for now, as it
+           deals with nulls, but we may want to do this in php instead of using
+           the db */
+        $this->db->select_avg($metric, 'avg');
+        $this->db->where('Acq_Time_Start >=', $this->startdate);
+        $this->db->where('Acq_Time_Start <=', $this->enddate . 'T23:59:59.999');
+		$this->db->where('Instrument', $instrument);
+        $this->average = $this->db->get('V_Dataset_QC_Metrics')->row()->avg;
     
         return FALSE; // no errors, so return false
     }

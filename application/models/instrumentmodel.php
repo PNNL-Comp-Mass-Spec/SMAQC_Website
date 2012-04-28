@@ -157,16 +157,7 @@ class Instrumentmodel extends CI_Model
 
         // we'll set the definition here to lorem ipsum
         // TODO: but we'll eventually want to grab it from a db or something
-        $this->definition = "Lorem ipsum dolor sit amet, consectetur adipis" .
-                            "icing elit, sed do eiusmod tempor incididunt u" .
-                            "t labore et dolore magna aliqua. Ut enim ad mi" .
-                            "nim veniam, quis nostrud exercitation ullamco " .
-                            "laboris nisi ut aliquip ex ea commodo consequa" .
-                            "t. Duis aute irure dolor in reprehenderit in v" .
-                            "oluptate velit esse cillum dolore eu fugiat nu" .
-                            "lla pariatur. Excepteur sint occaecat cupidata" .
-                            "t non proident, sunt in culpa qui officia dese" .
-                            "runt mollit anim id est laborum.";
+        $this->definition = "QC Metrics for " . $instrument;
                             
         
         

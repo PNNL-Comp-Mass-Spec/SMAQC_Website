@@ -31,6 +31,7 @@
     <script type="text/javascript" src="<?= base_url("assets/graph/plugins/jqplot.dateAxisRenderer.js") ?>"></script>
     <script type="text/javascript" src="<?= base_url("assets/graph/plugins/jqplot.canvasTextRenderer.js") ?>"></script>
     <script type="text/javascript" src="<?= base_url("assets/graph/plugins/jqplot.canvasAxisTickRenderer.js") ?>"></script>
+    <script type="text/javascript" src="<?= base_url("assets/graph/plugins/jqplot.canvasAxisLabelRenderer.min.js") ?>"></script>
     <script type="text/javascript" src="<?= base_url("assets/graph/plugins/jqplot.highlighter.js") ?>"></script>
     <script type="text/javascript" src="<?= base_url("assets/graph/plugins/jqplot.trendline.js") ?>"></script>
     <script type="text/javascript" src="<?= base_url("assets/graph/plugins/jqplot.cursor.js") ?>"></script>
@@ -56,7 +57,8 @@
             plotdata: <?=$plotdata?>,
             plotdata_average: <?=$plotdata_average?>,
             stddevupper: <?=$stddevupper?>,
-            stddevlower: <?=$stddevlower?>
+            stddevlower: <?=$stddevlower?>,
+            metric_units: <?=$metric_units?>
         }
 
         $(window).resize(function() {

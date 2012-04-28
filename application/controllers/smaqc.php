@@ -215,6 +215,7 @@ class Smaqc extends CI_Controller
             $data['plotdata_average'] = $this->Metricmodel->plotdata_average;
             $data['stddevupper']      = $this->Metricmodel->stddevupper;
             $data['stddevlower']      = $this->Metricmodel->stddevlower;
+            $data['metric_units']     = $this->Metricmodel->metric_units;
             
             $data['includegraph'] = TRUE;
         }
@@ -222,7 +223,9 @@ class Smaqc extends CI_Controller
         // load the views
         $this->load->view('headView.php', $data);
         $this->load->view('leftMenuView', $data);
-        $this->load->view('topMenuView' , $data);
+
+        // Disabled in April 2012 since not needed: 
+        // $this->load->view('topMenuView' , $data);
 
         if(empty($metric))
         {

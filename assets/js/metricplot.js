@@ -12,8 +12,12 @@ $(document).ready(function() {
                 tickOptions: {
                     angle: -60,
                     fontSize: '8pt',
-                    formatString: '%b %#d, %Y %H:%M'
+                    formatString: '%b %#d, %Y'
                 }
+            },
+            yaxis:{
+            	label:Settings.metric_units,
+            	labelRenderer: $.jqplot.CanvasAxisLabelRenderer
             }
         },
         legend: {
