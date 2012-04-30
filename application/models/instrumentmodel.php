@@ -204,7 +204,7 @@ class Instrumentmodel extends CI_Model
         // Obtain the metric descriptions
         $this->db->select('Metric, Description');
         $this->db->order_by('Metric');
-        $query = $this->db->get('T_Dataset_QC_Metrics');
+        $query = $this->db->get('V_Dataset_QC_Metric_Definitions');
 
         $this->metricdescriptions = array();
 
