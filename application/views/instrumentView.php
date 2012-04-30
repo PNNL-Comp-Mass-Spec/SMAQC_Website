@@ -39,7 +39,7 @@
 			<a class="customdate" href="<?= site_url(join('/', array("smaqc", "instrument", $title, $metricname, $startdate, $enddate, $windowsize))) ?>"><?=$metricname?></a>
 		</td>
 		<td align="right">
-			<?=$averagedmetrics->row()->$metricname?>
+			<?=number_format($averagedmetrics->row()->$metricname, 2)?>
 		</td>
 		<td align="right">
 			<?=$latestmetrics->row()->$metricname?>

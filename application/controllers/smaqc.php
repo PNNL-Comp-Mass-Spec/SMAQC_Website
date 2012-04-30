@@ -27,7 +27,7 @@ class Smaqc extends CI_Controller
 {
     var $defaultstartdate;
     var $defaultenddate;
-	var $DEFAULTWINDOWSIZE = 20;
+	var $DEFAULTWINDOWSIZE = 45;
 
     function __construct()
     {
