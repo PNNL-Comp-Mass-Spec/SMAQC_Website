@@ -11,6 +11,28 @@
  * @package SMAQC
  * @subpackage views
  */
+ 
+	function format_metric($metric)
+	{
+		if ($metric == 0)
+			return "0";
+			
+		if (abs($metric) < 0.01)
+			return number_format($metric, 4);
+
+		if (abs($metric) < 0.1)
+			return number_format($metric, 3);
+
+		if (abs($metric) < 1)
+			return number_format($metric, 2);
+
+		if (abs($metric) < 10)
+			return number_format($metric, 1);
+
+		return number_format($metric, 0);
+		
+	}
+	
 ?>
 <div id="main-page">
 <p><?=$definition?></p>
@@ -54,7 +76,7 @@
     <tr>
       <td><?=$row->Dataset_ID?></td>
       <td><?=preg_replace('/:[0-9][0-9][0-9]/', '', $row->Acq_Time_Start)?></td>
-      <td><?=$row->$metric?></td>
+      <td align="center"><?=format_metric($row->$metric)?></td>
       <td><a href="http://dms2.pnl.gov/dataset/show/<?=$row->Dataset?>" target="_Dataset"><?=$row->Dataset?></a></td>
     </tr>
 <?php endforeach; ?>

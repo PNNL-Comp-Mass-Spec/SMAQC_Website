@@ -11,6 +11,28 @@
  * @package SMAQC
  * @subpackage views
  */
+ 	
+	function format_metric($metric)
+	{
+		if ($metric == 0)
+			return "0";
+
+		if (abs($metric) < 0.01)
+			return number_format($metric, 4);
+
+		if (abs($metric) < 0.1)
+			return number_format($metric, 3);
+
+		if (abs($metric) < 1)
+			return number_format($metric, 2);
+
+		if (abs($metric) < 10)
+			return number_format($metric, 1);
+
+		return number_format($metric, 0);
+		
+	}
+	
 ?>
 <div id="main-page">
 <p><?=$definition?></p>
@@ -32,6 +54,7 @@
 		<th>Metric</th>
 		<th>Average Over Range</th>
 		<th>Most Recent Value</th>
+		<th>Description</th>
 	</tr>
 <?php foreach($metriclist as $metricname): ?>
 	<tr>
@@ -39,10 +62,13 @@
 			<a class="customdate" href="<?= site_url(join('/', array("smaqc", "instrument", $title, $metricname, $startdate, $enddate, $windowsize))) ?>"><?=$metricname?></a>
 		</td>
 		<td align="right">
-			<?=number_format($averagedmetrics->row()->$metricname, 2)?>
+			<?=format_metric($averagedmetrics->row()->$metricname)?>
 		</td>
 		<td align="right">
-			<?=$latestmetrics->row()->$metricname?>
+			<?=format_metric($latestmetrics->row()->$metricname)?>
+		</td>
+		<td align="left">
+			<?=$metricdescriptions[$metricname]?>
 		</td>
 	</tr>
 <?php endforeach; ?>

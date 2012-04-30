@@ -67,7 +67,14 @@ class Instrumentmodel extends CI_Model
      * @var array
      */ 
     private $metricnames;
-    
+
+    /**
+     * A list (php array) of the metric descriptions
+     * The type is what is returned by a call to CI's Active Record db->get().
+     * @var object 
+     */
+    private $metricdescriptions;
+        
     /**
      * The latest metrics for the instrument.
      * The type is what is returned by a call to CI's Active Record db->get().
@@ -126,6 +133,8 @@ class Instrumentmodel extends CI_Model
                 return $this->$what;
             case 'metricnames':
                 return $this->$what;
+            case 'metricdescriptions':
+            	return $this->$what;
             case 'latestmetrics':
                 return $this->$what;
             case 'averagedmetrics':
@@ -192,6 +201,19 @@ class Instrumentmodel extends CI_Model
         // TODO: actually figure out status. For now, just set it to "green"
         $this->status = "green";
 
+        // Obtain the metric descriptions
+        $this->db->select('Metric, Description');
+        $this->db->order_by('Metric');
+        $query = $this->db->get('T_Dataset_QC_Metrics');
+
+        $this->metricdescriptions = array();
+
+        // Populate the metric description array     
+        foreach($query->result() as $row)
+        {
+	        $this->metricdescriptions[$row->Metric] = $row->Description;
+        }
+
         // attempt to get the latest data
         $this->db->select();
         $this->db->where('Instrument', $instrument);
@@ -225,7 +247,7 @@ class Instrumentmodel extends CI_Model
                 $this->db->select_avg($field, "'" . $field . "'");
             }
         }
-
+        
         /* build the where clause to select averages only from the correct 
            date range */
         $this->db->where('Acq_Time_start >=', $this->startdate);

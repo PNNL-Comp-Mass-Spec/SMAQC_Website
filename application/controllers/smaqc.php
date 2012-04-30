@@ -176,10 +176,11 @@ class Smaqc extends CI_Controller
                 redirect(site_url(join('/', $redirecturlparts)));
             }
         
-            $data['metricnames']     = $this->Instrumentmodel->metricnames;
-            $data['latestmetrics']   = $this->Instrumentmodel->latestmetrics;
-            $data['averagedmetrics'] = $this->Instrumentmodel->averagedmetrics;
-            $data['definition']      = $this->Instrumentmodel->definition;
+            $data['metricnames']         = $this->Instrumentmodel->metricnames;
+            $data['metricdescriptions']  = $this->Instrumentmodel->metricdescriptions;
+            $data['latestmetrics']       = $this->Instrumentmodel->latestmetrics;
+            $data['averagedmetrics']     = $this->Instrumentmodel->averagedmetrics;
+            $data['definition']          = $this->Instrumentmodel->definition;
             
             $data['includegraph'] = FALSE;
         }
