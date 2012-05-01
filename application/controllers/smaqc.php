@@ -35,7 +35,7 @@ class Smaqc extends CI_Controller
         
         $this->load->helper('url');
         
-        $this->defaultstartdate = date("m-d-Y", strtotime("-6 month"));
+        $this->defaultstartdate = date("m-d-Y", strtotime("-4 months"));
         $this->defaultenddate   = date("m-d-Y", time());
         $this->metriclist       = array();
         $this->instrumentlist   = array();
@@ -108,7 +108,7 @@ class Smaqc extends CI_Controller
   
         if(empty($start) or empty($end))
         {
-            $startdate = date("m-d-Y", strtotime("-3 weeks"));
+            $startdate = date("m-d-Y", strtotime("-2 months"));
             $enddate = date("m-d-Y", time());
         }
         else
@@ -125,7 +125,7 @@ class Smaqc extends CI_Controller
             // check to see if the dates were malformed (not valid)
             if(($start === FALSE) || ($end === FALSE))
             {
-              $startdate = date("m-d-Y", strtotime("-3 weeks"));
+              $startdate = date("m-d-Y", strtotime("-2 months"));
               $enddate = date("m-d-Y", time());
             }
             else

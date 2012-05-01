@@ -26,8 +26,8 @@ if(empty($metric))
   <?php foreach($instrumentlist as $row): ?>
       <li><button id="left-menu-instrument-<?=$row?>" class="dropdownbutton"><?=$row?></button>
         <ul class="menulinks">
-          <li><a href="<?= site_url(join('/', array("smaqc", "instrument", $row, $metric, date("m-d-Y", strtotime("-24 hours")), date("m-d-Y", time())))) ?>">24 Hours</a></li>
-          <li><a href="<?= site_url(join('/', array("smaqc", "instrument", $row, $metric, date("m-d-Y", strtotime("-3 weeks")), date("m-d-Y", time())))) ?>">3 Weeks</a></li>
+          <li><a href="<?= site_url(join('/', array("smaqc", "instrument", $row, $metric, date("m-d-Y", strtotime("-1 week")), date("m-d-Y", time())))) ?>">1 Week</a></li>
+          <li><a href="<?= site_url(join('/', array("smaqc", "instrument", $row, $metric, date("m-d-Y", strtotime("-1 month")), date("m-d-Y", time())))) ?>">1 Month</a></li>
           <li><a class="customdate" href="<?= site_url(join('/', array("smaqc", "instrument", $row, $metric, $startdate, $enddate, $windowsize))) ?>">Current</a></li>
         </ul>
       </li>
@@ -39,16 +39,16 @@ if(empty($metric))
     <ul>
       <li><button class="dropdownbutton">All</button>
         <ul class="menulinks">
-          <li><a href="<?= site_url(join('/', array("smaqc", "instrument", $instrument, "all", date("m-d-Y", strtotime("-24 hours")), date("m-d-Y", time())))) ?>">24 Hours</a></li>
-          <li><a href="<?= site_url(join('/', array("smaqc", "instrument", $instrument, "all", date("m-d-Y", strtotime("-3 weeks")), date("m-d-Y", time())))) ?>">3 Weeks</a></li>
+          <li><a href="<?= site_url(join('/', array("smaqc", "instrument", $instrument, "all", date("m-d-Y", strtotime("-1 week")), date("m-d-Y", time())))) ?>">1 Week</a></li>
+          <li><a href="<?= site_url(join('/', array("smaqc", "instrument", $instrument, "all", date("m-d-Y", strtotime("-1 month")), date("m-d-Y", time())))) ?>">1 Month</a></li>
           <li><a class="customdate" href="<?= site_url(join('/', array("smaqc", "instrument", $instrument, "all", $startdate, $enddate, $windowsize))) ?>">Current</a></li>
         </ul>
       </li>
   <?php foreach($metriclist as $row): ?>
       <li><button class="dropdownbutton"><?=$row?></button>
         <ul class="menulinks">
-          <li><a href="<?= site_url(join('/', array("smaqc", "instrument", $instrument, $row, date("m-d-Y", strtotime("-24 hours")), date("m-d-Y", time())))) ?>">24 Hours</a></li>
-          <li><a href="<?= site_url(join('/', array("smaqc", "instrument", $instrument, $row, date("m-d-Y", strtotime("-3 weeks")), date("m-d-Y", time())))) ?>">3 Weeks</a></li>
+          <li><a href="<?= site_url(join('/', array("smaqc", "instrument", $instrument, $row, date("m-d-Y", strtotime("-1 week")), date("m-d-Y", time())))) ?>">1 Week</a></li>
+          <li><a href="<?= site_url(join('/', array("smaqc", "instrument", $instrument, $row, date("m-d-Y", strtotime("-1 month")), date("m-d-Y", time())))) ?>">1 Month</a></li>
           <li><a class="customdate" href="<?= site_url(join('/', array("smaqc", "instrument", $instrument, $row, $startdate, $enddate, $windowsize))) ?>">Current</a></li>
         </ul>
       </li>

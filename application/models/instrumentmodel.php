@@ -182,7 +182,7 @@ class Instrumentmodel extends CI_Model
         // set the default dates if need be
         if(empty($start))
         {
-            $this->startdate = date("Y-m-d", strtotime("-3 week"));
+            $this->startdate = date("Y-m-d", strtotime("-2 months"));
         }
         else
         {
