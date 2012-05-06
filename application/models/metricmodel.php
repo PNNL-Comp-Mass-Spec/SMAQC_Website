@@ -286,6 +286,7 @@ class Metricmodel extends CI_Model
     
         // check to see that this is a valid instrument/metric
         $this->db->where('Instrument', $instrument);
+        
         $query = $this->db->get('V_Dataset_QC_Metrics', 1);
         
         if($query->num_rows() < 1)
@@ -330,7 +331,7 @@ class Metricmodel extends CI_Model
         $this->db->where('Instrument =', $this->instrument);
         $this->db->where('Acq_Time_Start >=', $this->querystartdate);
         $this->db->where('Acq_Time_Start <=', $this->queryenddate . 'T23:59:59.999');
-        $this->db->order_by('Acq_Time_Start', 'asc');
+        $this->db->order_by('Acq_Time_Start', 'desc');
 
         // run the query, we may not actually need to store this in the model,
         // but for now we will
