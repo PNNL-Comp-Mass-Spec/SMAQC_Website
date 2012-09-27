@@ -30,6 +30,12 @@ class Metricmodel extends CI_Model
     private $instrument;
     
     /**
+     * Optional dataset name filter
+     * @var string
+     */     
+    private $datasetfilter;
+    
+    /**
      * The name of the metric.
      * @var string
      */
@@ -43,7 +49,7 @@ class Metricmodel extends CI_Model
     private $metric_units;
     
     /**
-     * The definition of the instrument.
+     * The definition of the metric.
      * A string that is retrieved from a database.
      * @var string
      */
@@ -146,6 +152,8 @@ class Metricmodel extends CI_Model
         {
             case 'instrument':
                 return $this->$what;
+            case 'datasetfilter':
+            	return $this->$what;
             case 'metric':
                 return $this->$what;
             case 'metric_units':
@@ -254,16 +262,15 @@ class Metricmodel extends CI_Model
      *
      * @param string $instrument The name of the instrument.
      * @param string $metric The name of the metric.
-     * @param string $start A human readable string for the start of the date
-     * range. Assumed to be in m-d-Y format. (Example: 11-11-2011)
-     * @param string $end A human readable string for the end of the date
-     * range. Assumed to be in m-d-Y format. (Example: 12-12-2012)
-     * 
+     * @param string $start A human readable string for the start of the date range. Assumed to be in m-d-Y format. (Example: 11-11-2011)
+     * @param string $end A human readable string for the end of the date range. Assumed to be in m-d-Y format. (Example: 12-12-2012)
+     * @param string $datasetfilter Optional dataset name filter
+     *
      * @return array|boolean An array containing error information if there is
      * an error, FALSE otherwise.
      * Error Array Format: ['type' => string, 'value' => string]
      */
-    public function initialize($instrument, $metric, $start, $end, $windowsize = 20)
+    public function initialize($instrument, $metric, $start, $end, $windowsize = 20, $datasetfilter = '')
     {
         // change the string format of the dates, as strtotime doesn't work
         // right with -'s
@@ -284,6 +291,8 @@ class Metricmodel extends CI_Model
         $this->querystartdate  = date("Y-m-d", strtotime('-' . $windowradius . ' day', $this->unixstartdate));
         $this->queryenddate    = date("Y-m-d", strtotime(      $windowradius . ' day', $this->unixenddate));
     
+    	$this->datasetfilter  = $datasetfilter;
+    	
         // check to see that this is a valid instrument/metric
         $this->db->where('Instrument', $instrument);
         
@@ -299,8 +308,8 @@ class Metricmodel extends CI_Model
             return array("type" => "metric", "value" => $metric);
         }    
     
-        // Lookup the definition, purpose, and units for this metric
-        $this->db->select('Description, Purpose, Units');
+        // Lookup the Description, purpose, units, and Source for this metric
+        $this->db->select('Description, Purpose, Units, Source');
         $this->db->where('Metric', $metric);
         $query = $this->db->get('V_Dataset_QC_Metric_Definitions', 1);
 
@@ -311,7 +320,7 @@ class Metricmodel extends CI_Model
         else 
         {
             $row = $query->row();
-            $this->definition = $metric . ": " . $row->Description . "; " . $row->Purpose;
+            $this->definition = $metric . " (" . $row->Source . "): " . $row->Description . "; " . $row->Purpose;
             
             $this->metric_units =$row->Units;
         }
@@ -321,8 +330,10 @@ class Metricmodel extends CI_Model
                          'Acq_Time_Start',
                          'Dataset_ID',
                          'Dataset',
+                         'Quameter_Job',
                          'SMAQC_Job',
-                         'Metrics_Last_Affected',
+                         'Quameter_Last_Affected',
+                         'Smaqc_Last_Affected',
                          $metric
                         );
                         
@@ -331,6 +342,12 @@ class Metricmodel extends CI_Model
         $this->db->where('Instrument =', $this->instrument);
         $this->db->where('Acq_Time_Start >=', $this->querystartdate);
         $this->db->where('Acq_Time_Start <=', $this->queryenddate . 'T23:59:59.999');
+        
+        if (strlen($this->datasetfilter) > 0)
+        {
+	        $this->db->like('Dataset', $this->datasetfilter);
+		}
+		
         $this->db->order_by('Acq_Time_Start', 'desc');
 
         // run the query, we may not actually need to store this in the model,

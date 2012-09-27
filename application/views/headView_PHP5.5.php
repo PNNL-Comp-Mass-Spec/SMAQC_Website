@@ -73,6 +73,17 @@
                 });
             });
         });
+
+        $("#datasetfilter").live('change', function (event) {
+          var input = $(this).val();
+          $('a.customdate').each(function() {
+                $(this).attr("href", function(index, old) {
+                    var substr = old.split('/');
+                    substr[substr.length - 1] = input;
+                    return substr.join('/');
+                });
+            });
+        });
         
     </script>
     <script type="text/javascript" src="<?= base_url("assets/js/metricplot.js") ?>"></script>

@@ -51,7 +51,11 @@
 	  <tr>
 	    <td align="right"><label for="to">To</label></td>
 	    <td><input type="text" id="to" name="to" value="<?=$enddate?>" /></td>
-	    <td><a href="<?= site_url(join('/', array("smaqc", "instrument", $instrument, $metric, $startdate, $enddate, $windowsize))) ?>" class="customdate button">Update</a></td>
+	    <td><a href="<?= site_url(join('/', array("smaqc", "instrument", $instrument, $metric, $startdate, $enddate, $windowsize, $datasetfilter))) ?>" class="customdate button">Update</a></td>
+	  </tr>
+	  <tr>
+	    <td colspan=2 align="right"><label for="datasetfilter">Dataset filter</label></td>
+	    <td><input type="text" id="datasetfilter" name="datasetfilter" value="<?=$datasetfilter?>" /></td>
 	  </tr>
 	  <tr>
 	    <td colspan=2 align="right"><label for="windowsize">StdDev Window Size (days)</label></td>
@@ -60,7 +64,7 @@
 	  </table>
 	</td>
 	<td>
-		<div style="text-align: right"><a class="customdate button" href="<?= site_url(join('/', array("smaqc", "instrument", $instrument, "all", $startdate, $enddate))) ?>">View All Metrics</a></div>
+		<div style="text-align: right"><a class="customdate button" href="<?= site_url(join('/', array("smaqc", "instrument", $instrument, "all", $startdate, $enddate, $windowsize, $datasetfilter))) ?>">View All Metrics</a></div>
 	</td>
   </tr>
 </table>

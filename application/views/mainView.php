@@ -46,7 +46,7 @@
 			<a href="<?= site_url(join('/', array("smaqc", "instrument", $row, "all", date("m-d-Y", strtotime("-1 month")), date("m-d-Y", time())))) ?>">1 Month</a>
 		</td>
 		<td>
-			<a class="customdate" href="<?= site_url(join('/', array("smaqc", "instrument", $row, "all", $startdate, $enddate, $windowsize))) ?>">Current</a>
+			<a class="customdate" href="<?= site_url(join('/', array("smaqc", "instrument", $row, "all", $startdate, $enddate, $windowsize, $datasetfilter))) ?>">Current</a>
 		</td>
 	</tr>
 <?php endforeach; ?>

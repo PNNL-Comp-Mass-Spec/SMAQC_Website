@@ -45,7 +45,7 @@
 	<tr>
 		<td align="right"><label for="to">To</label></td>
 		<td><input type="text" id="to" name="to" value="<?=$enddate?>" /></td>
-    <td><a href="<?= site_url(join('/', array("smaqc", "instrument", $instrument, "all", $startdate, $enddate, $windowsize))) ?>" class="customdate button">Update</a></td>
+    <td><a href="<?= site_url(join('/', array("smaqc", "instrument", $instrument, "all", $startdate, $enddate, $windowsize, $datasetfilter))) ?>" class="customdate button">Update</a></td>
 	</tr>
 </table>
 
@@ -55,11 +55,13 @@
 		<th>Average Over Range</th>
 		<th>Most Recent Value</th>
 		<th>Description</th>
+		<th>Category</th>
+		<th>Source</th>
 	</tr>
 <?php foreach($metriclist as $metricname): ?>
 	<tr>
 		<td>
-			<a class="customdate" href="<?= site_url(join('/', array("smaqc", "instrument", $title, $metricname, $startdate, $enddate, $windowsize))) ?>"><?=$metricname?></a>
+			<a class="customdate" href="<?= site_url(join('/', array("smaqc", "instrument", $title, $metricname, $startdate, $enddate, $windowsize, $datasetfilter))) ?>"><?=$metricname?></a>
 		</td>
 		<td align="right">
 			<?=format_metric($averagedmetrics->row()->$metricname)?>
@@ -68,7 +70,13 @@
 			<?=format_metric($latestmetrics->row()->$metricname)?>
 		</td>
 		<td align="left">
-			<?=$metricdescriptions[$metricname]?>
+			<?=$metricDescriptions[$metricname]?>
+		</td>
+		<td align="left">
+			<?=$metricCategories[$metricname]?>
+		</td>
+		<td align="left">
+			<?=$metricSources[$metricname]?>
 		</td>
 	</tr>
 <?php endforeach; ?>

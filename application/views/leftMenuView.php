@@ -28,7 +28,7 @@ if(empty($metric))
         <ul class="menulinks">
           <li><a href="<?= site_url(join('/', array("smaqc", "instrument", $row, $metric, date("m-d-Y", strtotime("-1 week")), date("m-d-Y", time())))) ?>">1 Week</a></li>
           <li><a href="<?= site_url(join('/', array("smaqc", "instrument", $row, $metric, date("m-d-Y", strtotime("-1 month")), date("m-d-Y", time())))) ?>">1 Month</a></li>
-          <li><a class="customdate" href="<?= site_url(join('/', array("smaqc", "instrument", $row, $metric, $startdate, $enddate, $windowsize))) ?>">Current</a></li>
+          <li><a class="customdate" href="<?= site_url(join('/', array("smaqc", "instrument", $row, $metric, $startdate, $enddate, $windowsize, $datasetfilter))) ?>">Current</a></li>
         </ul>
       </li>
   <?php endforeach; ?>
@@ -41,7 +41,7 @@ if(empty($metric))
         <ul class="menulinks">
           <li><a href="<?= site_url(join('/', array("smaqc", "instrument", $instrument, "all", date("m-d-Y", strtotime("-1 week")), date("m-d-Y", time())))) ?>">1 Week</a></li>
           <li><a href="<?= site_url(join('/', array("smaqc", "instrument", $instrument, "all", date("m-d-Y", strtotime("-1 month")), date("m-d-Y", time())))) ?>">1 Month</a></li>
-          <li><a class="customdate" href="<?= site_url(join('/', array("smaqc", "instrument", $instrument, "all", $startdate, $enddate, $windowsize))) ?>">Current</a></li>
+          <li><a class="customdate" href="<?= site_url(join('/', array("smaqc", "instrument", $instrument, "all", $startdate, $enddate, $windowsize, $datasetfilter))) ?>">Current</a></li>
         </ul>
       </li>
   <?php foreach($metriclist as $row): ?>
@@ -49,7 +49,7 @@ if(empty($metric))
         <ul class="menulinks">
           <li><a href="<?= site_url(join('/', array("smaqc", "instrument", $instrument, $row, date("m-d-Y", strtotime("-1 week")), date("m-d-Y", time())))) ?>">1 Week</a></li>
           <li><a href="<?= site_url(join('/', array("smaqc", "instrument", $instrument, $row, date("m-d-Y", strtotime("-1 month")), date("m-d-Y", time())))) ?>">1 Month</a></li>
-          <li><a class="customdate" href="<?= site_url(join('/', array("smaqc", "instrument", $instrument, $row, $startdate, $enddate, $windowsize))) ?>">Current</a></li>
+          <li><a class="customdate" href="<?= site_url(join('/', array("smaqc", "instrument", $instrument, $row, $startdate, $enddate, $windowsize, $datasetfilter))) ?>">Current</a></li>
         </ul>
       </li>
   <?php endforeach; ?>

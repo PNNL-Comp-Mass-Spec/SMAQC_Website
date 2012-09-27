@@ -73,8 +73,21 @@ class Instrumentmodel extends CI_Model
      * The type is what is returned by a call to CI's Active Record db->get().
      * @var object 
      */
-    private $metricdescriptions;
-        
+    private $metricDescriptions;
+
+    /**
+     * A list (php array) of the category of each metric
+     * The type is what is returned by a call to CI's Active Record db->get().
+     * @var object 
+     */
+    private $metricCategories;    
+    /**
+     * A list (php array) of the source of each metric
+     * The type is what is returned by a call to CI's Active Record db->get().
+     * @var object 
+     */
+    private $metricSources;
+    
     /**
      * The latest metrics for the instrument.
      * The type is what is returned by a call to CI's Active Record db->get().
@@ -133,8 +146,12 @@ class Instrumentmodel extends CI_Model
                 return $this->$what;
             case 'metricnames':
                 return $this->$what;
-            case 'metricdescriptions':
+            case 'metricDescriptions':
             	return $this->$what;
+            case 'metricCategories':
+           		return $this->$what;
+            case 'metricSources':
+           		return $this->$what;
             case 'latestmetrics':
                 return $this->$what;
             case 'averagedmetrics':
@@ -202,16 +219,20 @@ class Instrumentmodel extends CI_Model
         $this->status = "green";
 
         // Obtain the metric descriptions
-        $this->db->select('Metric, Description');
-        $this->db->order_by('Metric');
+        $this->db->select('Metric, Source, Category, Description');
+        $this->db->order_by('SortKey');
         $query = $this->db->get('V_Dataset_QC_Metric_Definitions');
 
-        $this->metricdescriptions = array();
+        $this->metricDescriptions = array();
+        $this->metricCategories = array();
+        $this->metricSources = array();
 
-        // Populate the metric description array     
+        // Populate the metric arrays
         foreach($query->result() as $row)
         {
-	        $this->metricdescriptions[$row->Metric] = $row->Description;
+	        $this->metricDescriptions[$row->Metric] = $row->Description;
+    	    $this->metricCategories[$row->Metric] = $row->Category;
+	        $this->metricSources[$row->Metric] = $row->Source;
         }
 
         // attempt to get the latest data
@@ -237,8 +258,10 @@ class Instrumentmodel extends CI_Model
                                     "Acq_Time_Start",
                                     "Dataset_ID",
                                     "Dataset",
+                                    "Quameter_Job",
+                                    "Quameter_Last_Affected",
                                     "SMAQC_Job",
-                                    "Metrics_Last_Affected"
+                                    "Smaqc_Last_Affected"
                                   );
             
             if(!in_array($field, $ignoredfields))

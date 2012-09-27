@@ -50,8 +50,10 @@ class Smaqc extends CI_Controller
                                     "Acq_Time_Start",
                                     "Dataset_ID",
                                     "Dataset",
+                                    "Quameter_Job",
+                                    "Quameter_Last_Affected",
                                     "SMAQC_Job",
-                                    "Metrics_Last_Affected"
+                                    "Smaqc_Last_Affected"
                                   );
                                   
             if(!in_array($field, $ignoredfields))
@@ -82,6 +84,7 @@ class Smaqc extends CI_Controller
         $data['metriclist']     = $this->metriclist;
         $data['instrumentlist'] = $this->instrumentlist;
         $data['windowsize']     = $this->DEFAULTWINDOWSIZE;
+        $data['datasetfilter']  = $this->datasetfilter;
         $data['includegraph']   = FALSE;
 
         $this->load->view('headView.php', $data);
@@ -91,7 +94,7 @@ class Smaqc extends CI_Controller
         $this->load->view('footView.php', $data);
     }
 
-    public function instrument($name, $metric = NULL, $start = NULL, $end = NULL, $windowsize = NULL)
+    public function instrument($name, $metric = NULL, $start = NULL, $end = NULL, $windowsize = NULL, $datasetfilter = NULL)
     {
         // if name is empty, redirect to home
         if(empty($name))
@@ -102,6 +105,7 @@ class Smaqc extends CI_Controller
         
         $data['title'] = $name;
         $data['instrument'] = $name;
+        $data['datasetfilter'] = $datasetfilter;
   
         $data['metriclist'] = $this->metriclist;
         $data['instrumentlist'] = $this->instrumentlist;
@@ -177,7 +181,9 @@ class Smaqc extends CI_Controller
             }
         
             $data['metricnames']         = $this->Instrumentmodel->metricnames;
-            $data['metricdescriptions']  = $this->Instrumentmodel->metricdescriptions;
+            $data['metricDescriptions']  = $this->Instrumentmodel->metricDescriptions;
+            $data['metricCategories']    = $this->Instrumentmodel->metricCategories;
+            $data['metricSources']       = $this->Instrumentmodel->metricSources;
             $data['latestmetrics']       = $this->Instrumentmodel->latestmetrics;
             $data['averagedmetrics']     = $this->Instrumentmodel->averagedmetrics;
             $data['definition']          = $this->Instrumentmodel->definition;
@@ -193,7 +199,8 @@ class Smaqc extends CI_Controller
                 $metric,
                 $startdate,
                 $enddate,
-				$windowsize
+				$windowsize,
+				$datasetfilter
             );
         
             if($error)
