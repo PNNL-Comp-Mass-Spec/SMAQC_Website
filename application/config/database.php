@@ -48,7 +48,7 @@
 $active_group = 'default';
 $active_record = TRUE;
 
-$db['default']['hostname'] = '130.20.225.2';
+$db['default']['hostname'] = '192.168.56.101';
 $db['default']['username'] = 'dmsreader';
 $db['default']['password'] = 'dms4fun';
 $db['default']['database'] = 'DMS5';

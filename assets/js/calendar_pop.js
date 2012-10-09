@@ -15,7 +15,10 @@ $(function() {
             dates.not( this ).datepicker( "option", option, date );
         },
         onClose: function( dateText, inst ) {
-            var offset = (this.id == "from") ? 3 : 2;
+            var offset = (this.id == "from") ? 4 : 3;
+            if((typeof filter_text == 'undefined') || !filterText) {
+                offset = offset - 1;
+            }
             $('a.customdate').each(function() {
                 $(this).attr("href", function(index, old) {
                     var substr = old.split('/');
@@ -25,7 +28,10 @@ $(function() {
             });
         },
         onChangeMonthYear: function( year, month, inst) {
-            var offset = (this.id == "from") ? 3 : 2;
+            var offset = (this.id == "from") ? 4 : 3;
+            if((typeof filter_text == 'undefined') || !filterText) {
+                offset = offset - 1;
+            }
             $('a.customdate').each(function() {
                 $(this).attr("href", function(index, old) {
                     var substr = old.split('/');

@@ -39,6 +39,7 @@ class Smaqc extends CI_Controller
         $this->defaultenddate   = date("m-d-Y", time());
         $this->metriclist       = array();
         $this->instrumentlist   = array();
+        $this->datasetfilter    = '';
     
         // get a full list of the metric names
         foreach($this->db->list_fields('V_Dataset_QC_Metrics') as $field)

@@ -61,6 +61,8 @@
             metric_units: <?=$metric_units?>
         }
 
+        var filterText = '<?=$datasetfilter?>';
+
         $(window).resize(function() {
             plot.replot( {resetAxes: true } );
         });
@@ -70,10 +72,34 @@
           $('a.customdate').each(function() {
                 $(this).attr("href", function(index, old) {
                     var substr = old.split('/');
-                    substr[substr.length - 1] = input;
+                    substr[substr.length - 2] = input;
                     return substr.join('/');
                 });
             });
+        });
+
+        $("#datasetfilter").live('change', function (event) {
+          var input = $(this).val();
+
+          if(!filterText) {
+            filterText = input;
+            $('a.customdate').each(function() {
+                 $(this).attr("href", function(index, old) {
+                    var substr = old.split('/');
+                    substr[substr.length] = input;
+                    return substr.join('/');
+                });
+            });
+          }
+          else {
+              $('a.customdate').each(function() {
+                    $(this).attr("href", function(index, old) {
+                        var substr = old.split('/');
+                        substr[substr.length - 1] = input;
+                        return substr.join('/');
+                    });
+                });
+          }
         });
  
         
