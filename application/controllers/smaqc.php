@@ -51,6 +51,8 @@ class Smaqc extends CI_Controller
                                     "Acq_Time_Start",
                                     "Dataset_ID",
                                     "Dataset",
+                                    "Dataset_Rating",
+                                    "Dataset_Rating_ID",
                                     "Quameter_Job",
                                     "Quameter_Last_Affected",
                                     "SMAQC_Job",
@@ -221,6 +223,7 @@ class Smaqc extends CI_Controller
             $data['metrics']    = $this->Metricmodel->data;
             $data['definition'] = $this->Metricmodel->definition;
             $data['plotdata']         = $this->Metricmodel->plotdata;
+            $data['plotDataBad']      = $this->Metricmodel->plotDataBad;
             $data['plotdata_average'] = $this->Metricmodel->plotdata_average;
             $data['stddevupper']      = $this->Metricmodel->stddevupper;
             $data['stddevlower']      = $this->Metricmodel->stddevlower;

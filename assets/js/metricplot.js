@@ -1,7 +1,7 @@
 var plot;
 $(document).ready(function() {
     $.jqplot.config.enablePlugins = true;
-    plot = $.jqplot('chartdiv', [Settings.plotdata, Settings.plotdata_average, Settings.stddevupper, Settings.stddevlower], {
+    plot = $.jqplot('chartdiv', [Settings.plotdata, Settings.plotdata_average, Settings.stddevupper, Settings.stddevlower, Settings.plotDataBad], {
         title:Settings.title,
         axes: {
             xaxis:{
@@ -68,6 +68,17 @@ $(document).ready(function() {
                 lineWidth: 3,
                 color: '#B00',
                 showLabel: false
+            },
+            {
+                label:'Low Quality',
+                lineWidth: 2,
+                showLine: false,
+                showMarker: true,
+                color: '#FA8100',
+                markerOptions: {
+                    size: 5,
+                    color: '#FA8100'
+                }
             }
         ]
     });

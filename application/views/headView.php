@@ -58,6 +58,7 @@
             plotdata_average: <?=$plotdata_average?>,
             stddevupper: <?=$stddevupper?>,
             stddevlower: <?=$stddevlower?>,
+            plotDataBad: <?=$plotDataBad?>,
             metric_units: <?=$metric_units?>
         }
 

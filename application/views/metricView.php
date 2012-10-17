@@ -64,7 +64,7 @@
 	  </table>
 	</td>
 	<td>
-		<div style="text-align: right"><a class="customdate button" href="<?= site_url(join('/', array("smaqc", "instrument", $instrument, "all", $startdate, $enddate, $windowsize, $datasetfilter))) ?>">View All Metrics</a></div>
+		<div style="text-align: right"><a class="customdate button" href="<?= site_url(join('/', array("smaqc", "instrument", $instrument, "all", $startdate, $enddate))) ?>">View All Metrics</a></div>
 	</td>
   </tr>
 </table>
@@ -74,13 +74,15 @@
       <th>Dataset ID</th>
       <th>Start Time</th>
       <th>Value</th>
+      <th>Rating</th>
       <th>Dataset</th>
     </tr>
 <?php foreach($metrics->result() as $row): ?>
     <tr>
-      <td><?=$row->Dataset_ID?></td>
+      <td align="center"><?=$row->Dataset_ID?></td>
       <td><?=preg_replace('/:[0-9][0-9][0-9]/', '', $row->Acq_Time_Start)?></td>
       <td align="center"><?=format_metric($row->$metric)?></td>
+      <td><?=$row->Dataset_Rating?></td>
       <td><a href="http://dms2.pnl.gov/dataset/show/<?=$row->Dataset?>" target="_Dataset"><?=$row->Dataset?></a></td>
     </tr>
 <?php endforeach; ?>

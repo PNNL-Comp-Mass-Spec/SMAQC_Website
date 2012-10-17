@@ -100,6 +100,14 @@ class Metricmodel extends CI_Model
      * The type is what is returned by a call to CI's Active Record db->get().
      * @var string
      */
+	private $plotDataBad;
+	
+    /**
+     * A JSON encoded array of (x,y) values for jqplot to use.
+     * The x value is a time/date in milliseconds.
+     * The type is what is returned by a call to CI's Active Record db->get().
+     * @var string
+     */
     private $plotdata_average;
 
     /**
@@ -168,6 +176,8 @@ class Metricmodel extends CI_Model
                 return $this->$what;
             case 'plotdata':
                 return $this->$what;
+            case 'plotDataBad':
+            	return $this->$what;
             case 'plotdata_average':
                 return $this->$what;
             case 'stddevupper':
@@ -334,6 +344,8 @@ class Metricmodel extends CI_Model
                          'SMAQC_Job',
                          'Quameter_Last_Affected',
                          'Smaqc_Last_Affected',
+                         'Dataset_Rating',
+                         'Dataset_Rating_ID',
                          $metric
                         );
                         
@@ -354,11 +366,10 @@ class Metricmodel extends CI_Model
         // but for now we will
         $this->data = $this->db->get();
 
-        // set metricdata to an empty array so that we can append data
+        // Initialize the data arrays so that we can append data
         $this->metricdata = array();
-        
-        // set plotdata to an empty array so that we can append each plot point
         $this->plotdata = array();
+        $this->plotDataBad = array();
         
         // get just the data we want for plotting
         foreach($this->data->result() as $row)
@@ -380,14 +391,31 @@ class Metricmodel extends CI_Model
             
             $date = strtotime($date);
 
-            // add the value to the metricdata array
-            $this->metricdata[] = array($date, $row->$metric);
-            
+            $datasetIsBad = 0;
+            if ($row->Dataset_Rating_ID >= -5 && $row->Dataset_Rating_ID <= 1)
+            {
+                $datasetIsBad = 1;
+            }
+
+            if ($datasetIsBad == 0)
+            {
+                // add the value to the metricdata array
+                $this->metricdata[] = array($date, $row->$metric);
+            }
+
             // add the value to the plotdata array if it is within the user-specified plotting range
             if ($date >= $this->unixstartdate && $date <= $this->unixenddate)
             {
-                // javascript likes milliseconds, so multiply $date by 1000
-                $this->plotdata[] = array($date * 1000, $row->$metric);
+                if ($datasetIsBad == 0)
+                {
+                    // javascript likes milliseconds, so multiply $date by 1000
+                    $this->plotdata[] = array($date * 1000, $row->$metric);
+                }
+                else
+                {
+                    // javascript likes milliseconds, so multiply $date by 1000
+                    $this->plotDataBad[] = array($date * 1000, $row->$metric);
+                }
             }
         }
 
@@ -478,12 +506,20 @@ class Metricmodel extends CI_Model
             // properly, and not break javascript on the page
             $this->plotdata[] = array();
         }
-    
+
+		if(count($this->plotDataBad) < 1)
+        {
+            // put an empty array in there so that jqplot will display
+            // properly, and not break javascript on the page
+            $this->plotDataBad[] = array();
+        }
+        
         // put everything for jqplot into a json encoded array
         $this->plotdata = json_encode($this->plotdata);
         $this->plotdata_average = json_encode($this->plotdata_average);
         $this->stddevupper = json_encode($this->stddevupper);
         $this->stddevlower = json_encode($this->stddevlower);
+        $this->plotDataBad = json_encode($this->plotDataBad);                
         $this->metric_units = json_encode($this->metric_units);
 
         /* get the average (we'll use the select_avg() call for now, as it

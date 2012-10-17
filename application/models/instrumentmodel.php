@@ -258,6 +258,8 @@ class Instrumentmodel extends CI_Model
                                     "Acq_Time_Start",
                                     "Dataset_ID",
                                     "Dataset",
+                                    "Dataset_Rating",
+                                    "Dataset_Rating_ID",
                                     "Quameter_Job",
                                     "Quameter_Last_Affected",
                                     "SMAQC_Job",
@@ -275,6 +277,9 @@ class Instrumentmodel extends CI_Model
            date range */
         $this->db->where('Acq_Time_start >=', $this->startdate);
         $this->db->where('Acq_Time_start <=', $this->enddate . 'T23:59:59.999');
+
+        $ratingIDExclusion = array(-5, -4, -3, -2, -1, 0, 1);
+        $this->db->where_not_in('Dataset_Rating_ID', $ratingIDExclusion);
 
         $this->db->where('Instrument', $instrument);
         $this->averagedmetrics = $this->db->get('V_Dataset_QC_Metrics');
