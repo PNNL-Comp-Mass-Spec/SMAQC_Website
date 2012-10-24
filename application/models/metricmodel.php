@@ -409,12 +409,12 @@ class Metricmodel extends CI_Model
                 if ($datasetIsBad == 0)
                 {
                     // javascript likes milliseconds, so multiply $date by 1000
-                    $this->plotdata[] = array($date * 1000, $row->$metric);
+                    $this->plotdata[] = array($date * 1000, $row->$metric, $row->Dataset);
                 }
                 else
                 {
                     // javascript likes milliseconds, so multiply $date by 1000
-                    $this->plotDataBad[] = array($date * 1000, $row->$metric);
+                    $this->plotDataBad[] = array($date * 1000, $row->$metric, $row->Dataset);
                 }
             }
         }

@@ -46,7 +46,14 @@ $(document).ready(function() {
                 showMarker: true,
                 markerOptions: {
                     size: 5
-                }
+                },
+                highlighter: {
+                    show: true,
+                    showTooltip: true,
+                    tooltipAxes: 'y',
+                    tooltipLocation: 'se',
+                    yvalues:2
+                }                
             },
             {
                 label:'Average',
@@ -57,11 +64,12 @@ $(document).ready(function() {
                     show: false,
                     color: '#FFEA00'
                 }
+                
             },
             {
                 label:'2x StdDev',
                 lineWidth: 3,
-                color: '#B00'
+                color: '#B00'                
             },
             {
                 label:'2x StdDev',
@@ -78,6 +86,13 @@ $(document).ready(function() {
                 markerOptions: {
                     size: 5,
                     color: '#FA8100'
+                },
+                highlighter: {
+                    show: true,
+                    showTooltip: true,
+                    tooltipAxes: 'y',
+                    tooltipLocation: 'se',
+                    yvalues:2
                 }
             }
         ]
