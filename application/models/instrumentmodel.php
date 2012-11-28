@@ -80,7 +80,8 @@ class Instrumentmodel extends CI_Model
      * The type is what is returned by a call to CI's Active Record db->get().
      * @var object 
      */
-    private $metricCategories;    
+    private $metricCategories;
+
     /**
      * A list (php array) of the source of each metric
      * The type is what is returned by a call to CI's Active Record db->get().
@@ -101,6 +102,14 @@ class Instrumentmodel extends CI_Model
      * @var object 
      */
     private $averagedmetrics;
+
+    /**
+     * The standard deviation for each of the metrics for the instrument over the
+     * provided date range.
+     * The type is what is returned by a call to CI's Active Record db->get().
+     * @var object 
+     */
+    private $stddevmetrics;
     
     /**
      * Constructor
@@ -156,6 +165,8 @@ class Instrumentmodel extends CI_Model
                 return $this->$what;
             case 'averagedmetrics':
                 return $this->$what;
+            case 'stddevmetrics':
+                return $this->$what;
             default:
                 return $CI->$what;  // check base class CI_Model for member
         }
@@ -177,7 +188,7 @@ class Instrumentmodel extends CI_Model
      * an error, FALSE otherwise.
      * Error Array Format: ['type' => string, 'value' => string]
      */
-    public function initialize($instrument, $start, $end)
+    public function initialize($instrument, $unit, $window)
     {
         $this->instrument = $instrument;
 
@@ -186,33 +197,10 @@ class Instrumentmodel extends CI_Model
         $this->definition = "QC Metrics for " . $instrument;
                             
         
-        
-        // change the string format of the dates, as strtotime doesn't work
-        // right with -'s
-        $start = str_replace('-', '/', $start);
-        $end = str_replace('-', '/', $end);
-        
-        /* TODO: Check if dates are malformed (not proper dates).
-           If the dates are malformed, do we want to return an error instead of
-           using the default values? */
-        
-        // set the default dates if need be
-        if(empty($start))
+        if($unit == "days")
         {
-            $this->startdate = date("Y-m-d", strtotime("-2 months"));
-        }
-        else
-        {
-            $this->startdate = date("Y-m-d", strtotime($start));
-        }
-
-        if(empty($end))
-        {
+            $this->startdate = date("Y-m-d", strtotime("-" . $window . "days"));
             $this->enddate = date("Y-m-d", time());
-        }
-        else
-        {
-            $this->enddate = date("Y-m-d", strtotime($end));
         }
         
         // TODO: actually figure out status. For now, just set it to "green"
@@ -240,6 +228,7 @@ class Instrumentmodel extends CI_Model
         $this->db->where('Instrument', $instrument);
         $this->db->order_by('Acq_Time_Start', 'desc');
         $this->latestmetrics = $this->db->get('V_Dataset_QC_Metrics', 1);
+
 
         // Check that the instrument even exists (did we get a result?)
         if($this->latestmetrics->num_rows() < 1)
@@ -274,15 +263,62 @@ class Instrumentmodel extends CI_Model
         }
         
         /* build the where clause to select averages only from the correct 
-           date range */
-        $this->db->where('Acq_Time_start >=', $this->startdate);
-        $this->db->where('Acq_Time_start <=', $this->enddate . 'T23:59:59.999');
+           date/dataset range */
+        if($unit == "days")
+        {
+            $this->db->where('Acq_Time_start >=', $this->startdate);
+            $this->db->where('Acq_Time_start <=', $this->enddate . 'T23:59:59.999');
+        }
+        else
+        {
+            $this->db->group_by('Acq_Time_Start');
+            $this->db->order_by('Acq_Time_Start', 'desc');
+            $this->db->limit($window);
+        }
+        
 
         $ratingIDExclusion = array(-5, -4, -3, -2, -1, 0, 1);
         $this->db->where_not_in('Dataset_Rating_ID', $ratingIDExclusion);
 
         $this->db->where('Instrument', $instrument);
         $this->averagedmetrics = $this->db->get('V_Dataset_QC_Metrics');
+
+        /* get the std deviations of the metrics over the specified time period */
+        $this->stddevmetrics = array();
+
+        if($unit == "days")
+        {
+            foreach($this->metricnames as $metric)
+            {
+                $this->db->select('STDEV(' . $metric . ') as stddev');
+                $this->db->from("(
+                                     SELECT " . $metric . "
+                                     FROM V_Dataset_QC_Metrics
+                                     WHERE Instrument = '" . $instrument . "'
+                                     AND Acq_Time_Start >= '" . $this->startdate . "'
+                                     AND Acq_Time_Start <= '" . $this->enddate . "T23:59:59.999'
+                                 ) as latest"
+                );
+                $this->stddevmetrics[$metric] = $this->db->get()->row()->stddev;
+            }
+        }
+        else
+        {
+            foreach($this->metricnames as $metric)
+            {
+                $this->db->select('STDEV(' . $metric . ') as stddev');
+                $this->db->from("(
+                                     SELECT TOP " . $window . " " . $metric . "
+                                     FROM V_Dataset_QC_Metrics
+                                     WHERE Instrument = '" . $instrument . "'
+                                     AND " . $metric . " IS NOT NULL
+                                     ORDER BY Acq_Time_Start DESC
+                                 ) as latest"
+                );
+                
+                $this->stddevmetrics[$metric] = $this->db->get()->row()->stddev;
+            }
+        }
     
         return FALSE; // no errors, so return false
     }    

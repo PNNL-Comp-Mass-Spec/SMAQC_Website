@@ -30,45 +30,102 @@
 			return number_format($metric, 1);
 
 		return number_format($metric, 0);
-		
+	}
+
+	function link_to_metric_dash($metricname, $instrument, $windowsize = FALSE, $unit = FALSE, $filterDS = FALSE, $ignoreDS = FALSE)
+	{
+		// Required URL parameters:
+        // metric: the name of the metric
+        // instrument: the name of the instrument
+
+        // Optional URL parameters:
+        // filterDS: used to select datasets based on a SQL 'LIKE' match
+        // ignoreDS: used to exclude datasets based on a SQL 'LIKE' match
+
+        $URI_elements = array('smaqc', 'metric', $metricname, 'inst', $instrument);
+
+        if($windowsize != FALSE)
+        {
+        	$URI_elements[] = "window";
+        	$URI_elements[] = $windowsize;
+        }
+
+        if($unit != FALSE)
+        {
+        	$URI_elements[] = "unit";
+        	$URI_elements[] = $unit;
+        }
+
+        if($filterDS != FALSE)
+        {
+        	$URI_elements[] = "filterDS";
+        	$URI_elements[] = $filterDS;
+        }
+
+        if($ignoreDS != FALSE)
+        {
+        	$URI_elements[] = "ignoreDS";
+        	$URI_elements[] = $ignoreDS;
+        }
+
+        return site_url(join("/", $URI_elements));
 	}
 	
 ?>
+<div id="left-menu">
+  <ul class="menuitems">
+    <li><button class="button" onClick="location.href='<?= site_url() ?>'">Home</button></li>
+	<li>
+		<strong>Settings</strong><br />
+		Instrument:
+		<select id="instrumentlist">
+	    	<?php foreach($instrumentlist as $row): ?>
+	          	<?php if($instrument == $row) { ?>
+					<option value="<?=$row?>" selected="selected"><?=$row?></option>
+				<?php } else { ?>
+					<option value="<?=$row?>"><?=$row?></option>
+				<?php } ?>
+	      	<?php endforeach; ?>
+	    </select>
+	    Metric:
+		<select id="metriclist">
+	    	<?php foreach($metriclist as $row): ?>
+	          	<?php if($metric == $row) { ?>
+					<option value="<?=$row?>" selected="selected"><?=$row?></option>
+				<?php } else { ?>
+					<option value="<?=$row?>"><?=$row?></option>
+				<?php } ?>
+	      	<?php endforeach; ?>
+	    </select>
+		Window Size:
+		<input id="windowsize" type="number" name="windowsize" min="1" value="<?=$windowsize?>">
+		Units for Window:
+		<select id="units">
+			<?php if($unit == "days") { ?>
+				<option value="days" selected="selected">days</option>
+				<option value="datasets">datasets</option>
+			<?php } else { ?>
+				<option value="days">days</option>
+				<option value="datasets" selected="selected">datasets</option>
+			<?php } ?>
+		</select>
+		<label for="from">From</label>
+		<input type="text" id="from" name="from" value="<?=$startdate?>" />
+		<label for="to">To</label>
+		<input type="text" id="to" name="to" value="<?=$enddate?>" />
+		<label for="filterDS">Dataset Filter</label>
+		<input type="text" id="filterDS" name="filterDS" value="<?=$filterDS?>" />
+		<label for="ignoreDS">Excluded Datasets</label>
+		<input type="text" id="ignoreDS" name="ignoreDS" value="<?=$ignoreDS?>" disabled="disabled" />
+		<button id="updatesettings" class="button">Update</button>
+	</li>
+  </ul>
+</div>
+
 <div id="main-page">
 <p><?=$definition?></p>
 
-<div id="chartdiv" style="height:480px;width:100%;"></div>
-
-<table id="metricplotcontrols">
-  <tr>
-  	<td width="85%">
-	  <table id="datepickertable">
-	  <tr>
-	    <td align="right"><label for="from">From</label></td>
-	    <td><input type="text" id="from" name="from" value="<?=$startdate?>" /></td>
-	    <td>&nbsp;</td>
-	  </tr>
-	  <tr>
-	    <td align="right"><label for="to">To</label></td>
-	    <td><input type="text" id="to" name="to" value="<?=$enddate?>" /></td>
-	    <td><a href="<?= site_url(join('/', array("smaqc", "instrument", $instrument, $metric, $startdate, $enddate, $windowsize, $datasetfilter))) ?>" class="customdate button">Update</a></td>
-	  </tr>
-	  <tr>
-	    <td colspan=2 align="right"><label for="datasetfilter">Dataset filter</label></td>
-	    <td><input type="text" id="datasetfilter" name="datasetfilter" value="<?=$datasetfilter?>" /></td>
-	  </tr>
-	  <tr>
-	    <td colspan=2 align="right"><label for="windowsize">StdDev Window Size (days)</label></td>
-	    <td><input type="text" id="windowsize" name="windowsize" value="<?=$windowsize?>" /></td>
-	  </tr>
-	  </table>
-	</td>
-	<td>
-		<div style="text-align: right"><a class="customdate button" href="<?= site_url(join('/', array("smaqc", "instrument", $instrument, "all", $startdate, $enddate))) ?>">View All Metrics</a></div>
-	</td>
-  </tr>
-</table>
-
+<div id="chartdiv" style="height:480px; width:100%; margin-bottom:40px;"></div>
   <table border=1 >
     <tr>
       <th>Dataset ID</th>

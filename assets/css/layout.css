@@ -20,7 +20,7 @@ body{
  }
 
 #left-menu{
- position: absolute;
+ position: fixed;
  left: 20px;
  width: 170px;
  border: solid #000000;
@@ -38,8 +38,6 @@ body{
  background: #ffffff;
  color: #333333;
  padding: 20px;
- position :relative;
- }
-
-
+ position: relative;
+}
 

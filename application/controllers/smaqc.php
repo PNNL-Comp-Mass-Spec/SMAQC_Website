@@ -28,6 +28,7 @@ class Smaqc extends CI_Controller
     var $defaultstartdate;
     var $defaultenddate;
 	var $DEFAULTWINDOWSIZE = 45;
+    var $DEFAULTUNIT = "days";
 
     function __construct()
     {
@@ -97,159 +98,336 @@ class Smaqc extends CI_Controller
         $this->load->view('footView.php', $data);
     }
 
-    public function instrument($name, $metric = NULL, $start = NULL, $end = NULL, $windowsize = NULL, $datasetfilter = NULL)
+    public function instrument()
     {
-        // if name is empty, redirect to home
-        if(empty($name))
+        // example URL: http://192.168.56.102/smaqc/index.php/smaqc/instrument/Broad_VOrbiETD01/window/5/unit/days
+
+        // Required URL parameters:
+        // instrument: the name of the instrument
+
+        // Optional URL parameters:
+        // window: window size for calculating average and standard deviation
+        // unit: days or datasets (for the window)
+        // filterDS: used to select datasets based on a SQL 'LIKE' match
+        // ignoreDS: used to exclude datasets based on a SQL 'LIKE' match
+
+        $needRedirect = FALSE;  // use this variable to redirect to new URL if default parameters are used
+        
+        // use an array of defaults for the uri-to-assoc() call, if not supplied in the URI, the value will be set to FALSE
+        $defaultURI = array('instrument', 'window', 'unit');
+
+        $URI_array = $this->uri->uri_to_assoc(2, $defaultURI);
+
+        $includedDatasets = array();
+        $excludedDatasets = array();
+
+        // make sure user supplied an instrument name, redirect to home page if not
+        if($URI_array["instrument"] === FALSE)
         {
             redirect(site_url());
-            return;
         }
-        
-        $data['title'] = $name;
-        $data['instrument'] = $name;
-        $data['datasetfilter'] = $datasetfilter;
+
+        //TODO: check for valid instrument name (is it in the DB?)
+
+        // set default window size if need be
+        if($URI_array["window"] === FALSE)
+        {
+            $needRedirect = TRUE;
+            $URI_array["window"] = $this->DEFAULTWINDOWSIZE;
+        }
+
+        // set default unit if need be
+        if($URI_array["unit"] === FALSE)
+        {
+            $needRedirect = TRUE;
+            $URI_array["unit"] = "datasets";
+        }
+
+        // get the filter list if supplied
+        if(!empty($URI_array["filterDS"]))
+        {
+            $includedDatasets = explode(",", $URI_array["filterDS"]);
+            //TODO: add WHERE LIKE to query
+        }
+
+        // get the ignore list if supplied
+        if(!empty($URI_array["ignoreDS"]))
+        {
+            $excludedDatasets = explode(",", $URI_array["ignoreDS"]);
+            //TODO: add WHERE NOT LIKE to query
+        }
+
+        // redirect if default values are to be used
+        if($needRedirect)
+        {
+            redirect('smaqc/' . $this->uri->assoc_to_uri($URI_array));
+        }
+
+        // set the data that we will have access to in the view
+        $data['title'] = $URI_array["instrument"];
+        $data['instrument'] = $URI_array["instrument"];
+        $data['datasetfilter'] = $includedDatasets;
+        $data['datasetignore'] = $excludedDatasets;
   
         $data['metriclist'] = $this->metriclist;
         $data['instrumentlist'] = $this->instrumentlist;
+
+        $data['unit'] = $URI_array["unit"];
+
+        // remove these later
+        $data['startdate'] = $this->defaultstartdate;
+        $data['enddate']   = $this->defaultenddate;
+
+        $data['windowsize'] = (int)$URI_array["window"];
+
+        $this->load->model('Instrumentmodel','',TRUE);
+            
+        $error = $this->Instrumentmodel->initialize(
+            $URI_array["instrument"],
+            $data['unit'],
+            $data['windowsize']
+        );
+    
+        if($error)
+        {
+            $redirecturlparts = array(
+                "smaqc",
+                "invaliditem",
+                $error["type"],
+                $error["value"]
+            );
+                                     
+            redirect(site_url(join('/', $redirecturlparts)));
+        }
+    
+        $data['metricnames']         = $this->Instrumentmodel->metricnames;
+        $data['metricDescriptions']  = $this->Instrumentmodel->metricDescriptions;
+        $data['metricCategories']    = $this->Instrumentmodel->metricCategories;
+        $data['metricSources']       = $this->Instrumentmodel->metricSources;
+        $data['latestmetrics']       = $this->Instrumentmodel->latestmetrics;
+        $data['averagedmetrics']     = $this->Instrumentmodel->averagedmetrics;
+        $data['stddevmetrics']       = $this->Instrumentmodel->stddevmetrics;
+        $data['definition']          = $this->Instrumentmodel->definition;
+        
+        $data['includegraph'] = FALSE;
+
+        // load the views
+        $this->load->view('headView', $data);
+        $this->load->view('instrumentView', $data);
+    }
+
+    public function metric()
+    {
+        // example URL: http://192.168.56.102/smaqc/index.php/smaqc/metric/C_1A/inst/Broad_VOrbiETD01/from/07-13-2012/to/11-13-2012/window/45/unit/days
+
+        // Required URL parameters:
+        // metric: the name of the metric
+        // instrument: the name of the instrument
+
+        // Required With Defaults:
+        // from: the beginning date for selecting datasets
+        // to: the ending date for selecting datasets
+        // window: window size for calculating average and standard deviation
+        // unit: days or datasets (for the window)
+
+        // Optional URL parameters:
+        // filterDS: used to select datasets based on a SQL 'LIKE' match
+        // ignoreDS: used to exclude datasets based on a SQL 'LIKE' match
+
+        // use an array of defaults for the uri-to-assoc() call, if not supplied in the URI, the value will be set to FALSE
+        $defaultURI = array('metric', 'inst', 'from', 'to', 'window', 'unit');
+
+        $URI_array = $this->uri->uri_to_assoc(2, $defaultURI);
+
+        $needRedirect = FALSE;
+
+        $datasetFilter = "";
+        $excludedDatasets = "";
+
+        // make sure user supplied a metric name, redirect to home page if not
+        if($URI_array["metric"] === FALSE)
+        {
+            redirect(site_url());
+        }
+
+        //TODO: check for valid metric name (is it in the DB?)
+
+        // make sure user supplied an instrument name, redirect to home page if not
+        if($URI_array["inst"] === FALSE)
+        {
+            redirect(site_url());
+        }
+
+        //TODO: check for valid instrument name (is it in the DB?)
+
+        // set default from and to dates if need be
+        if($URI_array["from"] === FALSE or $URI_array["to"] === FALSE)
+        {
+            $needRedirect = TRUE;
+            $URI_array["from"] = $this->defaultstartdate;
+            $URI_array["to"]   = $this->defaultenddate;
+        }
+
+        // set default window size if need be
+        if($URI_array["window"] === FALSE)
+        {
+            $needRedirect = TRUE;
+            $URI_array["window"] = $this->DEFAULTWINDOWSIZE;
+        }
+
+        // set default unit if need be
+        if($URI_array["unit"] === FALSE)
+        {
+            $needRedirect = TRUE;
+            $URI_array["unit"] = "datasets";
+        }
+
+        // get the filter list if supplied
+        if(!empty($URI_array["filterDS"]))
+        {
+            $datasetFilter = $URI_array["filterDS"];
+            //TODO: add WHERE LIKE to query
+        }
+
+        // get the ignore list if supplied
+        if(!empty($URI_array["ignoreDS"]))
+        {
+            $excludedDatasets = $URI_array["ignoreDS"];
+            //TODO: add WHERE NOT LIKE to query
+        }
+
+        // redirect if default values are to be used
+        if($needRedirect)
+        {
+            redirect('smaqc/' . $this->uri->assoc_to_uri($URI_array));
+        }
+
+        $data['title'] = $URI_array["inst"] . ' - ' . $URI_array["metric"];
+        $data['metric']     = $URI_array["metric"];
+        $data['instrument'] = $URI_array["inst"];
+        $data['datasetfilter'] = $datasetFilter;
+        $data['filterDS'] = $datasetFilter;
+        $data['ignoreDS'] = $excludedDatasets;
   
-        if(empty($start) or empty($end))
+        $data['metriclist'] = $this->metriclist;
+        $data['instrumentlist'] = $this->instrumentlist;
+
+        $data['startdate'] = date("m-d-Y", strtotime(str_replace('-', '/', $URI_array["from"])));
+        $data['enddate']   = date("m-d-Y", strtotime(str_replace('-', '/', $URI_array["to"])));
+
+        $data['windowsize'] = (int)$URI_array["window"];
+
+        $this->load->model('Metricmodel', '', TRUE);
+
+        // TODO: add support for excluded datasets
+
+        $error = $this->Metricmodel->initialize(
+            $URI_array["inst"],
+            $URI_array["metric"],
+            $data['startdate'],
+            $data['enddate'],
+            $data['windowsize'],
+            $datasetFilter
+        );
+    
+        if($error)
         {
-            $startdate = date("m-d-Y", strtotime("-2 months"));
-            $enddate = date("m-d-Y", time());
-        }
-        else
-        {
-            /* strtotime doesn't parse dates properly that use -'s, as it
-               thinks it's a european date. So, we're going to replace all -'s
-               with /'s */
-            $start = str_replace('-', '/', $start);
-            $end = str_replace('-', '/', $end);
-
-            $start = strtotime($start);
-            $end = strtotime($end);
-
-            // check to see if the dates were malformed (not valid)
-            if(($start === FALSE) || ($end === FALSE))
-            {
-              $startdate = date("m-d-Y", strtotime("-2 months"));
-              $enddate = date("m-d-Y", time());
-            }
-            else
-            {
-              $startdate = date("m-d-Y", $start);
-              $enddate = date("m-d-Y", $end);
-            }
-        }
-
-        $data['startdate'] = $startdate;
-        $data['enddate']   = $enddate;
-
-		// see if we need to use the default windowsize
-		if(!is_numeric($windowsize) || $windowsize < 1)
-		{
-			$windowsize = $this->DEFAULTWINDOWSIZE;
-		}
-		else
-		{
-			// if they somehow entered a float, cut off the decimal
-			$windowsize = (int)$windowsize;
-		}
-
-		$data['windowsize'] = $windowsize;
-
-        // see if a specific metric was asked for
-        if($metric == "all" or empty($metric))
-        {
-            $metric = NULL;
-            
-            $this->load->model('Instrumentmodel','',TRUE);
-            
-            $error = $this->Instrumentmodel->initialize(
-                $name,
-                $startdate,
-                $enddate
+            $redirecturlparts = array(
+                "smaqc",
+                "invaliditem",
+                $error["type"],
+                $error["value"]
             );
-        
-            if($error)
-            {
-                $redirecturlparts = array(
-                    "smaqc",
-                    "invaliditem",
-                    $error["type"],
-                    $error["value"]
-                );
-                                         
-                redirect(site_url(join('/', $redirecturlparts)));
-            }
-        
-            $data['metricnames']         = $this->Instrumentmodel->metricnames;
-            $data['metricDescriptions']  = $this->Instrumentmodel->metricDescriptions;
-            $data['metricCategories']    = $this->Instrumentmodel->metricCategories;
-            $data['metricSources']       = $this->Instrumentmodel->metricSources;
-            $data['latestmetrics']       = $this->Instrumentmodel->latestmetrics;
-            $data['averagedmetrics']     = $this->Instrumentmodel->averagedmetrics;
-            $data['definition']          = $this->Instrumentmodel->definition;
-            
-            $data['includegraph'] = FALSE;
+                                     
+            redirect(site_url(join('/', $redirecturlparts)));
         }
-        else
-        {
-            $this->load->model('Metricmodel', '', TRUE);
 
-            $error = $this->Metricmodel->initialize(
-                $name,
-                $metric,
-                $startdate,
-                $enddate,
-				$windowsize,
-				$datasetfilter
-            );
         
-            if($error)
-            {
-                $redirecturlparts = array(
-                    "smaqc",
-                    "invaliditem",
-                    $error["type"],
-                    $error["value"]
-                );
-                                         
-                redirect(site_url(join('/', $redirecturlparts)));
-            }
-        
-            $data['metric']     = $metric;
-            $data['title']      = $data['title'] . ' - ' . $metric;
-            $data['metrics']    = $this->Metricmodel->data;
-            $data['definition'] = $this->Metricmodel->definition;
-            $data['plotdata']         = $this->Metricmodel->plotdata;
-            $data['plotDataBad']      = $this->Metricmodel->plotDataBad;
-            $data['plotdata_average'] = $this->Metricmodel->plotdata_average;
-            $data['stddevupper']      = $this->Metricmodel->stddevupper;
-            $data['stddevlower']      = $this->Metricmodel->stddevlower;
-            $data['metric_units']     = $this->Metricmodel->metric_units;
+        $data['metrics']    = $this->Metricmodel->data;
+        $data['definition'] = $this->Metricmodel->definition;
+        $data['plotdata']         = $this->Metricmodel->plotdata;
+        $data['plotDataBad']      = $this->Metricmodel->plotDataBad;
+        $data['plotdata_average'] = $this->Metricmodel->plotdata_average;
+        $data['stddevupper']      = $this->Metricmodel->stddevupper;
+        $data['stddevlower']      = $this->Metricmodel->stddevlower;
+        $data['metric_units']     = $this->Metricmodel->metric_units;
             
-            $data['includegraph'] = TRUE;
-        }
+        $data['includegraph'] = TRUE;
 
         // load the views
         $this->load->view('headView.php', $data);
-        $this->load->view('leftMenuView', $data);
-
-        // Disabled in April 2012 since not needed: 
-        // $this->load->view('topMenuView' , $data);
-
-        if(empty($metric))
-        {
-            $this->load->view('instrumentView', $data);
-        }
-        else
-        {
-            $this->load->view('metricView', $data);
-        }
-
-        $this->load->view('footView.php', $data);
+        $this->load->view('metricView', $data);
     }
+
+    /* TODO:
+    public function dataset()
+    {
+        // example URL: http://192.168.56.102/smaqc/index.php/smaqc/dataset/QC/window/27/unit/days
+
+        // Required URL parameters:
+        // dataset: the name of the dataset
+
+        // Optional URL parameters:
+        // window: window size for calculating average and standard deviation
+        // unit: days or datasets (for the window)
+        // filterDS: used to select datasets based on a SQL 'LIKE' match
+        // ignoreDS: used to exclude datasets based on a SQL 'LIKE' match
+        
+        // use an array of defaults for the uri-to-assoc() call, if not supplied in the URI, the value will be set to FALSE
+        $defaultURI = array('dataset', 'window', 'unit', 'filterDS', 'ignoreDS');
+
+        $URI_array = $this->uri->uri_to_assoc(2, $defaultURI);
+
+        $includedDatasets = array();
+        $excludedDatasets = array();
+
+        // make sure user supplied an dataset name, redirect to home page if not
+        if($URI_array["dataset"] === FALSE)
+        {
+            redirect(site_url());
+        }
+
+        //TODO: check for valid dataset name (is it in the DB?)
+
+        // set default window size if need be
+        if($URI_array["window"] === FALSE)
+        {
+            $URI_array["window"] = $this->DEFAULTWINDOWSIZE;
+        }
+
+        // set default unit if need be
+        if($URI_array["unit"] === FALSE)
+        {
+            $URI_array["unit"] = "datasets";
+        }
+
+        // get the filter list if supplied
+        if($URI_array["filterDS"] != FALSE)
+        {
+            $includedDatasets = explode(",", $URI_array["filterDS"]);
+            //TODO: add WHERE LIKE to query
+        }
+
+        // get the ignore list if supplied
+        if($URI_array["ignoreDS"] != FALSE)
+        {
+            $excludedDatasets = explode(",", $URI_array["ignoreDS"]);
+            //TODO: add WHERE NOT LIKE to query
+        }
+
+        $data['title'] = $URI_array["dataset"];
+
+        //TODO: get this next one in the model
+        $data['instrument'] = $URI_array["instrument"];
+
+        $data['datasetfilter'] = $URI_array["filterDS"];
+  
+        $data['metriclist'] = $this->metriclist;
+        $data['instrumentlist'] = $this->instrumentlist;
+
+        print_r($URI_array);
+        return;
+    } */
   
     public function invaliditem($requesteditemtype = NULL, $name = NULL)
     {

@@ -62,13 +62,58 @@ color: #B00;
   width: 100%;
 }
 
-#left-menu .menulinks li
+#left-menu .menuitems li
 {
   text-align: center;
   padding: 0;
 }
 
+#left-menu select,input,option
+{
+  width: 100%;
+  text-align: center;
+}
+
+#left-menu form
+{
+
+}
+
 button.selected
 {
   color: #B00;
+}
+
+.statustable
+{
+	width:100%;
+}
+.statustable td, th
+{
+	text-align: center;
+}
+
+div.center
+{
+	width: 100%;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#main-page .category *
+{
+  padding: 0;
+  margin: 0;
+}
+
+#main-page .categorytitle:hover
+{
+  color:gray;
+  cursor: pointer;
+}
+
+#main-page .category table
+{
+  padding: 0px;
+  margin: 0px 0px 0px 20px;
 }

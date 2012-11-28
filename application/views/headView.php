@@ -16,6 +16,7 @@
 <html>
 <head>
 <title>SMAQC</title>
+<meta charset="UTF-8">
 <link rel="stylesheet" type="text/css" href="<?= base_url("assets/css/layout.css") ?>" />
 <link rel="stylesheet" type="text/css" href="<?= base_url("assets/css/present.css") ?>" />
 <link rel="stylesheet" type="text/css" href="<?= base_url("assets/css/smoothness/jquery-ui-1.8.17.custom.css") ?>" />
@@ -67,43 +68,6 @@
         $(window).resize(function() {
             plot.replot( {resetAxes: true } );
         });
-
-        $("#windowsize").live('change', function (event) {
-          var input = $(this).val();
-          $('a.customdate').each(function() {
-                $(this).attr("href", function(index, old) {
-                    var substr = old.split('/');
-                    substr[substr.length - 2] = input;
-                    return substr.join('/');
-                });
-            });
-        });
-
-        $("#datasetfilter").live('change', function (event) {
-          var input = $(this).val();
-
-          if(!filterText) {
-            filterText = input;
-            $('a.customdate').each(function() {
-                 $(this).attr("href", function(index, old) {
-                    var substr = old.split('/');
-                    substr[substr.length] = input;
-                    return substr.join('/');
-                });
-            });
-          }
-          else {
-              $('a.customdate').each(function() {
-                    $(this).attr("href", function(index, old) {
-                        var substr = old.split('/');
-                        substr[substr.length - 1] = input;
-                        return substr.join('/');
-                    });
-                });
-          }
-        });
- 
-        
     </script>
     <script type="text/javascript" src="<?= base_url("assets/js/metricplot.js") ?>"></script>
 
@@ -111,7 +75,66 @@
 
 <script type="text/javascript">
   $(function() {
+
     $(".button").button();
+
+    $(".categorytitle").click(function() {
+        $(this).siblings('table').toggle();
+    });
+
+    $(".categorylink").click(function() {
+        $(this.hash).children().show();
+    });
+
+    $("#updatesettings").click(function() {
+        var newurl = '<?=site_url()?>/smaqc';
+
+        if($("#metriclist").length)
+        {
+            newurl = newurl + "/metric/" + $("#metriclist").val();
+            newurl = newurl + "/inst/" + $("#instrumentlist").val();
+        }
+        else if($("#instrumentlist").length)
+        {
+            newurl = newurl + "/instrument/" + $("#instrumentlist").val();
+        }
+
+        if($("#windowsize").length)
+        {
+            newurl = newurl + "/window/" + $("#windowsize").val();
+        }
+
+        if($("#units").length)
+        {
+            newurl = newurl + "/unit/" + $("#units").val();
+        }
+
+        if($("#from").length)
+        {
+            newurl = newurl + "/from/" + $("#from").val();
+        }
+
+        if($("#to").length)
+        {
+            newurl = newurl + "/to/" + $("#to").val();
+        }
+
+        if($("#filterDS").length)
+        {
+            var txt = $("#filterDS").val();
+            if(txt != "")
+                newurl = newurl + "/filterDS/" + $("#filterDS").val();
+        }
+
+        if($("#ignoreDS").length)
+        {
+            var txt = $("#ignoreDS").val();
+            if(txt != "")
+                newurl = newurl + "/ignoreDS/" + $("#ignoreDS").val();
+        }
+
+        document.location.href = newurl;
+    });
   });
 </script>
 </head>
