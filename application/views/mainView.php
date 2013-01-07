@@ -24,7 +24,7 @@
 		<?php foreach($instrumentlist as $row): ?>
 			<tr>
 				<td style="text-align: left;"><a href="<?= site_url(join('/', array("smaqc", "instrument", $row))) ?>"><?=$row?></a></td>
-				<td><img src="assets/status_placeholder.png" alt="placeholder" /></td>
+				<td><img src="/smaqc/assets/status_placeholder.png" alt="placeholder" /></td>
 				<td>??%</td>
 			</tr>
 		<?php endforeach; ?>

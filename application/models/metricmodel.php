@@ -377,7 +377,7 @@ class Metricmodel extends CI_Model
             // skip the value if it's null
             // the reason ignoring nulls is not part of the query, is that CI
             // apparently has issues with that
-            if(empty($row->$metric))
+            if(is_null($row->$metric))
             {
                 continue;
             }

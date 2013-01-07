@@ -14,6 +14,9 @@
  
 	function format_metric($metric)
 	{
+		if(is_null($metric))
+			return "";
+			
 		if ($metric == 0)
 			return "0";
 			
