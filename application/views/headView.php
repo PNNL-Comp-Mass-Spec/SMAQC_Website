@@ -60,8 +60,9 @@
             stddevupper: <?=$stddevupper?>,
             stddevlower: <?=$stddevlower?>,
             plotDataBad: <?=$plotDataBad?>,
+            plotDataPoor: <?=$plotDataPoor?>,
             metric_units: <?=$metric_units?>
-        }
+        };
 
         var filterText = '<?=$datasetfilter?>';
 

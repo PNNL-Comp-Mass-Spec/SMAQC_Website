@@ -57,7 +57,8 @@ class Smaqc extends CI_Controller
                                     "Quameter_Job",
                                     "Quameter_Last_Affected",
                                     "SMAQC_Job",
-                                    "Smaqc_Last_Affected"
+                                    "Smaqc_Last_Affected",
+									"QCDM_Last_Affected"
                                   );
                                   
             if(!in_array($field, $ignoredfields))
@@ -347,6 +348,7 @@ class Smaqc extends CI_Controller
         $data['definition'] = $this->Metricmodel->definition;
         $data['plotdata']         = $this->Metricmodel->plotdata;
         $data['plotDataBad']      = $this->Metricmodel->plotDataBad;
+        $data['plotDataPoor']      = $this->Metricmodel->plotDataPoor;
         $data['plotdata_average'] = $this->Metricmodel->plotdata_average;
         $data['stddevupper']      = $this->Metricmodel->stddevupper;
         $data['stddevlower']      = $this->Metricmodel->stddevlower;
