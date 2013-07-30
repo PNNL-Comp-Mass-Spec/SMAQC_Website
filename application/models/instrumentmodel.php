@@ -252,7 +252,8 @@ class Instrumentmodel extends CI_Model
                                     "Quameter_Job",
                                     "Quameter_Last_Affected",
                                     "SMAQC_Job",
-                                    "Smaqc_Last_Affected"
+                                    "Smaqc_Last_Affected",
+                                    "QCDM_Last_Affected"
                                   );
             
             if(!in_array($field, $ignoredfields))
