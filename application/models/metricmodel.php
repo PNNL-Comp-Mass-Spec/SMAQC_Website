@@ -207,31 +207,29 @@ class Metricmodel extends CI_Model
     }
 
     /*
-     * Compute the average of the values in metricdata, limiting to date within the specified date range
+     * Compute the median of the values in metricdata, limiting to date within the specified date range
      *
      * @param datetime $windowStartDate: The start date; unix date/time
      * @param datetime $windowEndDate:   The end date; unix date/time
      *
-     * Returns the average or NULL if no data in the time range
+     * Returns the median or NULL if no data in the time range
      */
-    function compute_windowed_average($windowStartDate, $windowEndDate)
+    function compute_windowed_median($windowStartDate, $windowEndDate)
     {
         $dataCount = count($this->metricdata);
         
-        $sum = 0.0;
-        $count = 0;
+		$dataInWindow = array();
         
         for($i = 0; $i < $dataCount; $i++)
         {
             if ($this->metricdata[$i][0] >= $windowStartDate && $this->metricdata[$i][0] <= $windowEndDate) 
             {
-                $sum += $this->metricdata[$i][1];
-                $count += 1;
+                $dataInWindow[] = $this->metricdata[$i][1];
             }
         }
         
-        if ($count > 0)
-            return $sum / $count;
+        if (count($dataInWindow) > 0)
+            return $this->compute_median($dataInWindow);
         else
             return NULL;
     }
@@ -339,14 +337,12 @@ class Metricmodel extends CI_Model
         
         // $residuals holds the absolute value of the residuals (deviations) from medianInWindow
         $residuals = array();
-        $count = 0;
         
         for($i = 0; $i < $dataCount; $i++)
         {
             if ($this->metricdata[$i][0] >= $windowStartDate && $this->metricdata[$i][0] <= $windowEndDate) 
             {
-                $residuals[$count] = abs($this->metricdata[$i][1] - $medianInWindow);
-                $count += 1;
+                $residuals[] = abs($this->metricdata[$i][1] - $medianInWindow);
             }
         }
      
@@ -398,7 +394,8 @@ class Metricmodel extends CI_Model
 		}
 		if(strstr($instrument,'LTQ_2') !== FALSE || strstr($instrument,'LTQ_3') !== FALSE || strstr($instrument,'LTQ_4') !== FALSE || strstr($instrument,'LTQ_FB1') !== FALSE || strstr($instrument,'LTQ_ETD_1') !== FALSE)
 		{
-			$limit = 0.05;
+			// Old: $limit = 0.05;
+			$limit = 0.1;
 		}
 		if(strstr($instrument,'LTQ_Orb') !== FALSE || strstr($instrument,'Orbi_FB1') !== FALSE || strstr($instrument,'LTQ_FT1') !== FALSE)
 		{
@@ -407,6 +404,8 @@ class Metricmodel extends CI_Model
 		if(strstr($instrument,'VOrbi') !== FALSE || strstr($instrument,'VPro') !== FALSE || strstr($instrument,'External_Orb') !== FALSE)
 		{
 			$limit = 0.11;
+			// Old: 
+			$limit = 0.2;
 		}
 
         $this->unixstartdate  = strtotime($start);
@@ -548,7 +547,7 @@ class Metricmodel extends CI_Model
                 $datasetIsBad = 2;
             }
 			
-            if ($datasetIsBad == 0)
+            if ($datasetIsBad == 0 || $datasetIsBad == 1)
             {
                 // add the value to the metricdata array
                 $this->metricdata[] = array($date, $row->$metric);
@@ -610,7 +609,7 @@ class Metricmodel extends CI_Model
 			// Uncomment to debug
 			// echo "Date, MedianInWindow, MAD, LowerBoundMAD, UpperBoundMAD<br>";
             
-            for($i = 0; $i < $s0; $i++)
+            for($dateIndex = 0; $dateIndex < $s0; $dateIndex++)
             {
 	            if(strstr($metric,'QCDM') !== FALSE)
 				{
@@ -618,7 +617,7 @@ class Metricmodel extends CI_Model
 
 					// Javascript likes milliseconds, so multiply $date by 1000 when appending to the array
 					$this->stddevlower[] = array(
-						$dateList[$i] * 1000,
+						$dateList[$dateIndex] * 1000,
 						$limit
 						);
 						
@@ -626,60 +625,20 @@ class Metricmodel extends CI_Model
 				}
 				
                 // get the date to the left by the window radius
-                $sqlDateTimeLeftUnix = strtotime('-' . $windowradius . ' day', $dateList[$i]);
-                $sqlDateTimeLeft = date('Y-m-d H:i:s', $sqlDateTimeLeftUnix);
+                $sqlDateTimeLeftUnix = strtotime('-' . $windowradius . ' day', $dateList[$dateIndex]);
                 
                 // get the date to the right by the window radius
-                $sqlDateTimeRightUnix = strtotime($windowradius . ' day', $dateList[$i]);
-                $sqlDateTimeRight = date('Y-m-d H:i:s', $sqlDateTimeRightUnix);
+                $sqlDateTimeRightUnix = strtotime($windowradius . ' day', $dateList[$dateIndex]);
 
-                // Get the metric values over the date range (using both good and "low quality" datasets)
-                // We're excluding "not released" datasets
-
-                $this->db->select($metric);
-                $this->db->from('V_Dataset_QC_Metrics');
-                $this->db->where('Instrument', $instrument);
-                $this->db->where('Acq_Time_Start >=', $sqlDateTimeLeft);
-                $this->db->where('Acq_Time_Start <=', $sqlDateTimeRight);
-                             
-		        if (strlen($this->datasetfilter) > 0)
-		        {
-			        $this->db->like('Dataset', $this->datasetfilter);
-				}
-				
-				$this->db->where('Not Dataset_Rating_ID Between -5 and 1');
-				
-                $query = $this->db->get();
-
-		        $dataInWindow = array();
-		        
-		        // Populate $dataInWindow with the data
-		        foreach ($query->result() as $row)
-		        {
-		            // Skip the value if it's null
-		            // We unforunately cannot do this during the query, since codeigniter returns no rows
-		            if(is_null($row->$metric))
-		            {
-		                continue;
-		            }
-
-					// Append to the array
-					$dataInWindow[] = $row->$metric;
-		        }
-                
-                if (count($dataInWindow) == 0)
-                {
-                	continue;
-                }
-                	
-                $medianInWindow = $this->compute_median($dataInWindow);
+                // Compute the median of the metric values over the date range (using both good and "low quality" datasets)
+                $medianInWindow = $this->compute_windowed_median($sqlDateTimeLeftUnix, $sqlDateTimeRightUnix);
                 
                 if (is_null($medianInWindow))
                 	continue;
                 	
 				// Javascript likes milliseconds, so multiply $date by 1000 when appending to the array
                 $this->plotdata_average[] = array(
-                    $dateList[$i] * 1000,
+                    $dateList[$dateIndex] * 1000,
                     $medianInWindow
                     );
 
@@ -694,17 +653,17 @@ class Metricmodel extends CI_Model
 				
 				// Javascript likes milliseconds, so multiply $date by 1000 when appending to the array
 				$this->stddevlower[] = array(
-					$dateList[$i] * 1000,
+					$dateList[$dateIndex] * 1000,
 					$lowerBoundMAD
 					);
 
 				$this->stddevupper[] = array(
-					$dateList[$i] * 1000,
+					$dateList[$dateIndex] * 1000,
 					$upperBoundMAD
 					);
 					
 				// Uncomment to debug
-				// echo date('m/d/Y H:i:s', $dateList[$i]) . ", " . $medianInWindow . ", " . $mad . ", " . $lowerBoundMAD . ", " . $upperBoundMAD . "<br>";
+				// echo date('m/d/Y H:i:s', $dateList[$dateIndex]) . ", " . $medianInWindow . ", " . $mad . ", " . $lowerBoundMAD . ", " . $upperBoundMAD . "<br>";
                     
             } // end of loop
         } // end of calculating stddev
