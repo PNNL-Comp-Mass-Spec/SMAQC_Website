@@ -74,7 +74,7 @@ class Instrumentmodel extends CI_Model
      * @var object 
      */
     private $metricDescriptions;
-
+	
     /**
      * A list (php array) of the category of each metric
      * The type is what is returned by a call to CI's Active Record db->get().
@@ -207,7 +207,7 @@ class Instrumentmodel extends CI_Model
         $this->status = "green";
 
         // Obtain the metric descriptions
-        $this->db->select('Metric, Source, Category, Description');
+        $this->db->select('Metric, Source, Category, Description, Short_Description');
         $this->db->order_by('SortKey');
         $query = $this->db->get('V_Dataset_QC_Metric_Definitions');
 
@@ -223,7 +223,11 @@ class Instrumentmodel extends CI_Model
 	        $this->metricSources[$row->Metric] = $row->Source;
         }
 
-        // attempt to get the latest data
+
+		return false;
+		
+		
+        // attempt to get the latest data (retrieve just 1 row from V_Dataset_QC_Metrics)
         $this->db->select();
         $this->db->where('Instrument', $instrument);
         $this->db->order_by('Acq_Time_Start', 'desc');
@@ -236,8 +240,8 @@ class Instrumentmodel extends CI_Model
             return array("type" => "instrument", "value" => $instrument);
         }
         
-        /* get a full list of the metric names AND build a select statement to
-           get the average of each metric */
+        /*
+        // Get a full list of the metric names and build a select statement
         foreach($this->latestmetrics->list_fields() as $field)
         {
             // exclude fields that aren't actually metrics
@@ -263,8 +267,8 @@ class Instrumentmodel extends CI_Model
             }
         }
         
-        /* build the where clause to select averages only from the correct 
-           date/dataset range */
+        
+        // build the where clause to select averages only from the correct date/dataset range
         if($unit == "days")
         {
             $this->db->where('Acq_Time_start >=', $this->startdate);
@@ -284,7 +288,10 @@ class Instrumentmodel extends CI_Model
         $this->db->where('Instrument', $instrument);
         $this->averagedmetrics = $this->db->get('V_Dataset_QC_Metrics');
 
-        /* get the std deviations of the metrics over the specified time period */
+		*/
+		
+		/*
+        // get the std deviations of the metrics over the specified time period
         $this->stddevmetrics = array();
 
         if($unit == "days")
@@ -320,7 +327,8 @@ class Instrumentmodel extends CI_Model
                 $this->stddevmetrics[$metric] = $this->db->get()->row()->stddev;
             }
         }
-    
+    	*/
+    	
         return FALSE; // no errors, so return false
     }    
 }

@@ -130,7 +130,7 @@
 </div>
 
 <div id="top-menu">
-	<h2 align=right > <?=$title?> </h2>
+	<h2 align=left > <?=$title?> </h2>
 </div>
 
 <div id="main-page">
@@ -141,28 +141,28 @@
 		<hr />
 		<table style="border:0; width:100%;" id="tbl_<?=str_replace(' ','',$category)?>">
 			<tr>
-				<th style="width:50%;"></th>
-				<th style="width:40%;"></th>
-				<th>Status</th>
+				<th style="width:400px;"></th>
+				<th ></th>
+				<th style="width:150px;" ></th>
 			</tr>
-			<?php foreach(get_keys_by_value($metricCategories, $category) as $metricname): ?>
+			<?php foreach(get_keys_by_value($metricCategories, $category) as $metricname): 
+				$shortDescription = $metricShortDescription[$metricname];
+		    	if (strlen(trim($shortDescription)) == 0)
+		    		$shortDescription = '';
+				else
+			    	$shortDescription = ' (' . $shortDescription . ')';
+			
+			?>
 			<tr>
 				<td>
-					<h3><a href="<?=link_to_metric_dash($metricname, $instrument, $windowsize, $unit)?>"><?=$metricname?></a></h3>
-					<p>
-						Description: <?=$metricDescriptions[$metricname]?><br />
-						Source: <?=$metricSources[$metricname]?>
-					</p>
+					<h3><a href="<?=link_to_metric_dash($metricname, $instrument, $windowsize, $unit)?>"><?=$metricname . $shortDescription?></a></h3>
 				</td>
 				<td>
-					
-					average: <?=format_metric($averagedmetrics->row()->$metricname)?> -- 
-					stdev: <?=format_metric($stddevmetrics[$metricname])?><br />
-					bounds: (<?=format_metric($averagedmetrics->row()->$metricname - 2 * $stddevmetrics[$metricname] )?>, 
-					         <?=format_metric($averagedmetrics->row()->$metricname + 2 * $stddevmetrics[$metricname] )?>) -- 
-					latest:  <?=format_metric($latestmetrics->row()->$metricname)?>
+					<?=$metricDescriptions[$metricname]?>
 				</td>
-				<td align="center"><img src="/smaqc/assets/status_placeholder.png" alt="placeholder" /></td>
+				<td>
+					<?=$metricSources[$metricname]?>
+				</td>
 			</tr>
 			<?php endforeach; ?>
 		</table>

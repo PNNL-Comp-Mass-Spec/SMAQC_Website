@@ -448,29 +448,29 @@ class Metricmodel extends CI_Model
 				if(strstr($instrument,'Exact') !== FALSE)
 				{
 					$row = $query->row();
-					$this->definition = $metric . " (" . $row->Source . "): " . $row->Description . "; " . $row->Purpose . "Metrics used: MS1_TIC_Q2, MS1_Density_Q1";
+					$this->definition = $metric . " (" . $row->Source . "): " . $row->Description . " <br>" . $row->Purpose . "Metrics used: MS1_TIC_Q2, MS1_Density_Q1";
 				}
 				if(strstr($instrument,'LTQ_2') !== FALSE || strstr($instrument,'LTQ_3') !== FALSE || strstr($instrument,'LTQ_4') !== FALSE || strstr($instrument,'LTQ_FB1') !== FALSE || strstr($instrument,'LTQ_ETD_1') !== FALSE)
 				{
 					$row = $query->row();
-					$this->definition = $metric . " (" . $row->Source . "): " . $row->Description . "; " . $row->Purpose . "Metrics used: XIC_WideFrac, MS2_Density_Q1, P_2C";
+					$this->definition = $metric . " (" . $row->Source . "): " . $row->Description . " <br>" . $row->Purpose . "Metrics used: XIC_WideFrac, MS2_Density_Q1, P_2C";
 				}
 				if(strstr($instrument,'LTQ_Orb') !== FALSE || strstr($instrument,'Orbi_FB1') !== FALSE || strstr($instrument,'LTQ_FT1') !== FALSE)
 				{
 					$row = $query->row();
-					$this->definition = $metric . " (" . $row->Source . "): " . $row->Description . "; " . $row->Purpose . "Metrics used: XIC_WideFrac, MS1_TIC_Change_Q2, MS1_Density_Q1, MS1_Density_Q2, DS_2A, P_2B, P_2A, DS_2B";
+					$this->definition = $metric . " (" . $row->Source . "): " . $row->Description . " <br>" . $row->Purpose . "Metrics used: XIC_WideFrac, MS1_TIC_Change_Q2, MS1_Density_Q1, MS1_Density_Q2, DS_2A, P_2B, P_2A, DS_2B";
 				}
 				if(strstr($instrument,'VOrbi') !== FALSE || strstr($instrument,'VPro') !== FALSE || strstr($instrument,'External_Orb') !== FALSE)
 				{
 					$row = $query->row();
-					$this->definition = $metric . " (" . $row->Source . "): " . $row->Description . "; " . $row->Purpose . "Metrics used: XIC_WideFrac, MS2_Density_Q1, MS1_2B, P_2B, P_2A, DS_2B";
+					$this->definition = $metric . " (" . $row->Source . "): " . $row->Description . " <br>" . $row->Purpose . "Metrics used: XIC_WideFrac, MS2_Density_Q1, MS1_2B, P_2B, P_2A, DS_2B";
 				}
 				$this->metric_units =$row->Units;
 			}
 			else
 			{
 				$row = $query->row();
-				$this->definition = $metric . " (" . $row->Source . "): " . $row->Description . "; " . $row->Purpose;
+				$this->definition = $metric . " (" . $row->Source . "): " . $row->Description . " <br>" . $row->Purpose;
 				
 				$this->metric_units =$row->Units;
 			}

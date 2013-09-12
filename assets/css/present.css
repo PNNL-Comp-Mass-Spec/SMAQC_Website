@@ -84,9 +84,14 @@ button.selected
   color: #B00;
 }
 
+.statusTableContainer
+{
+	width:300px;
+}
+
 .statustable
 {
-	width:100%;
+	width:270px;
 }
 .statustable td, th
 {

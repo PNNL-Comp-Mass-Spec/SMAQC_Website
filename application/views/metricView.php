@@ -35,6 +35,39 @@
 		return number_format($metric, 0);
 	}
 
+
+	function link_to_instrument_dash($instrument, $windowsize = FALSE, $unit = FALSE, $filterDS = FALSE, $ignoreDS = FALSE)
+	{
+
+        $URI_elements = array('smaqc', 'instrument', $instrument);
+
+        if($windowsize != FALSE)
+        {
+        	$URI_elements[] = "window";
+        	$URI_elements[] = $windowsize;
+        }
+
+        if($unit != FALSE)
+        {
+        	$URI_elements[] = "unit";
+        	$URI_elements[] = $unit;
+        }
+
+        if($filterDS != FALSE)
+        {
+        	$URI_elements[] = "filterDS";
+        	$URI_elements[] = $filterDS;
+        }
+
+        if($ignoreDS != FALSE)
+        {
+        	$URI_elements[] = "ignoreDS";
+        	$URI_elements[] = $ignoreDS;
+        }
+
+        return site_url(join("/", $URI_elements));
+	}
+	
 	function link_to_metric_dash($metricname, $instrument, $windowsize = FALSE, $unit = FALSE, $filterDS = FALSE, $ignoreDS = FALSE)
 	{
 		// Required URL parameters:
@@ -77,7 +110,7 @@
 ?>
 <div id="left-menu">
   <ul class="menuitems">
-    <li><button class="button" onClick="location.href='<?= site_url() ?>'">Home</button></li>
+    <li><button class="button" onClick="location.href='<?= link_to_instrument_dash($instrument, $windowsize) ?>'">Home</button></li>
 	<li>
 		<strong>Settings</strong><br />
 		Instrument:
@@ -92,11 +125,18 @@
 	    </select>
 	    Metric:
 		<select id="metriclist">
-	    	<?php foreach($metriclist as $row): ?>
+	    	<?php foreach($metriclist as $row): 
+		    	$shortDescription = $metricShortDescription[$row];
+		    	if (strlen(trim($shortDescription)) == 0)
+		    		$shortDescription = '';
+				else
+			    	$shortDescription = ' (' . $shortDescription . ')';
+
+	    	?>
 	          	<?php if($metric == $row) { ?>
-					<option value="<?=$row?>" selected="selected"><?=$row?></option>
+					<option value="<?=$row?>" selected="selected"><?=$row . $shortDescription?></option>
 				<?php } else { ?>
-					<option value="<?=$row?>"><?=$row?></option>
+					<option value="<?=$row?>"><?=$row . $shortDescription?></option>
 				<?php } ?>
 	      	<?php endforeach; ?>
 	    </select>

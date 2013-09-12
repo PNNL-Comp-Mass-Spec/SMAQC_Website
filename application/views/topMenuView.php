@@ -14,5 +14,5 @@
  */
 ?>
 <div id="top-menu">
-<h2 align=right > <?=$title?> </h2>
+<h2 align=left > <?=$title?> </h2>
 </div>

@@ -39,6 +39,7 @@ class Smaqc extends CI_Controller
         $this->defaultstartdate = date("m-d-Y", strtotime("-4 months"));
         $this->defaultenddate   = date("m-d-Y", time());
         $this->metriclist       = array();
+        $this->metricShortDescription = array();
         $this->instrumentlist   = array();
         $this->datasetfilter    = '';
     
@@ -67,13 +68,22 @@ class Smaqc extends CI_Controller
             }
         }
     
+        
+        // Get the Short Description for each metric
+        $this->db->select('Metric, Short_Description');
+        $this->db->order_by("Metric", "asc");
+        $result = $this->db->get('V_Dataset_QC_Metric_Definitions')->result();
+        
+        foreach($result as $row)
+        {
+            $this->metricShortDescription[$row->Metric] = $row->Short_Description;
+        }
+
         // get a full list of the instruments
         $this->db->select('Instrument');
         $this->db->distinct();
         $this->db->order_by("Instrument", "asc");
         $result = $this->db->get('V_Dataset_QC_Metrics')->result();
-        
-        $instrumentlist = array();
         
         foreach($result as $row)
         {
@@ -87,6 +97,7 @@ class Smaqc extends CI_Controller
         $data['startdate']      = $this->defaultstartdate;
         $data['enddate']        = $this->defaultenddate;
         $data['metriclist']     = $this->metriclist;
+        $data['metricShortDescription'] = $this->metricShortDescription;
         $data['instrumentlist'] = $this->instrumentlist;
         $data['windowsize']     = $this->DEFAULTWINDOWSIZE;
         $data['datasetfilter']  = $this->datasetfilter;
@@ -171,6 +182,7 @@ class Smaqc extends CI_Controller
         $data['datasetignore'] = $excludedDatasets;
   
         $data['metriclist'] = $this->metriclist;
+        $data['metricShortDescription'] = $this->metricShortDescription;        
         $data['instrumentlist'] = $this->instrumentlist;
 
         $data['unit'] = $URI_array["unit"];
@@ -311,6 +323,7 @@ class Smaqc extends CI_Controller
         $data['ignoreDS'] = $excludedDatasets;
   
         $data['metriclist'] = $this->metriclist;
+        $data['metricShortDescription'] = $this->metricShortDescription;        
         $data['instrumentlist'] = $this->instrumentlist;
 
         $data['startdate'] = date("m-d-Y", strtotime(str_replace('-', '/', $URI_array["from"])));
@@ -440,6 +453,7 @@ class Smaqc extends CI_Controller
         $data['includegraph'] = FALSE;
     
         $data['metriclist']     = $this->metriclist;
+        $data['metricShortDescription']     = $this->metricShortDescription;        
         $data['instrumentlist'] = $this->instrumentlist;
     
         $msg = "The requested #' does not exist.";

@@ -14,18 +14,14 @@
  */
 ?>
 <div id="main-page">
-	<div class="center">
-		<table class="statustable">
+	<div class="statusTableContainer" >
+		<table class="statustable" >
 			<tr>
 				<th>Instrument</th>
-				<th>Status</th>
-				<th>% Within Tolerance</th>
 			</tr>
 		<?php foreach($instrumentlist as $row): ?>
 			<tr>
 				<td style="text-align: left;"><a href="<?= site_url(join('/', array("smaqc", "instrument", $row))) ?>"><?=$row?></a></td>
-				<td><img src="/smaqc/assets/status_placeholder.png" alt="placeholder" /></td>
-				<td>??%</td>
 			</tr>
 		<?php endforeach; ?>
 
