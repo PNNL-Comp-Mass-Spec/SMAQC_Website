@@ -420,14 +420,14 @@ class Metricmodel extends CI_Model
         // check to see that this is a valid instrument/metric
         $this->db->where('Instrument', $instrument);
         
-        $query = $this->db->get('V_Dataset_QC_Metrics', 1);
+        $query = $this->db->get('V_Dataset_QC_Metrics_Export', 1);
         
         if($query->num_rows() < 1)
         {
             return array("type" => "instrument", "value" => $instrument);
         }
         
-        if(!$this->db->field_exists($metric, 'V_Dataset_QC_Metrics'))
+        if(!$this->db->field_exists($metric, 'V_Dataset_QC_Metrics_Export'))
         {
             return array("type" => "metric", "value" => $metric);
         }    
@@ -492,7 +492,7 @@ class Metricmodel extends CI_Model
                         );
                         
         $this->db->select(join(',', $columns));
-        $this->db->from('V_Dataset_QC_Metrics');
+        $this->db->from('V_Dataset_QC_Metrics_Export');
         $this->db->where('Instrument =', $this->instrument);
         $this->db->where('Acq_Time_Start >=', $this->querystartdate);
         $this->db->where('Acq_Time_Start <=', $this->queryenddate . 'T23:59:59.999');
@@ -582,7 +582,7 @@ class Metricmodel extends CI_Model
 				$dateMidnight = strtotime("0:00", $date);
 				if (count($dateList) == 0) 
 				{
-					// Data is returned from V_Dataset_QC_Metrics sorted descending
+					// Data is returned from V_Dataset_QC_Metrics_Export sorted descending
 					// Thus, add one day past $dateList so that the average and trend lines extend past the last data point
 					$dateList[] = strtotime('+1 day', $dateMidnight);
 					$dateList[] = $dateMidnight;
@@ -709,7 +709,7 @@ class Metricmodel extends CI_Model
         $this->db->where('Acq_Time_Start >=', $this->startdate);
         $this->db->where('Acq_Time_Start <=', $this->enddate . 'T23:59:59.999');
         $this->db->where('Instrument', $instrument);
-        $this->average = $this->db->get('V_Dataset_QC_Metrics')->row()->avg;
+        $this->average = $this->db->get('V_Dataset_QC_Metrics_Export')->row()->avg;
         */
 
         return FALSE; // no errors, so return false

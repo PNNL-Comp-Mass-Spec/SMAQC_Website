@@ -227,11 +227,11 @@ class Instrumentmodel extends CI_Model
 		return false;
 		
 		
-        // attempt to get the latest data (retrieve just 1 row from V_Dataset_QC_Metrics)
+        // attempt to get the latest data (retrieve just 1 row from V_Dataset_QC_Metrics_Export)
         $this->db->select();
         $this->db->where('Instrument', $instrument);
         $this->db->order_by('Acq_Time_Start', 'desc');
-        $this->latestmetrics = $this->db->get('V_Dataset_QC_Metrics', 1);
+        $this->latestmetrics = $this->db->get('V_Dataset_QC_Metrics_Export', 1);
 
 
         // Check that the instrument even exists (did we get a result?)
@@ -286,7 +286,7 @@ class Instrumentmodel extends CI_Model
         $this->db->where_not_in('Dataset_Rating_ID', $ratingIDExclusion);
 
         $this->db->where('Instrument', $instrument);
-        $this->averagedmetrics = $this->db->get('V_Dataset_QC_Metrics');
+        $this->averagedmetrics = $this->db->get('V_Dataset_QC_Metrics_Export');
 
 		*/
 		
@@ -301,7 +301,7 @@ class Instrumentmodel extends CI_Model
                 $this->db->select('STDEV(' . $metric . ') as stddev');
                 $this->db->from("(
                                      SELECT " . $metric . "
-                                     FROM V_Dataset_QC_Metrics
+                                     FROM V_Dataset_QC_Metrics_Export
                                      WHERE Instrument = '" . $instrument . "'
                                      AND Acq_Time_Start >= '" . $this->startdate . "'
                                      AND Acq_Time_Start <= '" . $this->enddate . "T23:59:59.999'
@@ -317,7 +317,7 @@ class Instrumentmodel extends CI_Model
                 $this->db->select('STDEV(' . $metric . ') as stddev');
                 $this->db->from("(
                                      SELECT TOP " . $window . " " . $metric . "
-                                     FROM V_Dataset_QC_Metrics
+                                     FROM V_Dataset_QC_Metrics_Export
                                      WHERE Instrument = '" . $instrument . "'
                                      AND " . $metric . " IS NOT NULL
                                      ORDER BY Acq_Time_Start DESC

@@ -341,14 +341,14 @@ class Metricmodel extends CI_Model
         // check to see that this is a valid instrument/metric
         $this->db->where('Instrument', $instrument);
         
-        $query = $this->db->get('V_Dataset_QC_Metrics', 1);
+        $query = $this->db->get('V_Dataset_QC_Metrics_Export', 1);
         
         if($query->num_rows() < 1)
         {
             return array("type" => "instrument", "value" => $instrument);
         }
         
-        if(!$this->db->field_exists($metric, 'V_Dataset_QC_Metrics'))
+        if(!$this->db->field_exists($metric, 'V_Dataset_QC_Metrics_Export'))
         {
             return array("type" => "metric", "value" => $metric);
         }    
@@ -413,7 +413,7 @@ class Metricmodel extends CI_Model
                         );
                         
         $this->db->select(join(',', $columns));
-        $this->db->from('V_Dataset_QC_Metrics');
+        $this->db->from('V_Dataset_QC_Metrics_Export');
         $this->db->where('Instrument =', $this->instrument);
         $this->db->where('Acq_Time_Start >=', $this->querystartdate);
         $this->db->where('Acq_Time_Start <=', $this->queryenddate . 'T23:59:59.999');
@@ -525,7 +525,7 @@ class Metricmodel extends CI_Model
                 $this->db->where('Instrument', $instrument);
                 $this->db->where('Acq_Time_Start >=', $sqlDateTimeLeft);
                 $this->db->where('Acq_Time_Start <=', $sqlDateTimeRight);
-                $avg = $this->db->get('V_Dataset_QC_Metrics')->row()->avg;
+                $avg = $this->db->get('V_Dataset_QC_Metrics_Export')->row()->avg;
 
                 $this->plotdata_average[] = array(
                     $this->plotdata[$i][0],

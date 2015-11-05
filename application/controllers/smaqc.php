@@ -44,7 +44,7 @@ class Smaqc extends CI_Controller
         $this->datasetfilter    = '';
     
         // get a full list of the metric names
-        foreach($this->db->list_fields('V_Dataset_QC_Metrics') as $field)
+        foreach($this->db->list_fields('V_Dataset_QC_Metrics_Export') as $field)
         {
             // exclude fields that aren't actually metrics
             $ignoredfields = array(
