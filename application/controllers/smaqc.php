@@ -83,7 +83,7 @@ class Smaqc extends CI_Controller
         $this->db->select('Instrument');
         $this->db->distinct();
         $this->db->order_by("Instrument", "asc");
-        $result = $this->db->get('V_Dataset_QC_Metrics')->result();
+        $result = $this->db->get('V_Dataset_QC_Metric_Instruments')->result();
         
         foreach($result as $row)
         {
