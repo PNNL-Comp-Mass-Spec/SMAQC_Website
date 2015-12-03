@@ -245,19 +245,17 @@ class QCArtModel extends CI_Model
      * an error, FALSE otherwise.
      * Error Array Format: ['type' => string, 'value' => string]
      */
-    public function initialize($instrument, $metric, $start, $end, $windowsize = 20, $datasetfilter = '')
+    public function initialize($instrument, $metric, $start, $end, $datasetfilter = '')
     {
-        // change the string format of the dates, as strtotime doesn't work
+        // change the string format of the dates, since strtotime doesn't work
         // right with -'s
         $start = str_replace('-', '/', $start);
         $end   = str_replace('-', '/', $end);
 
-        // windowradius is how many days to the left/right to average around
-        $windowradius = (int)($windowsize / 2);
-
-		if ($windowradius < 1)
-			$windowradius = 1;
-
+		// Do not load data outside of $start or $end
+      	$windowRadiusLeft = 0;
+      	$windowRadiusRight = 1;
+      	
         // set all the proper values
         $this->instrument = $instrument;
         $this->metric     = $metric;
@@ -266,8 +264,8 @@ class QCArtModel extends CI_Model
         $this->unixenddate    = strtotime($end);
         
         // Set the query start date to $windowradius days prior to $start
-        $this->querystartdate  = date("Y-m-d", strtotime('-' . $windowradius . ' day', $this->unixstartdate));
-        $this->queryenddate    = date("Y-m-d", strtotime(      $windowradius . ' day', $this->unixenddate));
+        $this->querystartdate  = date("Y-m-d", strtotime('-' . $windowRadiusLeft  . ' day', $this->unixstartdate));
+        $this->queryenddate    = date("Y-m-d", strtotime(      $windowRadiusRight . ' day', $this->unixenddate));
     
     	$this->datasetfilter  = $datasetfilter;
     	

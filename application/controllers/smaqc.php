@@ -390,15 +390,13 @@ class Smaqc extends CI_Controller
         // Required With Defaults:
         // from: the beginning date for selecting datasets
         // to: the ending date for selecting datasets
-        // window: window size for calculating average and standard deviation
-        // unit: days or datasets (for the window)
 
         // Optional URL parameters:
         // filterDS: used to select datasets based on a SQL 'LIKE' match
         // ignoreDS: used to exclude datasets based on a SQL 'LIKE' match
 
         // use an array of defaults for the uri-to-assoc() call, if not supplied in the URI, the value will be set to FALSE
-        $defaultURI = array('inst', 'from', 'to', 'window', 'unit');
+        $defaultURI = array('inst', 'from', 'to');
 
         $URI_array = $this->uri->uri_to_assoc(3, $defaultURI);
 
@@ -419,20 +417,6 @@ class Smaqc extends CI_Controller
             $needRedirect = TRUE;
             $URI_array["from"] = $this->defaultstartdate;
             $URI_array["to"]   = $this->defaultenddate;
-        }
-
-        // set default window size if need be
-        if($URI_array["window"] === FALSE)
-        {
-            $needRedirect = TRUE;
-            $URI_array["window"] = $this->DEFAULTWINDOWSIZE;
-        }
-
-        // set default unit if need be
-        if($URI_array["unit"] === FALSE)
-        {
-            $needRedirect = TRUE;
-            $URI_array["unit"] = "datasets";
         }
 
         // get the filter list if supplied
@@ -458,8 +442,6 @@ class Smaqc extends CI_Controller
         $data['startdate'] = date("m-d-Y", strtotime(str_replace('-', '/', $URI_array["from"])));
         $data['enddate']   = date("m-d-Y", strtotime(str_replace('-', '/', $URI_array["to"])));
 
-        $data['windowsize'] = (int)$URI_array["window"];
-
         $this->load->model('QCArtModel', '', TRUE);
 
         // TODO: add support for excluded datasets
@@ -469,7 +451,6 @@ class Smaqc extends CI_Controller
             'QCART',
             $data['startdate'],
             $data['enddate'],
-            $data['windowsize'],
             $datasetFilter
         );
     

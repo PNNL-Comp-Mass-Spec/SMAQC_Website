@@ -30,22 +30,10 @@
 	}
 
 
-	function link_to_instrument_dash($instrument, $windowsize = FALSE, $unit = FALSE, $filterDS = FALSE, $ignoreDS = FALSE)
+	function link_to_instrument_dash($instrument, $filterDS = FALSE, $ignoreDS = FALSE)
 	{
 
         $URI_elements = array('smaqc', 'instrument', $instrument);
-
-        if($windowsize != FALSE)
-        {
-        	$URI_elements[] = "window";
-        	$URI_elements[] = $windowsize;
-        }
-
-        if($unit != FALSE)
-        {
-        	$URI_elements[] = "unit";
-        	$URI_elements[] = $unit;
-        }
 
         if($filterDS != FALSE)
         {
@@ -62,7 +50,7 @@
         return site_url(join("/", $URI_elements));
 	}
 	
-	function link_to_metric_dash($metricname, $instrument, $windowsize = FALSE, $unit = FALSE, $filterDS = FALSE, $ignoreDS = FALSE)
+	function link_to_metric_dash($metricname, $instrument, $filterDS = FALSE, $ignoreDS = FALSE)
 	{
 		// Required URL parameters:
         // metric: the name of the metric
@@ -73,18 +61,6 @@
         // ignoreDS: used to exclude datasets based on a SQL 'LIKE' match
 
         $URI_elements = array('smaqc', 'qcart', 'inst', $instrument);
-
-        if($windowsize != FALSE)
-        {
-        	$URI_elements[] = "window";
-        	$URI_elements[] = $windowsize;
-        }
-
-        if($unit != FALSE)
-        {
-        	$URI_elements[] = "unit";
-        	$URI_elements[] = $unit;
-        }
 
         if($filterDS != FALSE)
         {
@@ -104,7 +80,7 @@
 ?>
 <div id="left-menu">
   <ul class="menuitems">
-    <li><button class="button" onClick="location.href='<?= link_to_instrument_dash($instrument, $windowsize) ?>'">Home</button></li>
+    <li><button class="button" onClick="location.href='<?= link_to_instrument_dash($instrument) ?>'">Home</button></li>
 	<li>
 		<strong>Settings</strong><br />
 		
@@ -118,20 +94,6 @@
 				<?php } ?>
 	      	<?php endforeach; ?>
 	    </select>
-
-		Window Size:
-		<input id="windowsize" type="number" name="windowsize" min="1" value="<?=$windowsize?>">
-		
-		Units for Window:
-		<select id="units">
-			<?php if($unit == "days") { ?>
-				<option value="days" selected="selected">days</option>
-				<option value="datasets">datasets</option>
-			<?php } else { ?>
-				<option value="days">days</option>
-				<option value="datasets" selected="selected">datasets</option>
-			<?php } ?>
-		</select>
 		
 		<label for="from">From</label>
 		<input type="text" id="from" name="from" value="<?=$startdate?>" />
