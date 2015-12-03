@@ -123,8 +123,6 @@ if (defined('ENVIRONMENT'))
 	// $assign_to_config['name_of_config_item'] = 'value of config item';
 
 
-	date_default_timezone_set('America/Los_Angeles');
-
 	// Uncomment to debug
 	// ini_set('display_errors', 1);
 

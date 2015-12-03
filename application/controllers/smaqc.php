@@ -58,6 +58,7 @@ class Smaqc extends CI_Controller
                                     "Quameter_Job",
                                     "Quameter_Last_Affected",
                                     "SMAQC_Job",
+                                    "PSM_Source_Job",
                                     "Smaqc_Last_Affected",
 									"QCDM_Last_Affected"
                                   );
@@ -112,7 +113,9 @@ class Smaqc extends CI_Controller
 
     public function instrument()
     {
-        // example URL: http://192.168.56.102/smaqc/index.php/smaqc/instrument/Broad_VOrbiETD01/window/5/unit/days
+    	// Display list of QC metric names and descriptions
+    	// Example URL:      http://prismsupport.pnl.gov/smaqc/index.php/smaqc/instrument/VOrbiETD04
+ 	    // auto-expanded to  http://prismsupport.pnl.gov/smaqc/index.php/smaqc/instrument/VOrbiETD04/window/45/unit/datasets
 
         // Required URL parameters:
         // instrument: the name of the instrument
@@ -231,7 +234,9 @@ class Smaqc extends CI_Controller
 
     public function metric()
     {
-        // example URL: http://192.168.56.102/smaqc/index.php/smaqc/metric/C_1A/inst/Broad_VOrbiETD01/from/07-13-2012/to/11-13-2012/window/45/unit/days
+    	// Plot the given metric vs. time
+        // Example URL:      http://prismsupport.pnl.gov/smaqc/index.php/smaqc/metric/C_1A/inst/VOrbiETD04
+        // auto-expanded to  http://prismsupport.pnl.gov/smaqc/index.php/smaqc/metric/C_1A/inst/VOrbiETD04/from/08-02-2015/to/12-02-2015/window/45/unit/datasets
 
         // Required URL parameters:
         // metric: the name of the metric
@@ -298,8 +303,7 @@ class Smaqc extends CI_Controller
         // get the filter list if supplied
         if(!empty($URI_array["filterDS"]))
         {
-            $datasetFilter = $URI_array["filterDS"];
-            //TODO: add WHERE LIKE to query
+            $datasetFilter = $URI_array["filterDS"];            
         }
 
         // get the ignore list if supplied
@@ -357,11 +361,11 @@ class Smaqc extends CI_Controller
         }
 
         
-        $data['metrics']    = $this->Metricmodel->data;
-        $data['definition'] = $this->Metricmodel->definition;
+        $data['metrics']          = $this->Metricmodel->data;
+        $data['definition']       = $this->Metricmodel->definition;
         $data['plotdata']         = $this->Metricmodel->plotdata;
         $data['plotDataBad']      = $this->Metricmodel->plotDataBad;
-        $data['plotDataPoor']      = $this->Metricmodel->plotDataPoor;
+        $data['plotDataPoor']     = $this->Metricmodel->plotDataPoor;
         $data['plotdata_average'] = $this->Metricmodel->plotdata_average;
         $data['stddevupper']      = $this->Metricmodel->stddevupper;
         $data['stddevlower']      = $this->Metricmodel->stddevlower;
@@ -374,75 +378,130 @@ class Smaqc extends CI_Controller
         $this->load->view('metricView', $data);
     }
 
-    /* TODO:
-    public function dataset()
+    public function qcart()
     {
-        // example URL: http://192.168.56.102/smaqc/index.php/smaqc/dataset/QC/window/27/unit/days
+    	// Plot the QC-ART value vs. time, including custom threshold lines
+    	// Example URL:      http://prismsupport.pnl.gov/smaqc/index.php/smaqc/qcart/inst/VOrbi05
+        // auto-expanded to  http://prismsupport.pnl.gov/smaqc/index.php/smaqc/qcart/inst/VOrbi05/from/08-02-2015/to/12-02-2015/window/45/unit/datasets
 
         // Required URL parameters:
-        // dataset: the name of the dataset
+        // instrument: the name of the instrument
 
-        // Optional URL parameters:
+        // Required With Defaults:
+        // from: the beginning date for selecting datasets
+        // to: the ending date for selecting datasets
         // window: window size for calculating average and standard deviation
         // unit: days or datasets (for the window)
+
+        // Optional URL parameters:
         // filterDS: used to select datasets based on a SQL 'LIKE' match
         // ignoreDS: used to exclude datasets based on a SQL 'LIKE' match
-        
+
         // use an array of defaults for the uri-to-assoc() call, if not supplied in the URI, the value will be set to FALSE
-        $defaultURI = array('dataset', 'window', 'unit', 'filterDS', 'ignoreDS');
+        $defaultURI = array('inst', 'from', 'to', 'window', 'unit');
 
-        $URI_array = $this->uri->uri_to_assoc(2, $defaultURI);
+        $URI_array = $this->uri->uri_to_assoc(3, $defaultURI);
 
-        $includedDatasets = array();
-        $excludedDatasets = array();
+        $needRedirect = FALSE;
 
-        // make sure user supplied an dataset name, redirect to home page if not
-        if($URI_array["dataset"] === FALSE)
+        $datasetFilter = "";
+        $excludedDatasets = "";
+
+        // make sure user supplied an instrument name, redirect to home page if not
+        if($URI_array["inst"] === FALSE)
         {
-            redirect(site_url());
+            redirect(site_url() . "#InstNotDefined");
         }
 
-        //TODO: check for valid dataset name (is it in the DB?)
+        // set default from and to dates if need be
+        if($URI_array["from"] === FALSE or $URI_array["to"] === FALSE)
+        {
+            $needRedirect = TRUE;
+            $URI_array["from"] = $this->defaultstartdate;
+            $URI_array["to"]   = $this->defaultenddate;
+        }
 
         // set default window size if need be
         if($URI_array["window"] === FALSE)
         {
+            $needRedirect = TRUE;
             $URI_array["window"] = $this->DEFAULTWINDOWSIZE;
         }
 
         // set default unit if need be
         if($URI_array["unit"] === FALSE)
         {
+            $needRedirect = TRUE;
             $URI_array["unit"] = "datasets";
         }
 
         // get the filter list if supplied
-        if($URI_array["filterDS"] != FALSE)
+        if(!empty($URI_array["filterDS"]))
         {
-            $includedDatasets = explode(",", $URI_array["filterDS"]);
-            //TODO: add WHERE LIKE to query
+            $datasetFilter = $URI_array["filterDS"];            
         }
 
-        // get the ignore list if supplied
-        if($URI_array["ignoreDS"] != FALSE)
+        // redirect if default values are to be used
+        if($needRedirect)
         {
-            $excludedDatasets = explode(",", $URI_array["ignoreDS"]);
-            //TODO: add WHERE NOT LIKE to query
+            redirect('smaqc/qcart/' . $this->uri->assoc_to_uri($URI_array));
         }
 
-        $data['title'] = $URI_array["dataset"];
-
-        //TODO: get this next one in the model
-        $data['instrument'] = $URI_array["instrument"];
-
-        $data['datasetfilter'] = $URI_array["filterDS"];
-  
-        $data['metriclist'] = $this->metriclist;
+		// Note that metricplot.js is looking for a title of "QC-ART" to select the correct plot format for this data
+        $data['title'] = $URI_array["inst"] . ' - QC-ART';
+        $data['metric']     = 'QCART';
+        $data['instrument'] = $URI_array["inst"];
+        $data['datasetfilter'] = $datasetFilter;
+        $data['filterDS'] = $datasetFilter;
         $data['instrumentlist'] = $this->instrumentlist;
 
-        print_r($URI_array);
-        return;
-    } */
+        $data['startdate'] = date("m-d-Y", strtotime(str_replace('-', '/', $URI_array["from"])));
+        $data['enddate']   = date("m-d-Y", strtotime(str_replace('-', '/', $URI_array["to"])));
+
+        $data['windowsize'] = (int)$URI_array["window"];
+
+        $this->load->model('QCArtModel', '', TRUE);
+
+        // TODO: add support for excluded datasets
+
+        $error = $this->QCArtModel->initialize(
+            $URI_array["inst"],
+            'QCART',
+            $data['startdate'],
+            $data['enddate'],
+            $data['windowsize'],
+            $datasetFilter
+        );
+    
+        if($error)
+        {
+            $redirecturlparts = array(
+                "qcart",
+                "invaliditem",
+                $error["type"],
+                $error["value"]
+            );
+                                     
+            redirect(site_url(join('/', $redirecturlparts)));
+        }
+
+        
+        $data['metrics']          = $this->QCArtModel->data;
+        $data['definition']       = $this->QCArtModel->definition;
+        $data['plotdata']         = $this->QCArtModel->plotdata;
+        $data['plotDataBad']      = $this->QCArtModel->plotDataBad;
+        $data['plotDataPoor']     = $this->QCArtModel->plotDataPoor;
+        $data['plotdata_average'] = $this->QCArtModel->plotdata_average;
+        $data['stddevupper']      = $this->QCArtModel->stddevupper;
+        $data['stddevlower']      = $this->QCArtModel->stddevlower;
+        $data['metric_units']     = $this->QCArtModel->metric_units;
+            
+        $data['includegraph'] = TRUE;
+
+        // load the views
+        $this->load->view('headViewQCArt.php', $data);
+        $this->load->view('qcartView', $data);
+    }
   
     public function invaliditem($requesteditemtype = NULL, $name = NULL)
     {

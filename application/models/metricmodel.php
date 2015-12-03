@@ -41,8 +41,8 @@ class Metricmodel extends CI_Model
      */
     private $metric;
 
-	 /**
-     * The name of the metric.
+	/**
+     * The QCDM threshold for flagging data as bad
      * @var string
      */
     private $limit;
@@ -95,7 +95,7 @@ class Metricmodel extends CI_Model
     /**
      * A JSON encoded array of (x,y) values for jqplot to use.
      * The x value is a time/date in milliseconds.
-     * The type is what is returned by a call to CI's Active Record db->get().
+     * The y values are the metric values to plot
      * @var string
      */
     private $plotdata;
@@ -103,7 +103,7 @@ class Metricmodel extends CI_Model
     /**
      * A JSON encoded array of (x,y) values for jqplot to use.
      * The x value is a time/date in milliseconds.
-     * The type is what is returned by a call to CI's Active Record db->get().
+     * The y values are the metric values to plot purple because the data is not released
      * @var string
      */
     private $plotDataBad;
@@ -111,7 +111,7 @@ class Metricmodel extends CI_Model
     /**
      * A JSON encoded array of (x,y) values for jqplot to use.
      * The x value is a time/date in milliseconds.
-     * The type is what is returned by a call to CI's Active Record db->get().
+     * The y values are the metric values to plot orange because the QCDM value is past a threshold
      * @var string
      */
     private $plotDataPoor;
@@ -119,16 +119,15 @@ class Metricmodel extends CI_Model
     /**
      * A JSON encoded array of (x,y) values for jqplot to use.
      * The x value is a time/date in milliseconds.
-     * The type is what is returned by a call to CI's Active Record db->get().
+     * The median metric value across a moving window
      * @var string
-     */
-    
+     */    
     private $plotdata_average;
 
     /**
      * A JSON encoded array of (x,y) values for jqplot to use.
      * The x value is a time/date in milliseconds.
-     * The type is what is returned by a call to CI's Active Record db->get().
+     * The y value is the upper bound standard deviation value to plot
      * @var string
      */
     private $stddevupper;
@@ -136,7 +135,8 @@ class Metricmodel extends CI_Model
     /**
      * A JSON encoded array of (x,y) values for jqplot to use.
      * The x value is a time/date in milliseconds.
-     * The type is what is returned by a call to CI's Active Record db->get().
+     * The y value is the lower bound standard deviation value to plot
+     * However, when the metric is QCDM, this array is used to track the threshold (limit) for in control vs. out of control
      * @var string
      */
     private $stddevlower;
@@ -445,6 +445,7 @@ class Metricmodel extends CI_Model
         {
 			if(strstr($metric,'QCDM') !== FALSE)
 			{
+				// QCDM metric
 				if(strstr($instrument,'Exact') !== FALSE)
 				{
 					$row = $query->row();
@@ -537,9 +538,13 @@ class Metricmodel extends CI_Model
 
             $datasetIsBad = 0;
             
-            if ($row->QCDM > $limit)
+            if(strstr($row->Dataset,'QC_Shew') !== FALSE)
             {
-                $datasetIsBad = 1;
+            	// QC_Shew dataset
+	            if ($row->QCDM > $limit)
+	            {
+	                $datasetIsBad = 1;
+	            }
             }
             
             if ($row->Dataset_Rating_ID >= -5 && $row->Dataset_Rating_ID <= 1)
@@ -613,6 +618,7 @@ class Metricmodel extends CI_Model
             {
 	            if(strstr($metric,'QCDM') !== FALSE)
 				{
+					// The metric is QCDM
 					// Use a limit customized for the given instrument
 
 					// Javascript likes milliseconds, so multiply $date by 1000 when appending to the array
@@ -623,6 +629,9 @@ class Metricmodel extends CI_Model
 						
 					continue;
 				}
+				
+				// The metric is not QCDM
+				// Compute the median value within a time period
 				
                 // get the date to the left by the window radius
                 $sqlDateTimeLeftUnix = strtotime('-' . $windowradius . ' day', $dateList[$dateIndex]);

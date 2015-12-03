@@ -1,6 +1,6 @@
 <?php
 /**
- * instrumentView.php
+ * metricView.php
  *
  * File containing the code for the metricView.
  * 
@@ -113,6 +113,7 @@
     <li><button class="button" onClick="location.href='<?= link_to_instrument_dash($instrument, $windowsize) ?>'">Home</button></li>
 	<li>
 		<strong>Settings</strong><br />
+		
 		Instrument:
 		<select id="instrumentlist">
 	    	<?php foreach($instrumentlist as $row): ?>
@@ -123,6 +124,7 @@
 				<?php } ?>
 	      	<?php endforeach; ?>
 	    </select>
+	    
 	    Metric:
 		<select id="metriclist">
 	    	<?php foreach($metriclist as $row): 
@@ -140,8 +142,10 @@
 				<?php } ?>
 	      	<?php endforeach; ?>
 	    </select>
+	    
 		Window Size:
 		<input id="windowsize" type="number" name="windowsize" min="1" value="<?=$windowsize?>">
+		
 		Units for Window:
 		<select id="units">
 			<?php if($unit == "days") { ?>
@@ -152,14 +156,21 @@
 				<option value="datasets" selected="selected">datasets</option>
 			<?php } ?>
 		</select>
+		
 		<label for="from">From</label>
 		<input type="text" id="from" name="from" value="<?=$startdate?>" />
+		
 		<label for="to">To</label>
 		<input type="text" id="to" name="to" value="<?=$enddate?>" />
+		
 		<label for="filterDS">Dataset Filter</label>
 		<input type="text" id="filterDS" name="filterDS" value="<?=$filterDS?>" />
+		
+		<!--
 		<label for="ignoreDS">Excluded Datasets</label>
 		<input type="text" id="ignoreDS" name="ignoreDS" value="<?=$ignoreDS?>" disabled="disabled" />
+		-->
+		
 		<button id="updatesettings" class="button">Update</button>
 	</li>
   </ul>
