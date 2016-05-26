@@ -50,7 +50,7 @@ $active_record = TRUE;
 
 $db['default']['hostname'] = '130.20.225.2';
 $db['default']['username'] = 'dmsreader';
-$db['default']['password'] = 'dms4fun';
+$db['default']['password'] = 'see_repo_DMS2_DatabaseConfigFiles';
 $db['default']['database'] = 'DMS5';
 $db['default']['dbdriver'] = 'sqlsrv';
 $db['default']['dbprefix'] = '';
