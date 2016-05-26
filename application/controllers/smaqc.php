@@ -1,4 +1,6 @@
 <?php
+defined('BASEPATH') OR exit('No direct script access allowed');
+
 /**
  * smaqc.php
  *
@@ -18,11 +20,12 @@
  * 
  * @author Trevor Owen <trevor.owen@email.wsu.edu>
  * @author Aaron Cain
- * @version 1.0
+ * @version 1.1
  *
  * @package SMAQC
  * @subpackage controllers
  */
+ 
 class Smaqc extends CI_Controller
 {
     var $defaultstartdate;
@@ -32,10 +35,11 @@ class Smaqc extends CI_Controller
 
     function __construct()
     {
+	// Call the parent constructor
         parent::__construct();
         
         $this->load->helper('url');
-        
+        	
         $this->defaultstartdate = date("m-d-Y", strtotime("-4 months"));
         $this->defaultenddate   = date("m-d-Y", time());
         $this->metriclist       = array();
@@ -43,6 +47,8 @@ class Smaqc extends CI_Controller
         $this->instrumentlist   = array();
         $this->datasetfilter    = '';
     
+    	$this->load->database();
+		
         // get a full list of the metric names
         foreach($this->db->list_fields('V_Dataset_QC_Metrics_Export') as $field)
         {
@@ -263,7 +269,7 @@ class Smaqc extends CI_Controller
         $excludedDatasets = "";
 
         // make sure user supplied a metric name, redirect to home page if not
-        if($URI_array["metric"] === FALSE)
+        if(empty($URI_array["metric"]))
         {
             redirect(site_url());
         }
@@ -271,7 +277,7 @@ class Smaqc extends CI_Controller
         //TODO: check for valid metric name (is it in the DB?)
 
         // make sure user supplied an instrument name, redirect to home page if not
-        if($URI_array["inst"] === FALSE)
+        if(empty($URI_array["inst"]))
         {
             redirect(site_url());
         }
@@ -279,7 +285,7 @@ class Smaqc extends CI_Controller
         //TODO: check for valid instrument name (is it in the DB?)
 
         // set default from and to dates if need be
-        if($URI_array["from"] === FALSE or $URI_array["to"] === FALSE)
+	if(empty($URI_array["from"]) || empty($URI_array["to"]))
         {
             $needRedirect = TRUE;
             $URI_array["from"] = $this->defaultstartdate;
@@ -287,14 +293,14 @@ class Smaqc extends CI_Controller
         }
 
         // set default window size if need be
-        if($URI_array["window"] === FALSE)
+        if(empty($URI_array["window"]))
         {
             $needRedirect = TRUE;
             $URI_array["window"] = $this->DEFAULTWINDOWSIZE;
         }
 
         // set default unit if need be
-        if($URI_array["unit"] === FALSE)
+	if(empty($URI_array["unit"]))
         {
             $needRedirect = TRUE;
             $URI_array["unit"] = "datasets";
@@ -406,13 +412,13 @@ class Smaqc extends CI_Controller
         $excludedDatasets = "";
 
         // make sure user supplied an instrument name, redirect to home page if not
-        if($URI_array["inst"] === FALSE)
+        if(empty($URI_array["inst"]))
         {
             redirect(site_url() . "#InstNotDefined");
         }
 
         // set default from and to dates if need be
-        if($URI_array["from"] === FALSE or $URI_array["to"] === FALSE)
+        if(empty($URI_array["from"]) || empty($URI_array["to"]))
         {
             $needRedirect = TRUE;
             $URI_array["from"] = $this->defaultstartdate;
