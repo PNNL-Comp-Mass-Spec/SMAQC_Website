@@ -79,9 +79,9 @@ $db['default'] = array(
 	'username' => 'dmsreader',
 	'password' => 'see_repo_DMS2_DatabaseConfigFiles',
 	'database' => 'DMS5',
-	'dbdriver' => 'sqlsrv',
+	'dbdriver' => 'mssql',
 	'dbprefix' => '',
-	'pconnect' => FALSE,
+	'pconnect' => TRUE,
 	'db_debug' => (ENVIRONMENT !== 'production'),
 	'cache_on' => FALSE,
 	'cachedir' => '',
@@ -94,4 +94,3 @@ $db['default'] = array(
 	'failover' => array(),
 	'save_queries' => TRUE
 );
-
