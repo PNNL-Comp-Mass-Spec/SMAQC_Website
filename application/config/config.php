@@ -23,7 +23,9 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 | a PHP script and you can easily do that on your own.
 |
 */
-$config['base_url']	= 'https://prismsupport.pnl.gov/smaqc/';
+//$config['base_url']	= 'https://prismsupport.pnl.gov/smaqc/';
+$protocol = isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on" ? "https" : "http";
+$config['base_url'] = "{$protocol}://".$_SERVER["SERVER_NAME"]."/smaqc/";
 
 /*
 |--------------------------------------------------------------------------
