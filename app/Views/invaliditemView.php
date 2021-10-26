@@ -3,7 +3,7 @@
  * invaliditemView.php
  *
  * File containing the code for the invaliditemView.
- * 
+ *
  * @author Trevor Owen <trevor.owen@email.wsu.edu>
  * @version 1.0
  * @copyright TODO

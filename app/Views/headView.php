@@ -3,7 +3,7 @@
  * headView.php
  *
  * File containing the opening code for all views in SMAQC.
- * 
+ *
  * @author Trevor Owen <trevor.owen@email.wsu.edu>
  * @author Aaron Cain
  * @version 1.0
@@ -47,7 +47,7 @@
             $tempStartDate = explode('-', $startdate);
             $tempStartDate = $tempStartDate[2] . '-' . $tempStartDate[0] . '-' . $tempStartDate[1];
             $jqStartdate = new DateTime($tempStartDate);
-            
+
             $tempEndDate = explode('-', $enddate);
             $tempEndDate = $tempEndDate[2] . '-' . $tempEndDate[0] . '-' . $tempEndDate[1] . ' 23:59:59';
             $jqEnddate = new DateTime($tempEndDate);

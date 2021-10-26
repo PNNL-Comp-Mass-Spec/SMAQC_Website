@@ -3,56 +3,55 @@
  * qcartView.php
  *
  * File containing the code for the qcartView.
- * 
+ *
  */
- 
-	function format_metric($metric)
-	{
-		if(is_null($metric))
-			return "";
-			
-		if ($metric == 0)
-			return "0";
-			
-		if (abs($metric) < 0.01)
-			return number_format($metric, 4);
 
-		if (abs($metric) < 0.1)
-			return number_format($metric, 3);
+    function format_metric($metric)
+    {
+        if(is_null($metric))
+            return "";
 
-		if (abs($metric) < 1)
-			return number_format($metric, 2);
+        if ($metric == 0)
+            return "0";
 
-		if (abs($metric) < 10)
-			return number_format($metric, 1);
+        if (abs($metric) < 0.01)
+            return number_format($metric, 4);
 
-		return number_format($metric, 0);
-	}
+        if (abs($metric) < 0.1)
+            return number_format($metric, 3);
 
+        if (abs($metric) < 1)
+            return number_format($metric, 2);
 
-	function link_to_instrument_dash($instrument, $filterDS = FALSE, $ignoreDS = FALSE)
-	{
+        if (abs($metric) < 10)
+            return number_format($metric, 1);
+
+        return number_format($metric, 0);
+    }
+
+    function link_to_instrument_dash($instrument, $filterDS = FALSE, $ignoreDS = FALSE)
+    {
 
         $URI_elements = array('smaqc', 'instrument', $instrument);
 
         if($filterDS != FALSE)
         {
-        	$URI_elements[] = "filterDS";
-        	$URI_elements[] = $filterDS;
+            $URI_elements[] = "filterDS";
+            $URI_elements[] = $filterDS;
         }
 
         if($ignoreDS != FALSE)
         {
-        	$URI_elements[] = "ignoreDS";
-        	$URI_elements[] = $ignoreDS;
+            $URI_elements[] = "ignoreDS";
+            $URI_elements[] = $ignoreDS;
         }
 
         return site_url(join("/", $URI_elements));
-	}
-	
-	function link_to_metric_dash($metricname, $instrument, $filterDS = FALSE, $ignoreDS = FALSE)
-	{
-		// Required URL parameters:
+    }
+
+    function link_to_metric_dash($metricname, $instrument, $filterDS = FALSE, $ignoreDS = FALSE)
+    {
+        // Required URL parameters:
         // metric: the name of the metric
         // instrument: the name of the instrument
 
@@ -64,48 +63,48 @@
 
         if($filterDS != FALSE)
         {
-        	$URI_elements[] = "filterDS";
-        	$URI_elements[] = $filterDS;
+            $URI_elements[] = "filterDS";
+            $URI_elements[] = $filterDS;
         }
 
         if($ignoreDS != FALSE)
         {
-        	$URI_elements[] = "ignoreDS";
-        	$URI_elements[] = $ignoreDS;
+            $URI_elements[] = "ignoreDS";
+            $URI_elements[] = $ignoreDS;
         }
 
         return site_url(join("/", $URI_elements));
-	}
-	
+    }
+
 ?>
 <div id="left-menu">
   <ul class="menuitems">
     <li><button class="button" onClick="location.href='<?= link_to_instrument_dash($instrument) ?>'">Home</button></li>
-	<li>
-		<strong>Settings</strong><br />
-		
-		Instrument:
-		<select id="instrumentlist">
-	    	<?php foreach($instrumentlist as $row): ?>
-	          	<?php if($instrument == $row) { ?>
-					<option value="<?=$row?>" selected="selected"><?=$row?></option>
-				<?php } else { ?>
-					<option value="<?=$row?>"><?=$row?></option>
-				<?php } ?>
-	      	<?php endforeach; ?>
-	    </select>
-		
-		<label for="from">From</label>
-		<input type="text" id="from" name="from" value="<?=$startdate?>" />
-		
-		<label for="to">To</label>
-		<input type="text" id="to" name="to" value="<?=$enddate?>" />
-		
-		<label for="filterDS">Dataset Filter</label>
-		<input type="text" id="filterDS" name="filterDS" value="<?=$filterDS?>" />
-		
-		<button id="updatesettings" class="button">Update</button>
-	</li>
+    <li>
+        <strong>Settings</strong><br />
+
+        Instrument:
+        <select id="instrumentlist">
+            <?php foreach($instrumentlist as $row): ?>
+                  <?php if($instrument == $row) { ?>
+                    <option value="<?=$row?>" selected="selected"><?=$row?></option>
+                <?php } else { ?>
+                    <option value="<?=$row?>"><?=$row?></option>
+                <?php } ?>
+              <?php endforeach; ?>
+        </select>
+
+        <label for="from">From</label>
+        <input type="text" id="from" name="from" value="<?=$startdate?>" />
+
+        <label for="to">To</label>
+        <input type="text" id="to" name="to" value="<?=$enddate?>" />
+
+        <label for="filterDS">Dataset Filter</label>
+        <input type="text" id="filterDS" name="filterDS" value="<?=$filterDS?>" />
+
+        <button id="updatesettings" class="button">Update</button>
+    </li>
   </ul>
 </div>
 

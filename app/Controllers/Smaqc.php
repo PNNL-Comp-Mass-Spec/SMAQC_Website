@@ -5,7 +5,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * smaqc.php
  *
  * File containing the default CodeIgniter controller for SMAQC.
- * 
+ *
  * @author Trevor Owen <trevor.owen@email.wsu.edu>
  * @author Aaron Cain
  * @version 1.0
@@ -14,10 +14,10 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @package SMAQC
  * @subpackage controllers
  */
- 
+
 /**
  * CodeIgniter model for a SMAQC metric
- * 
+ *
  * @author Trevor Owen <trevor.owen@email.wsu.edu>
  * @author Aaron Cain
  * @version 1.1
@@ -25,30 +25,30 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @package SMAQC
  * @subpackage controllers
  */
- 
+
 class Smaqc extends CI_Controller
 {
     var $defaultstartdate;
     var $defaultenddate;
-	var $DEFAULTWINDOWSIZE = 45;
+    var $DEFAULTWINDOWSIZE = 45;
     var $DEFAULTUNIT = "days";
 
     function __construct()
     {
-	// Call the parent constructor
+        // Call the parent constructor
         parent::__construct();
-        
+
         $this->load->helper('url');
-        	
+
         $this->defaultstartdate = date("m-d-Y", strtotime("-4 months"));
         $this->defaultenddate   = date("m-d-Y", time());
         $this->metriclist       = array();
         $this->metricShortDescription = array();
         $this->instrumentlist   = array();
         $this->datasetfilter    = '';
-    
-    	$this->load->database();
-		
+
+        $this->load->database();
+
         // get a full list of the metric names
         foreach($this->db->list_fields('V_Dataset_QC_Metrics_Export') as $field)
         {
@@ -66,21 +66,20 @@ class Smaqc extends CI_Controller
                                     "SMAQC_Job",
                                     "PSM_Source_Job",
                                     "Smaqc_Last_Affected",
-									"QCDM_Last_Affected"
+                                    "QCDM_Last_Affected"
                                   );
-                                  
+
             if(!in_array($field, $ignoredfields))
             {
                 $this->metriclist[] = $field;
             }
         }
-    
-        
+
         // Get the Short Description for each metric
         $this->db->select('Metric, Short_Description');
         $this->db->order_by("Metric", "asc");
         $result = $this->db->get('V_Dataset_QC_Metric_Definitions')->result();
-        
+
         foreach($result as $row)
         {
             $this->metricShortDescription[$row->Metric] = $row->Short_Description;
@@ -91,7 +90,7 @@ class Smaqc extends CI_Controller
         $this->db->distinct();
         $this->db->order_by("Instrument", "asc");
         $result = $this->db->get('V_Dataset_QC_Metric_Instruments')->result();
-        
+
         foreach($result as $row)
         {
             $this->instrumentlist[] = $row->Instrument;
@@ -119,9 +118,9 @@ class Smaqc extends CI_Controller
 
     public function instrument()
     {
-    	// Display list of QC metric names and descriptions
-    	// Example URL:      http://prismsupport.pnl.gov/smaqc/index.php/smaqc/instrument/VOrbiETD04
- 	    // auto-expanded to  http://prismsupport.pnl.gov/smaqc/index.php/smaqc/instrument/VOrbiETD04/window/45/unit/datasets
+        // Display list of QC metric names and descriptions
+        // Example URL:      http://prismsupport.pnl.gov/smaqc/index.php/smaqc/instrument/VOrbiETD04
+        // auto-expanded to  http://prismsupport.pnl.gov/smaqc/index.php/smaqc/instrument/VOrbiETD04/window/45/unit/datasets
 
         // Required URL parameters:
         // instrument: the name of the instrument
@@ -133,7 +132,7 @@ class Smaqc extends CI_Controller
         // ignoreDS: used to exclude datasets based on a SQL 'LIKE' match
 
         $needRedirect = FALSE;  // use this variable to redirect to new URL if default parameters are used
-        
+
         // use an array of defaults for the uri-to-assoc() call, if not supplied in the URI, the value will be set to FALSE
         $defaultURI = array('instrument', 'window', 'unit');
 
@@ -189,9 +188,9 @@ class Smaqc extends CI_Controller
         $data['instrument'] = $URI_array["instrument"];
         $data['datasetfilter'] = $includedDatasets;
         $data['datasetignore'] = $excludedDatasets;
-  
+
         $data['metriclist'] = $this->metriclist;
-        $data['metricShortDescription'] = $this->metricShortDescription;        
+        $data['metricShortDescription'] = $this->metricShortDescription;
         $data['instrumentlist'] = $this->instrumentlist;
 
         $data['unit'] = $URI_array["unit"];
@@ -203,13 +202,13 @@ class Smaqc extends CI_Controller
         $data['windowsize'] = (int)$URI_array["window"];
 
         $this->load->model('Instrumentmodel','',TRUE);
-            
+
         $error = $this->Instrumentmodel->initialize(
             $URI_array["instrument"],
             $data['unit'],
             $data['windowsize']
         );
-    
+
         if($error)
         {
             $redirecturlparts = array(
@@ -218,10 +217,10 @@ class Smaqc extends CI_Controller
                 $error["type"],
                 $error["value"]
             );
-                                     
+
             redirect(site_url(join('/', $redirecturlparts)));
         }
-    
+
         $data['metricnames']         = $this->Instrumentmodel->metricnames;
         $data['metricDescriptions']  = $this->Instrumentmodel->metricDescriptions;
         $data['metricCategories']    = $this->Instrumentmodel->metricCategories;
@@ -230,7 +229,7 @@ class Smaqc extends CI_Controller
         $data['averagedmetrics']     = $this->Instrumentmodel->averagedmetrics;
         $data['stddevmetrics']       = $this->Instrumentmodel->stddevmetrics;
         $data['definition']          = $this->Instrumentmodel->definition;
-        
+
         $data['includegraph'] = FALSE;
 
         // load the views
@@ -240,7 +239,7 @@ class Smaqc extends CI_Controller
 
     public function metric()
     {
-    	// Plot the given metric vs. time
+        // Plot the given metric vs. time
         // Example URL:      http://prismsupport.pnl.gov/smaqc/index.php/smaqc/metric/C_1A/inst/VOrbiETD04
         // auto-expanded to  http://prismsupport.pnl.gov/smaqc/index.php/smaqc/metric/C_1A/inst/VOrbiETD04/from/08-02-2015/to/12-02-2015/window/45/unit/datasets
 
@@ -285,7 +284,7 @@ class Smaqc extends CI_Controller
         //TODO: check for valid instrument name (is it in the DB?)
 
         // set default from and to dates if need be
-	if(empty($URI_array["from"]) || empty($URI_array["to"]))
+        if(empty($URI_array["from"]) || empty($URI_array["to"]))
         {
             $needRedirect = TRUE;
             $URI_array["from"] = $this->defaultstartdate;
@@ -300,7 +299,7 @@ class Smaqc extends CI_Controller
         }
 
         // set default unit if need be
-	if(empty($URI_array["unit"]))
+        if(empty($URI_array["unit"]))
         {
             $needRedirect = TRUE;
             $URI_array["unit"] = "datasets";
@@ -309,7 +308,7 @@ class Smaqc extends CI_Controller
         // get the filter list if supplied
         if(!empty($URI_array["filterDS"]))
         {
-            $datasetFilter = $URI_array["filterDS"];            
+            $datasetFilter = $URI_array["filterDS"];
         }
 
         // get the ignore list if supplied
@@ -331,9 +330,9 @@ class Smaqc extends CI_Controller
         $data['datasetfilter'] = $datasetFilter;
         $data['filterDS'] = $datasetFilter;
         $data['ignoreDS'] = $excludedDatasets;
-  
+
         $data['metriclist'] = $this->metriclist;
-        $data['metricShortDescription'] = $this->metricShortDescription;        
+        $data['metricShortDescription'] = $this->metricShortDescription;
         $data['instrumentlist'] = $this->instrumentlist;
 
         $data['startdate'] = date("m-d-Y", strtotime(str_replace('-', '/', $URI_array["from"])));
@@ -353,7 +352,7 @@ class Smaqc extends CI_Controller
             $data['windowsize'],
             $datasetFilter
         );
-    
+
         if($error)
         {
             $redirecturlparts = array(
@@ -362,11 +361,10 @@ class Smaqc extends CI_Controller
                 $error["type"],
                 $error["value"]
             );
-                                     
+
             redirect(site_url(join('/', $redirecturlparts)));
         }
 
-        
         $data['metrics']          = $this->Metricmodel->data;
         $data['definition']       = $this->Metricmodel->definition;
         $data['plotdata']         = $this->Metricmodel->plotdata;
@@ -376,7 +374,7 @@ class Smaqc extends CI_Controller
         $data['stddevupper']      = $this->Metricmodel->stddevupper;
         $data['stddevlower']      = $this->Metricmodel->stddevlower;
         $data['metric_units']     = $this->Metricmodel->metric_units;
-            
+
         $data['includegraph'] = TRUE;
 
         // load the views
@@ -386,8 +384,8 @@ class Smaqc extends CI_Controller
 
     public function qcart()
     {
-    	// Plot the QC-ART value vs. time, including custom threshold lines
-    	// Example URL:      http://prismsupport.pnl.gov/smaqc/index.php/smaqc/qcart/inst/VOrbi05
+        // Plot the QC-ART value vs. time, including custom threshold lines
+        // Example URL:      http://prismsupport.pnl.gov/smaqc/index.php/smaqc/qcart/inst/VOrbi05
         // auto-expanded to  http://prismsupport.pnl.gov/smaqc/index.php/smaqc/qcart/inst/VOrbi05/from/08-02-2015/to/12-02-2015/window/45/unit/datasets
 
         // Required URL parameters:
@@ -428,7 +426,7 @@ class Smaqc extends CI_Controller
         // get the filter list if supplied
         if(!empty($URI_array["filterDS"]))
         {
-            $datasetFilter = $URI_array["filterDS"];            
+            $datasetFilter = $URI_array["filterDS"];
         }
 
         // redirect if default values are to be used
@@ -437,7 +435,7 @@ class Smaqc extends CI_Controller
             redirect('smaqc/qcart/' . $this->uri->assoc_to_uri($URI_array));
         }
 
-		// Note that metricplot.js is looking for a title of "QC-ART" to select the correct plot format for this data
+        // Note that metricplot.js is looking for a title of "QC-ART" to select the correct plot format for this data
         $data['title'] = $URI_array["inst"] . ' - QC-ART';
         $data['metric']     = 'QCART';
         $data['instrument'] = $URI_array["inst"];
@@ -459,7 +457,7 @@ class Smaqc extends CI_Controller
             $data['enddate'],
             $datasetFilter
         );
-    
+
         if($error)
         {
             $redirecturlparts = array(
@@ -468,11 +466,10 @@ class Smaqc extends CI_Controller
                 $error["type"],
                 $error["value"]
             );
-                                     
+
             redirect(site_url(join('/', $redirecturlparts)));
         }
 
-        
         $data['metrics']          = $this->QCArtModel->data;
         $data['definition']       = $this->QCArtModel->definition;
         $data['plotdata']         = $this->QCArtModel->plotdata;
@@ -482,28 +479,28 @@ class Smaqc extends CI_Controller
         $data['stddevupper']      = $this->QCArtModel->stddevupper;
         $data['stddevlower']      = $this->QCArtModel->stddevlower;
         $data['metric_units']     = $this->QCArtModel->metric_units;
-            
+
         $data['includegraph'] = TRUE;
 
         // load the views
         $this->load->view('headViewQCArt.php', $data);
         $this->load->view('qcartView', $data);
     }
-  
+
     public function invaliditem($requesteditemtype = NULL, $name = NULL)
     {
         $data['title']      = " SMAQC ";
         $data['startdate']  = $this->defaultstartdate;
         $data['enddate']    = $this->defaultenddate;
-        
+
         $data['includegraph'] = FALSE;
-    
+
         $data['metriclist']     = $this->metriclist;
-        $data['metricShortDescription']     = $this->metricShortDescription;        
+        $data['metricShortDescription']     = $this->metricShortDescription;
         $data['instrumentlist'] = $this->instrumentlist;
-    
+
         $msg = "The requested #' does not exist.";
-        
+
         if(($requesteditemtype == "instrument") && !empty($name))
         {
             $data['message'] = str_replace("#", "instrument '" . $name, $msg);

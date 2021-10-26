@@ -3,7 +3,7 @@
  * topMenuView.php
  *
  * File containing the code for the topMenuView loaded on each page.
- * 
+ *
  * @author Trevor Owen <trevor.owen@email.wsu.edu>
  * @author Aaron Cain
  * @version 1.0

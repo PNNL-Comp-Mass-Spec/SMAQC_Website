@@ -3,7 +3,7 @@
  * metricmodel.php
  *
  * File containing a CodeIgniter model for a SMAQC metric.
- * 
+ *
  * @author Trevor Owen <trevor.owen@email.wsu.edu>
  * @version 1.0
  * @copyright TODO
@@ -11,10 +11,10 @@
  * @package SMAQC
  * @subpackage models
  */
- 
+
 /**
  * CodeIgniter model for a SMAQC metric
- * 
+ *
  * @author Trevor Owen <trevor.owen@email.wsu.edu>
  * @version 1.0
  *
@@ -28,32 +28,32 @@ class Metricmodel extends CI_Model
      * @var string
      */
     private $instrument;
-    
+
     /**
      * Optional dataset name filter
      * @var string
-     */     
+     */
     private $datasetfilter;
-    
+
     /**
      * The name of the metric.
      * @var string
      */
     private $metric;
 
-	/**
+    /**
      * The QCDM threshold for flagging data as bad
      * @var string
      */
     private $limit;
-	
+
     /**
      * The units for the metric
      * A string that is retrieved from a database.
      * @var string
      */
     private $metric_units;
-    
+
     /**
      * The definition of the metric.
      * A string that is retrieved from a database.
@@ -66,32 +66,32 @@ class Metricmodel extends CI_Model
      * This should be a human readable string of the format m-d-Y.
      * (Example: 11-11-2011)
      * @var string
-     */  
+     */
     private $querystartdate;
     private $queryenddate;
-   
+
     /**
      * The start/end date for plotting metrics.; unix datetime
-     */           
+     */
     private $unixstartdate;
     private $unixenddate;
-    
+
     /**
      * The results of querying the database for the metric values.
      * The type is what is returned by a call to CI's Active Record db->get().
      * @var object
      */
     private $data;
-    
+
     /**
-     * An array of (x,y) values for the metric being plotted; includes data 
+     * An array of (x,y) values for the metric being plotted; includes data
      * outside the date range being plotted (to allow for more accurate computation of median and MAD)
      * The x value is a unix timestamp, in seconds
      * The type is what is returned by a call to CI's Active Record db->get().
      * @var string
      */
     private $metricdata;
-    
+
     /**
      * A JSON encoded array of (x,y) values for jqplot to use.
      * The x value is a time/date in milliseconds.
@@ -107,7 +107,7 @@ class Metricmodel extends CI_Model
      * @var string
      */
     private $plotDataBad;
-	
+
     /**
      * A JSON encoded array of (x,y) values for jqplot to use.
      * The x value is a time/date in milliseconds.
@@ -115,13 +115,13 @@ class Metricmodel extends CI_Model
      * @var string
      */
     private $plotDataPoor;
-	
+
     /**
      * A JSON encoded array of (x,y) values for jqplot to use.
      * The x value is a time/date in milliseconds.
      * The median metric value across a moving window
      * @var string
-     */    
+     */
     private $plotdata_average;
 
     /**
@@ -163,7 +163,7 @@ class Metricmodel extends CI_Model
      * members in the class. The use of the variable $CI and get_instance()
      * allows us to access CI's loaded classes using the same syntax as in the
      * controller.
-     * 
+     *
      * @param string $what The member of the class that we are looking for.
      *
      * @return mixed Returns whatever member was requested.
@@ -176,7 +176,7 @@ class Metricmodel extends CI_Model
             case 'instrument':
                 return $this->$what;
             case 'datasetfilter':
-            	return $this->$what;
+                return $this->$what;
             case 'metric':
                 return $this->$what;
             case 'metric_units':
@@ -192,9 +192,9 @@ class Metricmodel extends CI_Model
             case 'plotdata':
                 return $this->$what;
             case 'plotDataBad':
-            	return $this->$what;
+                return $this->$what;
             case 'plotDataPoor':
-            	return $this->$what;
+                return $this->$what;
             case 'plotdata_average':
                 return $this->$what;
             case 'stddevupper':
@@ -217,26 +217,26 @@ class Metricmodel extends CI_Model
     function compute_windowed_median($windowStartDate, $windowEndDate)
     {
         $dataCount = count($this->metricdata);
-        
-		$dataInWindow = array();
-        
+
+        $dataInWindow = array();
+
         for($i = 0; $i < $dataCount; $i++)
         {
-            if ($this->metricdata[$i][0] >= $windowStartDate && $this->metricdata[$i][0] <= $windowEndDate) 
+            if ($this->metricdata[$i][0] >= $windowStartDate && $this->metricdata[$i][0] <= $windowEndDate)
             {
                 $dataInWindow[] = $this->metricdata[$i][1];
             }
         }
-        
+
         if (count($dataInWindow) > 0)
             return $this->compute_median($dataInWindow);
         else
             return NULL;
     }
-    
+
     /*
      * Old, unused Function
-     * 
+     *
      * Compute the standard deviation of the values in metricdata, limiting to date within the specified date range
      *
      * @param datetime $windowStartDate: The start date; unix date/time
@@ -252,73 +252,73 @@ class Metricmodel extends CI_Model
         // It is also listed on Wikipedia: http://en.wikipedia.org/wiki/Standard_deviation
 
         $dataCount = count($this->metricdata);
-        
+
         // $sumSquares holds the sum of (x - average)^2
         $sumSquares = 0.0;
         $count = 0;
 
         $stdev = NULL;
-        
+
         for($i = 0; $i < $dataCount; $i++)
         {
-            if ($this->metricdata[$i][0] >= $windowStartDate && $this->metricdata[$i][0] <= $windowEndDate) 
+            if ($this->metricdata[$i][0] >= $windowStartDate && $this->metricdata[$i][0] <= $windowEndDate)
             {
                 $sumSquares += pow($this->metricdata[$i][1] - $avgInWindow, 2);
                 $count += 1;
             }
         }
-        
+
         if ($count == 1)
         {
             $stdev = 0.0;
         }
-    
+
         if ($count > 1)
         {
             // The standard deviation is the square root of $sumSquares divided by n-1
             $stdev = sqrt($sumSquares / ($count - 1));
         }
-        
+
         return $stdev;
     }
-	*/
-	
+    */
+
      /*
      * Compute the median median of the values in $values
      *
      */
     function compute_median($values)
     {
-		$count = count($values);
-		$median = 0;
-		
-	    switch ($count)
-        {
-			case 0:
-	        	$median = 0;
-            	break;
-            	
-	        case 1:
-            	$median = $values[0];
-            	break;
-            	
-			default:
-		    	sort($values);
-		    	
-		        $midpoint = intval($count / 2);
-		
-		        if($count % 2 == 0) { 
-		            $median = ($values[$midpoint] + $values[$midpoint-1]) / 2; 
-		        } else { 
-		            $median = $values[$midpoint]; 
-		        }
+        $count = count($values);
+        $median = 0;
 
-		        break;
-		}
-		      
+        switch ($count)
+        {
+            case 0:
+                $median = 0;
+                break;
+
+            case 1:
+                $median = $values[0];
+                break;
+
+            default:
+                sort($values);
+
+                $midpoint = intval($count / 2);
+
+                if($count % 2 == 0) {
+                    $median = ($values[$midpoint] + $values[$midpoint-1]) / 2;
+                } else {
+                    $median = $values[$midpoint];
+                }
+
+                break;
+        }
+
         return $median;
     }
-    
+
      /*
      * Compute the median absolute deviation (MAD) of the values in metricdata, limiting to date within the specified date range
      *
@@ -334,23 +334,23 @@ class Metricmodel extends CI_Model
 
         $dataCount = count($this->metricdata);
         $median = 0;
-        
+
         // $residuals holds the absolute value of the residuals (deviations) from medianInWindow
         $residuals = array();
-        
+
         for($i = 0; $i < $dataCount; $i++)
         {
-            if ($this->metricdata[$i][0] >= $windowStartDate && $this->metricdata[$i][0] <= $windowEndDate) 
+            if ($this->metricdata[$i][0] >= $windowStartDate && $this->metricdata[$i][0] <= $windowEndDate)
             {
                 $residuals[] = abs($this->metricdata[$i][1] - $medianInWindow);
             }
         }
-     
-     	$median = $this->compute_median($residuals);
-     	
-     	return $median;
+
+         $median = $this->compute_median($residuals);
+
+         return $median;
     }
-    
+
     /**
      * Initializer for the Metric model
      *
@@ -377,61 +377,61 @@ class Metricmodel extends CI_Model
         // windowradius is how many days to the left/right to average around
         $windowradius = (int)($windowsize / 2);
 
-		if ($windowradius < 1)
-			$windowradius = 1;
+        if ($windowradius < 1)
+            $windowradius = 1;
 
         // set all the proper values
         $this->instrument = $instrument;
         $this->metric     = $metric;
-		
-		// Use a limit customized for the given instrument		
-		// Default to 0.25 if the instrument is not recognized
-		$limit = 0.25;
-		
-		if(strstr($instrument,'Exact') !== FALSE)
-		{
-			$limit = 0.07;
-		}
-		if(strstr($instrument,'LTQ_2') !== FALSE || strstr($instrument,'LTQ_3') !== FALSE || strstr($instrument,'LTQ_4') !== FALSE || strstr($instrument,'LTQ_FB1') !== FALSE || strstr($instrument,'LTQ_ETD_1') !== FALSE)
-		{
-			// Old: $limit = 0.05;
-			$limit = 0.1;
-		}
-		if(strstr($instrument,'LTQ_Orb') !== FALSE || strstr($instrument,'Orbi_FB1') !== FALSE || strstr($instrument,'LTQ_FT1') !== FALSE)
-		{
-			$limit = 0.23;
-		}
-		if(strstr($instrument,'VOrbi') !== FALSE || strstr($instrument,'VPro') !== FALSE || strstr($instrument,'External_Orb') !== FALSE)
-		{
-			$limit = 0.11;
-			// Old: 
-			$limit = 0.2;
-		}
+
+        // Use a limit customized for the given instrument
+        // Default to 0.25 if the instrument is not recognized
+        $limit = 0.25;
+
+        if(strstr($instrument,'Exact') !== FALSE)
+        {
+            $limit = 0.07;
+        }
+        if(strstr($instrument,'LTQ_2') !== FALSE || strstr($instrument,'LTQ_3') !== FALSE || strstr($instrument,'LTQ_4') !== FALSE || strstr($instrument,'LTQ_FB1') !== FALSE || strstr($instrument,'LTQ_ETD_1') !== FALSE)
+        {
+            // Old: $limit = 0.05;
+            $limit = 0.1;
+        }
+        if(strstr($instrument,'LTQ_Orb') !== FALSE || strstr($instrument,'Orbi_FB1') !== FALSE || strstr($instrument,'LTQ_FT1') !== FALSE)
+        {
+            $limit = 0.23;
+        }
+        if(strstr($instrument,'VOrbi') !== FALSE || strstr($instrument,'VPro') !== FALSE || strstr($instrument,'External_Orb') !== FALSE)
+        {
+            $limit = 0.11;
+            // Old:
+            $limit = 0.2;
+        }
 
         $this->unixstartdate  = strtotime($start);
         $this->unixenddate    = strtotime($end);
-        
+
         // Set the query start date to $windowradius days prior to $start
         $this->querystartdate  = date("Y-m-d", strtotime('-' . $windowradius . ' day', $this->unixstartdate));
         $this->queryenddate    = date("Y-m-d", strtotime(      $windowradius . ' day', $this->unixenddate));
-    
-    	$this->datasetfilter  = $datasetfilter;
-    	
+
+        $this->datasetfilter  = $datasetfilter;
+
         // check to see that this is a valid instrument/metric
         $this->db->where('Instrument', $instrument);
-        
+
         $query = $this->db->get('V_Dataset_QC_Metrics_Export', 1);
-        
+
         if($query->num_rows() < 1)
         {
             return array("type" => "instrument", "value" => $instrument);
         }
-        
+
         if(!$this->db->field_exists($metric, 'V_Dataset_QC_Metrics_Export'))
         {
             return array("type" => "metric", "value" => $metric);
-        }    
-    
+        }
+
         // Lookup the Description, purpose, units, and Source for this metric
         $this->db->select('Description, Purpose, Units, Source');
         $this->db->where('Metric', $metric);
@@ -441,42 +441,42 @@ class Metricmodel extends CI_Model
         {
             $this->definition = $metric . " (definition not found in DB)";
         }
-        else 
+        else
         {
-			if(strstr($metric,'QCDM') !== FALSE)
-			{
-				// QCDM metric
-				if(strstr($instrument,'Exact') !== FALSE)
-				{
-					$row = $query->row();
-					$this->definition = $metric . " (" . $row->Source . "): " . $row->Description . " <br>" . $row->Purpose . "Metrics used: MS1_TIC_Q2, MS1_Density_Q1";
-				}
-				if(strstr($instrument,'LTQ_2') !== FALSE || strstr($instrument,'LTQ_3') !== FALSE || strstr($instrument,'LTQ_4') !== FALSE || strstr($instrument,'LTQ_FB1') !== FALSE || strstr($instrument,'LTQ_ETD_1') !== FALSE)
-				{
-					$row = $query->row();
-					$this->definition = $metric . " (" . $row->Source . "): " . $row->Description . " <br>" . $row->Purpose . "Metrics used: XIC_WideFrac, MS2_Density_Q1, P_2C";
-				}
-				if(strstr($instrument,'LTQ_Orb') !== FALSE || strstr($instrument,'Orbi_FB1') !== FALSE || strstr($instrument,'LTQ_FT1') !== FALSE)
-				{
-					$row = $query->row();
-					$this->definition = $metric . " (" . $row->Source . "): " . $row->Description . " <br>" . $row->Purpose . "Metrics used: XIC_WideFrac, MS1_TIC_Change_Q2, MS1_Density_Q1, MS1_Density_Q2, DS_2A, P_2B, P_2A, DS_2B";
-				}
-				if(strstr($instrument,'VOrbi') !== FALSE || strstr($instrument,'VPro') !== FALSE || strstr($instrument,'External_Orb') !== FALSE)
-				{
-					$row = $query->row();
-					$this->definition = $metric . " (" . $row->Source . "): " . $row->Description . " <br>" . $row->Purpose . "Metrics used: XIC_WideFrac, MS2_Density_Q1, MS1_2B, P_2B, P_2A, DS_2B";
-				}
-				$this->metric_units =$row->Units;
-			}
-			else
-			{
-				$row = $query->row();
-				$this->definition = $metric . " (" . $row->Source . "): " . $row->Description . " <br>" . $row->Purpose;
-				
-				$this->metric_units =$row->Units;
-			}
+            if(strstr($metric,'QCDM') !== FALSE)
+            {
+                // QCDM metric
+                if(strstr($instrument,'Exact') !== FALSE)
+                {
+                    $row = $query->row();
+                    $this->definition = $metric . " (" . $row->Source . "): " . $row->Description . " <br>" . $row->Purpose . "Metrics used: MS1_TIC_Q2, MS1_Density_Q1";
+                }
+                if(strstr($instrument,'LTQ_2') !== FALSE || strstr($instrument,'LTQ_3') !== FALSE || strstr($instrument,'LTQ_4') !== FALSE || strstr($instrument,'LTQ_FB1') !== FALSE || strstr($instrument,'LTQ_ETD_1') !== FALSE)
+                {
+                    $row = $query->row();
+                    $this->definition = $metric . " (" . $row->Source . "): " . $row->Description . " <br>" . $row->Purpose . "Metrics used: XIC_WideFrac, MS2_Density_Q1, P_2C";
+                }
+                if(strstr($instrument,'LTQ_Orb') !== FALSE || strstr($instrument,'Orbi_FB1') !== FALSE || strstr($instrument,'LTQ_FT1') !== FALSE)
+                {
+                    $row = $query->row();
+                    $this->definition = $metric . " (" . $row->Source . "): " . $row->Description . " <br>" . $row->Purpose . "Metrics used: XIC_WideFrac, MS1_TIC_Change_Q2, MS1_Density_Q1, MS1_Density_Q2, DS_2A, P_2B, P_2A, DS_2B";
+                }
+                if(strstr($instrument,'VOrbi') !== FALSE || strstr($instrument,'VPro') !== FALSE || strstr($instrument,'External_Orb') !== FALSE)
+                {
+                    $row = $query->row();
+                    $this->definition = $metric . " (" . $row->Source . "): " . $row->Description . " <br>" . $row->Purpose . "Metrics used: XIC_WideFrac, MS2_Density_Q1, MS1_2B, P_2B, P_2A, DS_2B";
+                }
+                $this->metric_units =$row->Units;
+            }
+            else
+            {
+                $row = $query->row();
+                $this->definition = $metric . " (" . $row->Source . "): " . $row->Description . " <br>" . $row->Purpose;
+
+                $this->metric_units =$row->Units;
+            }
         }
-    
+
         // build the query to get all the metric points in the specified range
         $columns = array(
                          'Acq_Time_Start',
@@ -489,20 +489,20 @@ class Metricmodel extends CI_Model
                          'Dataset_Rating',
                          'Dataset_Rating_ID',
                          $metric,
-						 'QCDM'
+                         'QCDM'
                         );
-                        
+
         $this->db->select(join(',', $columns));
         $this->db->from('V_Dataset_QC_Metrics_Export');
         $this->db->where('Instrument =', $this->instrument);
         $this->db->where('Acq_Time_Start >=', $this->querystartdate);
         $this->db->where('Acq_Time_Start <=', $this->queryenddate . 'T23:59:59.999');
-                
+
         if (strlen($this->datasetfilter) > 0)
         {
-	        $this->db->like('Dataset', $this->datasetfilter);
-		}
-		
+            $this->db->like('Dataset', $this->datasetfilter);
+        }
+
         $this->db->order_by('Acq_Time_Start', 'desc');
 
         // run the query, we may not actually need to store this in the model,
@@ -512,11 +512,11 @@ class Metricmodel extends CI_Model
         // Initialize the data arrays so that we can append data
         $this->metricdata = array();
         $this->plotdata = array();
-        $this->plotDataBad = array();			// Not Released (aka bad)
-        $this->plotDataPoor = array();			// QCDM value out-of-range (aka low quality)
-        
-        $dateList = array();					// List of dates for which metric data exists
-        
+        $this->plotDataBad = array();            // Not Released (aka bad)
+        $this->plotDataPoor = array();            // QCDM value out-of-range (aka low quality)
+
+        $dateList = array();                    // List of dates for which metric data exists
+
         // get just the data we want for plotting
         foreach($this->data->result() as $row)
         {
@@ -533,25 +533,25 @@ class Metricmodel extends CI_Model
             // cutoff fractional seconds, leaving only the date data we want
             $pattern = '/:[0-9][0-9][0-9]/';
             $date = preg_replace($pattern, '', $row->Acq_Time_Start);
-            
+
             $date = strtotime($date);
 
             $datasetIsBad = 0;
-            
+
             if(strstr($row->Dataset,'QC_Shew') !== FALSE)
             {
-            	// QC_Shew dataset
-	            if ($row->QCDM > $limit)
-	            {
-	                $datasetIsBad = 1;
-	            }
+                // QC_Shew dataset
+                if ($row->QCDM > $limit)
+                {
+                    $datasetIsBad = 1;
+                }
             }
-            
+
             if ($row->Dataset_Rating_ID >= -5 && $row->Dataset_Rating_ID <= 1)
             {
                 $datasetIsBad = 2;
             }
-			
+
             if ($datasetIsBad == 0 || $datasetIsBad == 1)
             {
                 // add the value to the metricdata array
@@ -565,13 +565,13 @@ class Metricmodel extends CI_Model
                 {
                     if($datasetIsBad == 1)
                     {
-                    	// Dataset with poor QCDM score
+                        // Dataset with poor QCDM score
                         // javascript likes milliseconds, so multiply $date by 1000 when appending to the array
                         $this->plotDataPoor[] = array($date * 1000, $row->$metric, $row->Dataset);
                     }
                     if($datasetIsBad == 2)
                     {
-                    	// Not Released dataset
+                        // Not Released dataset
                         // javascript likes milliseconds, so multiply $date by 1000 when appending to the array
                         $this->plotDataBad[] = array($date * 1000, $row->$metric, $row->Dataset);
                     }
@@ -581,22 +581,22 @@ class Metricmodel extends CI_Model
                     // javascript likes milliseconds, so multiply $date by 1000 when appending to the array
                     $this->plotdata[] = array($date * 1000, $row->$metric, $row->Dataset);
                 }
-	                
-	            // Append to $dateList if a new date
-	            // First round $date to the midnight of the given day
-				$dateMidnight = strtotime("0:00", $date);
-				if (count($dateList) == 0) 
-				{
-					// Data is returned from V_Dataset_QC_Metrics_Export sorted descending
-					// Thus, add one day past $dateList so that the average and trend lines extend past the last data point
-					$dateList[] = strtotime('+1 day', $dateMidnight);
-					$dateList[] = $dateMidnight;
-				}
-				else {
-		            if ($dateList[count($dateList)-1] != $dateMidnight)
-		            	$dateList[] = $dateMidnight;
-				}
-            }          
+
+                // Append to $dateList if a new date
+                // First round $date to the midnight of the given day
+                $dateMidnight = strtotime("0:00", $date);
+                if (count($dateList) == 0)
+                {
+                    // Data is returned from V_Dataset_QC_Metrics_Export sorted descending
+                    // Thus, add one day past $dateList so that the average and trend lines extend past the last data point
+                    $dateList[] = strtotime('+1 day', $dateMidnight);
+                    $dateList[] = $dateMidnight;
+                }
+                else {
+                    if ($dateList[count($dateList)-1] != $dateMidnight)
+                        $dateList[] = $dateMidnight;
+                }
+            }
         }
 
         $this->plotdata_average = array();
@@ -611,72 +611,72 @@ class Metricmodel extends CI_Model
             $medianInWindow = 0.0;
             $mad = 0.0;
 
-			// Uncomment to debug
-			// echo "Date, MedianInWindow, MAD, LowerBoundMAD, UpperBoundMAD<br>";
-            
+            // Uncomment to debug
+            // echo "Date, MedianInWindow, MAD, LowerBoundMAD, UpperBoundMAD<br>";
+
             for($dateIndex = 0; $dateIndex < $s0; $dateIndex++)
             {
-	            if(strstr($metric,'QCDM') !== FALSE)
-				{
-					// The metric is QCDM
-					// Use a limit customized for the given instrument
+                if(strstr($metric,'QCDM') !== FALSE)
+                {
+                    // The metric is QCDM
+                    // Use a limit customized for the given instrument
 
-					// Javascript likes milliseconds, so multiply $date by 1000 when appending to the array
-					$this->stddevlower[] = array(
-						$dateList[$dateIndex] * 1000,
-						$limit
-						);
-						
-					continue;
-				}
-				
-				// The metric is not QCDM
-				// Compute the median value within a time period
-				
+                    // Javascript likes milliseconds, so multiply $date by 1000 when appending to the array
+                    $this->stddevlower[] = array(
+                        $dateList[$dateIndex] * 1000,
+                        $limit
+                        );
+
+                    continue;
+                }
+
+                // The metric is not QCDM
+                // Compute the median value within a time period
+
                 // get the date to the left by the window radius
                 $sqlDateTimeLeftUnix = strtotime('-' . $windowradius . ' day', $dateList[$dateIndex]);
-                
+
                 // get the date to the right by the window radius
                 $sqlDateTimeRightUnix = strtotime($windowradius . ' day', $dateList[$dateIndex]);
 
                 // Compute the median of the metric values over the date range (using both good and "low quality" datasets)
                 $medianInWindow = $this->compute_windowed_median($sqlDateTimeLeftUnix, $sqlDateTimeRightUnix);
-                
+
                 if (is_null($medianInWindow))
-                	continue;
-                	
-				// Javascript likes milliseconds, so multiply $date by 1000 when appending to the array
+                    continue;
+
+                // Javascript likes milliseconds, so multiply $date by 1000 when appending to the array
                 $this->plotdata_average[] = array(
                     $dateList[$dateIndex] * 1000,
                     $medianInWindow
                     );
 
                 // Compute the median absolute deviation over the date range
-				$mad = $this->compute_windowed_mad($sqlDateTimeLeftUnix, $sqlDateTimeRightUnix, $medianInWindow);
+                $mad = $this->compute_windowed_mad($sqlDateTimeLeftUnix, $sqlDateTimeRightUnix, $medianInWindow);
 
-				$lowerBoundMAD = $medianInWindow - (1.5 * $mad);
-				$upperBoundMAD = $medianInWindow + (1.5 * $mad);
+                $lowerBoundMAD = $medianInWindow - (1.5 * $mad);
+                $upperBoundMAD = $medianInWindow + (1.5 * $mad);
 
-				if ($lowerBoundMAD < 0)
-					$lowerBoundMAD = 0;
-				
-				// Javascript likes milliseconds, so multiply $date by 1000 when appending to the array
-				$this->stddevlower[] = array(
-					$dateList[$dateIndex] * 1000,
-					$lowerBoundMAD
-					);
+                if ($lowerBoundMAD < 0)
+                    $lowerBoundMAD = 0;
 
-				$this->stddevupper[] = array(
-					$dateList[$dateIndex] * 1000,
-					$upperBoundMAD
-					);
-					
-				// Uncomment to debug
-				// echo date('m/d/Y H:i:s', $dateList[$dateIndex]) . ", " . $medianInWindow . ", " . $mad . ", " . $lowerBoundMAD . ", " . $upperBoundMAD . "<br>";
-                    
+                // Javascript likes milliseconds, so multiply $date by 1000 when appending to the array
+                $this->stddevlower[] = array(
+                    $dateList[$dateIndex] * 1000,
+                    $lowerBoundMAD
+                    );
+
+                $this->stddevupper[] = array(
+                    $dateList[$dateIndex] * 1000,
+                    $upperBoundMAD
+                    );
+
+                // Uncomment to debug
+                // echo date('m/d/Y H:i:s', $dateList[$dateIndex]) . ", " . $medianInWindow . ", " . $mad . ", " . $lowerBoundMAD . ", " . $upperBoundMAD . "<br>";
+
             } // end of loop
         } // end of calculating stddev
-        
+
         // check to see if there were any data points in the date range
         if(count($this->plotdata) < 1)
         {
@@ -685,29 +685,29 @@ class Metricmodel extends CI_Model
             $this->plotdata[] = array();
         }
 
-		if(count($this->plotDataBad) < 1)
+        if(count($this->plotDataBad) < 1)
         {
             // put an empty array in there so that jqplot will display
             // properly, and not break javascript on the page
             $this->plotDataBad[] = array();
         }
-        
+
         if(count($this->plotDataPoor) < 1)
         {
             // put an empty array in there so that jqplot will display
             // properly, and not break javascript on the page
             $this->plotDataPoor[] = array();
         }
-        
+
         // put everything for jqplot into a json encoded array
         $this->plotdata = json_encode($this->plotdata);
         $this->plotdata_average = json_encode($this->plotdata_average);
         $this->stddevupper = json_encode($this->stddevupper);
         $this->stddevlower = json_encode($this->stddevlower);
-        $this->plotDataBad = json_encode($this->plotDataBad); 
+        $this->plotDataBad = json_encode($this->plotDataBad);
         $this->plotDataPoor = json_encode($this->plotDataPoor);
         $this->metric_units = json_encode($this->metric_units);
-        
+
         /* get the average (we'll use the select_avg() call for now, as it
            deals with nulls, but we may want to do this in php instead of using
            the db */

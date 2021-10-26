@@ -3,9 +3,9 @@
  * qcartmodel.php
  *
  * File containing a CodeIgniter model for the QC-ART metric.
- * 
+ *
  */
- 
+
 class QCArtModel extends CI_Model
 {
     /**
@@ -13,13 +13,13 @@ class QCArtModel extends CI_Model
      * @var string
      */
     private $instrument;
-    
+
     /**
      * Optional dataset name filter
      * @var string
-     */     
+     */
     private $datasetfilter;
-    
+
     /**
      * The name of the metric.
      * @var string
@@ -32,7 +32,7 @@ class QCArtModel extends CI_Model
      * @var string
      */
     private $metric_units;
-    
+
     /**
      * The definition of the metric.
      * A string that is retrieved from a database.
@@ -45,25 +45,25 @@ class QCArtModel extends CI_Model
      * This should be a human readable string of the format m-d-Y.
      * (Example: 11-11-2011)
      * @var string
-     */  
+     */
     private $querystartdate;
     private $queryenddate;
-   
+
     /**
      * The start/end date for plotting metrics.; unix datetime
-     */           
+     */
     private $unixstartdate;
     private $unixenddate;
-    
+
     /**
      * The results of querying the database for the metric values.
      * The type is what is returned by a call to CI's Active Record db->get().
      * @var object
      */
     private $data;
-    
+
     /**
-     * An array of (x,y) values for the metric being plotted; 
+     * An array of (x,y) values for the metric being plotted;
      * includes data outside the date range being plotted (to allow for more accurate computation of median and MAD)
      * The x value is a unix timestamp, in seconds
      * The y value is the metric value
@@ -73,7 +73,7 @@ class QCArtModel extends CI_Model
      * @var string
      */
     private $metricdata;
-    
+
     /**
      * A JSON encoded array of (x,y) values for jqplot to use.
      * The x value is a time/date in milliseconds.
@@ -89,7 +89,7 @@ class QCArtModel extends CI_Model
      * @var string
      */
     private $plotDataBad;
-	
+
     /**
      * A JSON encoded array of (x,y) values for jqplot to use.
      * The x value is a time/date in milliseconds.
@@ -97,13 +97,13 @@ class QCArtModel extends CI_Model
      * @var string
      */
     private $plotDataPoor;
-	
+
     /**
      * A JSON encoded array of (x,y) values for jqplot to use.
      * The x value is a time/date in milliseconds.
      * The average metric value across the datasets in a given fraction set
      * @var string
-     */    
+     */
     private $plotdata_average;
 
     /**
@@ -121,7 +121,7 @@ class QCArtModel extends CI_Model
      * @var string
      */
     private $stddevlower;
-	
+
     /**
      * Constructor
      *
@@ -144,7 +144,7 @@ class QCArtModel extends CI_Model
      * members in the class. The use of the variable $CI and get_instance()
      * allows us to access CI's loaded classes using the same syntax as in the
      * controller.
-     * 
+     *
      * @param string $what The member of the class that we are looking for.
      *
      * @return mixed Returns whatever member was requested.
@@ -157,7 +157,7 @@ class QCArtModel extends CI_Model
             case 'instrument':
                 return $this->$what;
             case 'datasetfilter':
-            	return $this->$what;
+                return $this->$what;
             case 'metric':
                 return $this->$what;
             case 'metric_units':
@@ -173,9 +173,9 @@ class QCArtModel extends CI_Model
             case 'plotdata':
                 return $this->$what;
             case 'plotDataBad':
-            	return $this->$what;
+                return $this->$what;
             case 'plotDataPoor':
-            	return $this->$what;
+                return $this->$what;
             case 'plotdata_average':
                 return $this->$what;
             case 'stddevupper':
@@ -187,48 +187,48 @@ class QCArtModel extends CI_Model
         }
     }
 
-	/*
+    /*
      * Compute the average value for data in metricdata that comes from the same fraction set
      *
      * @param int $fractionSetFilter: The fraction set to filter on
      *
      * Returns the average or NULL if no matching data
      */
-	function compute_fractionset_average($fractionSetFilter, $fractionSetDateSeconds)
-	{
-		$dataCount = count($this->metricdata);
-        
-		$runningSum = 0.0;
+    function compute_fractionset_average($fractionSetFilter, $fractionSetDateSeconds)
+    {
+        $dataCount = count($this->metricdata);
+
+        $runningSum = 0.0;
         $countToAverage = 0;
-        
+
         for($i = 0; $i < $dataCount; $i++)
         {
-            if ($this->metricdata[$i][2] == $fractionSetFilter) 
+            if ($this->metricdata[$i][2] == $fractionSetFilter)
             {
-            	if ($this->DateDiffDays($this->metricdata[$i][0], $fractionSetDateSeconds) < 30) 
-            	{
-                	$runningSum += $this->metricdata[$i][1];
-	                $countToAverage += 1;
-	            }
+                if ($this->DateDiffDays($this->metricdata[$i][0], $fractionSetDateSeconds) < 30)
+                {
+                    $runningSum += $this->metricdata[$i][1];
+                    $countToAverage += 1;
+                }
             }
         }
-        
+
         if ($countToAverage > 0)
             return $runningSum / (float)$countToAverage;
         else
             return NULL;
 
-	}	
+    }
 
-	// Returns the number of days between two second-based dates
-	// Always returns a positive number
-	function DateDiffDays($dateOneSeconds, $dateTwoSeconds) 
-	{
-		$dateDiffSeconds = abs($dateOneSeconds - $dateTwoSeconds);
-		
-		return $dateDiffSeconds / 86400.0;
-	}
-	
+    // Returns the number of days between two second-based dates
+    // Always returns a positive number
+    function DateDiffDays($dateOneSeconds, $dateTwoSeconds)
+    {
+        $dateDiffSeconds = abs($dateOneSeconds - $dateTwoSeconds);
+
+        return $dateDiffSeconds / 86400.0;
+    }
+
     /**
      * Initializer for the QC-ART model
      *
@@ -252,38 +252,38 @@ class QCArtModel extends CI_Model
         $start = str_replace('-', '/', $start);
         $end   = str_replace('-', '/', $end);
 
-		// Do not load data outside of $start or $end
-      	$windowRadiusLeft = 0;
-      	$windowRadiusRight = 1;
-      	
+        // Do not load data outside of $start or $end
+        $windowRadiusLeft = 0;
+        $windowRadiusRight = 1;
+
         // set all the proper values
         $this->instrument = $instrument;
         $this->metric     = $metric;
-		
+
         $this->unixstartdate  = strtotime($start);
         $this->unixenddate    = strtotime($end);
-        
+
         // Set the query start date to $windowradius days prior to $start
         $this->querystartdate  = date("Y-m-d", strtotime('-' . $windowRadiusLeft  . ' day', $this->unixstartdate));
         $this->queryenddate    = date("Y-m-d", strtotime(      $windowRadiusRight . ' day', $this->unixenddate));
-    
-    	$this->datasetfilter  = $datasetfilter;
-    	
+
+        $this->datasetfilter  = $datasetfilter;
+
         // check to see that this is a valid instrument/metric
         $this->db->where('Instrument', $instrument);
-        
+
         $query = $this->db->get('V_Dataset_QC_Metrics_Export', 1);
-        
+
         if($query->num_rows() < 1)
         {
             return array("type" => "instrument", "value" => $instrument);
         }
-        
+
         if(!$this->db->field_exists($metric, 'V_Dataset_QC_Metrics_Export'))
         {
             return array("type" => "metric", "value" => $metric);
-        }    
-    
+        }
+
         // Lookup the Description, purpose, units, and Source for this metric
         $this->db->select('Description, Purpose, Units, Source');
         $this->db->where('Metric', $metric);
@@ -293,14 +293,14 @@ class QCArtModel extends CI_Model
         {
             $this->definition = $metric . " (definition not found in DB)";
         }
-        else 
+        else
         {
-			$row = $query->row();
-			$this->definition = $metric . " (" . $row->Source . "): " . $row->Description . " <br>" . $row->Purpose;
-			
-			$this->metric_units =$row->Units;
+            $row = $query->row();
+            $this->definition = $metric . " (" . $row->Source . "): " . $row->Description . " <br>" . $row->Purpose;
+
+            $this->metric_units =$row->Units;
         }
-    
+
         // build the query to get all the metric points in the specified range
         $columns = array(
                          'Acq_Time_Start',
@@ -313,20 +313,20 @@ class QCArtModel extends CI_Model
                          'Dataset_Rating',
                          'Dataset_Rating_ID',
                           $metric,
-						 'QCDM'
+                         'QCDM'
                         );
-                        
+
         $this->db->select(join(',', $columns));
         $this->db->from('V_Dataset_QC_Metrics_Export');
         $this->db->where('Instrument =', $this->instrument);
         $this->db->where('Acq_Time_Start >=', $this->querystartdate);
         $this->db->where('Acq_Time_Start <=', $this->queryenddate . 'T23:59:59.999');
-                
+
         if (strlen($this->datasetfilter) > 0)
         {
-	        $this->db->like('Dataset', $this->datasetfilter);
-		}
-		
+            $this->db->like('Dataset', $this->datasetfilter);
+        }
+
         $this->db->order_by('Acq_Time_Start', 'desc');
 
         // run the query, we may not actually need to store this in the model,
@@ -335,22 +335,22 @@ class QCArtModel extends CI_Model
 
         // Initialize the data arrays so that we can append data
         $this->metricdata = array();
-		
+
         $this->plotdata = array();
-        $this->plotDataBad = array();			// Not Released (aka bad)
-        $this->plotDataPoor = array();			// QC-ART value out-of-range (aka low quality)
-        
-		// QC-ART threshold for very bad scores
+        $this->plotDataBad = array();            // Not Released (aka bad)
+        $this->plotDataPoor = array();            // QC-ART value out-of-range (aka low quality)
+
+        // QC-ART threshold for very bad scores
         $qcArtRedThreshold = 6.55;
-        
+
         // QC-ART threshold for poor scores
         $qcArtYellowThreshold = 4;
 
-		// This array tracks date values and fraction set numbers
-		// Used to compute (and plot) the average QC-ART value for each fraction set
-		// $fractionSetList[i][0] is date
-		// $fractionSetList[i][1] is fractionSet number
-		$fractionSetList = array();
+        // This array tracks date values and fraction set numbers
+        // Used to compute (and plot) the average QC-ART value for each fraction set
+        // $fractionSetList[i][0] is date
+        // $fractionSetList[i][1] is fractionSet number
+        $fractionSetList = array();
 
         // get just the data we want for plotting
         foreach($this->data->result() as $row)
@@ -368,7 +368,7 @@ class QCArtModel extends CI_Model
             // cutoff fractional seconds, leaving only the date data we want
             $pattern = '/:[0-9][0-9][0-9]/';
             $date = preg_replace($pattern, '', $row->Acq_Time_Start);
-            
+
             $date = strtotime($date);
 
             $datasetIsBad = 0;
@@ -377,26 +377,25 @@ class QCArtModel extends CI_Model
             {
                 $datasetIsBad = 1;
             }
-            
+
             if ($row->Dataset_Rating_ID >= -5 && $row->Dataset_Rating_ID <= 1)
             {
                 $datasetIsBad = 2;
             }
-			
-			// Parse out the fraction set, for example "40" from
-			// TEDDY_DISCOVERY_SET_40_23_30Nov15_Frodo_15-08-38
-			
-			$fractionSetForDataset = 0;
-			$patternSetNumber = '/_SET_([0-9]+)_/';
-			if (preg_match($patternSetNumber, $row->Dataset, $matches)) {
-				$fractionSetForDataset = (int)$matches[1];
-			}
-			
-			// Uncomment to debug
-		    // else
-			//	echo "No match to " . patternSetNumber . " for " . $row->Dataset . "<br>";
 
-			
+            // Parse out the fraction set, for example "40" from
+            // TEDDY_DISCOVERY_SET_40_23_30Nov15_Frodo_15-08-38
+
+            $fractionSetForDataset = 0;
+            $patternSetNumber = '/_SET_([0-9]+)_/';
+            if (preg_match($patternSetNumber, $row->Dataset, $matches)) {
+                $fractionSetForDataset = (int)$matches[1];
+            }
+
+            // Uncomment to debug
+            // else
+            //    echo "No match to " . patternSetNumber . " for " . $row->Dataset . "<br>";
+
             if ($datasetIsBad == 0 || $datasetIsBad == 1)
             {
                 // add the value to the metricdata array
@@ -410,13 +409,13 @@ class QCArtModel extends CI_Model
                 {
                     if($datasetIsBad == 1)
                     {
-                    	// Dataset with QC-ART score over the threshold
+                        // Dataset with QC-ART score over the threshold
                         // javascript likes milliseconds, so multiply $date by 1000 when appending to the array
                         $this->plotDataPoor[] = array($date * 1000, $row->$metric, $row->Dataset);
                     }
                     if($datasetIsBad == 2)
                     {
-                    	// Not Released dataset
+                        // Not Released dataset
                         // javascript likes milliseconds, so multiply $date by 1000 when appending to the array
                         $this->plotDataBad[] = array($date * 1000, $row->$metric, $row->Dataset);
                     }
@@ -426,10 +425,10 @@ class QCArtModel extends CI_Model
                     // javascript likes milliseconds, so multiply $date by 1000 when appending to the array
                     $this->plotdata[] = array($date * 1000, $row->$metric, $row->Dataset);
                 }
-	                
-	            // Append to $fractionSetList
-				$fractionSetList[] = array($date, $fractionSetForDataset);
-				
+
+                // Append to $fractionSetList
+                $fractionSetList[] = array($date, $fractionSetForDataset);
+
             }
         }
 
@@ -444,93 +443,93 @@ class QCArtModel extends CI_Model
         {
             $cachedFractionSet = 0;
             $cachedAverage = 0.0;
-			$cachedFractionSetDateSeconds;
-			
-			// Uncomment to debug
-			// echo "DataIndex, Date, FractionSet, FractionSetAverage<br>";
-            
+            $cachedFractionSetDateSeconds;
+
+            // Uncomment to debug
+            // echo "DataIndex, Date, FractionSet, FractionSetAverage<br>";
+
             for($dataIndex = 0; $dataIndex < $s0; $dataIndex++)
             {
-	    		// Compute the average for the fraction set
+                // Compute the average for the fraction set
 
-				$currentFractionSetDate = $fractionSetList[$dataIndex][0];
-				$currentFractionSet = $fractionSetList[$dataIndex][1];
-				
-				if ($currentFractionSet == 0)
-				{
-					// Uncomment to debug
-					// echo $dataIndex . ", " . date('m/d/Y H:i:s', $currentFractionSetDate) . ", " . $currentFractionSet . ", InvalidFractionSet<br>";
-					continue;
-				}
+                $currentFractionSetDate = $fractionSetList[$dataIndex][0];
+                $currentFractionSet = $fractionSetList[$dataIndex][1];
 
-				// Javascript likes milliseconds, so multiply $date by 1000 when appending to the array
-				$currentDateMillisec = $currentFractionSetDate * 1000;
-			
-				if ($cachedFractionSet != $currentFractionSet || $this->DateDiffDays($cachedFractionSetDateSeconds, $currentFractionSetDate) > 30) {
-				
-					$newAverage = $this->compute_fractionset_average($currentFractionSet, $currentFractionSetDate);
+                if ($currentFractionSet == 0)
+                {
+                    // Uncomment to debug
+                    // echo $dataIndex . ", " . date('m/d/Y H:i:s', $currentFractionSetDate) . ", " . $currentFractionSet . ", InvalidFractionSet<br>";
+                    continue;
+                }
 
-					/*
-					if ($cachedFractionSet != 0) 
-					{
-						// Add some additional values to make the line be a step functin
-						$midPointDateMillisec = (int)(($cachedFractionSetDateSeconds * 1000 + $currentDateMillisec) / 2.0);
-						
-						$leftPoint = $midPointDateMillisec - 3600000;
-						if ($leftPoint < $cachedFractionSetDateSeconds * 1000 + 10000)
-							$leftPoint = $cachedFractionSetDateSeconds * 1000 + 10000;
-							
-						$rightPoint = $midPointDateMillisec + 3600000;
-						if ($rightPoint > $currentDateMillisec - 10000)
-							$rightPoint = $currentDateMillisec - 10000;
-						
-						$this->plotdata_average[] = array(
-	                    $leftPoint,
-	                    $cachedAverage
-	                    );
+                // Javascript likes milliseconds, so multiply $date by 1000 when appending to the array
+                $currentDateMillisec = $currentFractionSetDate * 1000;
 
-						echo $dataIndex . ", " . date('m/d/Y H:i:s', $leftPoint/1000.0) . ", " . $cachedFractionSet . ", " . $cachedAverage . " (filler)<br>";
+                if ($cachedFractionSet != $currentFractionSet || $this->DateDiffDays($cachedFractionSetDateSeconds, $currentFractionSetDate) > 30) {
 
-						$this->plotdata_average[] = array(
-	                    $rightPoint,
-	                    $newAverage
-	                    );
-	                    
-	                    echo $dataIndex . ", " . date('m/d/Y H:i:s', $rightPoint/1000.0) . ", " . $currentFractionSet . ", " . $newAverage . " (filler)<br>";
-	                    
-					}
-					*/
-					
-					$cachedFractionSet = $currentFractionSet;
-					$cachedFractionSetDateSeconds = $currentFractionSetDate;
-					
-		            $cachedAverage = $newAverage;
-				}
-				
-				if (is_null($cachedAverage))
-					continue;
-				
+                    $newAverage = $this->compute_fractionset_average($currentFractionSet, $currentFractionSetDate);
+
+                    /*
+                    if ($cachedFractionSet != 0)
+                    {
+                        // Add some additional values to make the line be a step functin
+                        $midPointDateMillisec = (int)(($cachedFractionSetDateSeconds * 1000 + $currentDateMillisec) / 2.0);
+
+                        $leftPoint = $midPointDateMillisec - 3600000;
+                        if ($leftPoint < $cachedFractionSetDateSeconds * 1000 + 10000)
+                            $leftPoint = $cachedFractionSetDateSeconds * 1000 + 10000;
+
+                        $rightPoint = $midPointDateMillisec + 3600000;
+                        if ($rightPoint > $currentDateMillisec - 10000)
+                            $rightPoint = $currentDateMillisec - 10000;
+
+                        $this->plotdata_average[] = array(
+                        $leftPoint,
+                        $cachedAverage
+                        );
+
+                        echo $dataIndex . ", " . date('m/d/Y H:i:s', $leftPoint/1000.0) . ", " . $cachedFractionSet . ", " . $cachedAverage . " (filler)<br>";
+
+                        $this->plotdata_average[] = array(
+                        $rightPoint,
+                        $newAverage
+                        );
+
+                        echo $dataIndex . ", " . date('m/d/Y H:i:s', $rightPoint/1000.0) . ", " . $currentFractionSet . ", " . $newAverage . " (filler)<br>";
+
+                    }
+                    */
+
+                    $cachedFractionSet = $currentFractionSet;
+                    $cachedFractionSetDateSeconds = $currentFractionSetDate;
+
+                    $cachedAverage = $newAverage;
+                }
+
+                if (is_null($cachedAverage))
+                    continue;
+
                 $this->plotdata_average[] = array(
                     $currentDateMillisec,
                     $cachedAverage
                     );
-				
-				$this->stddevlower[] = array(
-					$currentDateMillisec,
-					$qcArtYellowThreshold
-					);
 
-				$this->stddevupper[] = array(
-					$currentDateMillisec,
-					$qcArtRedThreshold
-					);
-					
-				// Uncomment to debug
-				// echo $dataIndex . ", " . date('m/d/Y H:i:s', $currentFractionSetDate) . ", " . $cachedFractionSet . ", " . $cachedAverage . "<br>";
-                    
+                $this->stddevlower[] = array(
+                    $currentDateMillisec,
+                    $qcArtYellowThreshold
+                    );
+
+                $this->stddevupper[] = array(
+                    $currentDateMillisec,
+                    $qcArtRedThreshold
+                    );
+
+                // Uncomment to debug
+                // echo $dataIndex . ", " . date('m/d/Y H:i:s', $currentFractionSetDate) . ", " . $cachedFractionSet . ", " . $cachedAverage . "<br>";
+
             } // end of loop
         } // end of calculating stddev
-        
+
         // check to see if there were any data points in the date range
         if(count($this->plotdata) < 1)
         {
@@ -539,29 +538,29 @@ class QCArtModel extends CI_Model
             $this->plotdata[] = array();
         }
 
-		if(count($this->plotDataBad) < 1)
+        if(count($this->plotDataBad) < 1)
         {
             // put an empty array in there so that jqplot will display
             // properly, and not break javascript on the page
             $this->plotDataBad[] = array();
         }
-        
+
         if(count($this->plotDataPoor) < 1)
         {
             // put an empty array in there so that jqplot will display
             // properly, and not break javascript on the page
             $this->plotDataPoor[] = array();
         }
-        
+
         // put everything for jqplot into a json encoded array
         $this->plotdata = json_encode($this->plotdata);
         $this->plotdata_average = json_encode($this->plotdata_average);
         $this->stddevupper = json_encode($this->stddevupper);
         $this->stddevlower = json_encode($this->stddevlower);
-        $this->plotDataBad = json_encode($this->plotDataBad); 
+        $this->plotDataBad = json_encode($this->plotDataBad);
         $this->plotDataPoor = json_encode($this->plotDataPoor);
         $this->metric_units = json_encode($this->metric_units);
-     
+
         return FALSE; // no errors, so return false
     }
 }
