@@ -358,6 +358,7 @@ class Smaqc extends BaseController
         $data['enddate']   = date("m-d-Y", strtotime(str_replace('-', '/', $URI_array["to"])));
 
         $data['windowsize'] = (int)$URI_array["window"];
+        $data['unit'] = $URI_array["unit"];
 
         $this->MetricModel = new \App\Models\MetricModel();
 

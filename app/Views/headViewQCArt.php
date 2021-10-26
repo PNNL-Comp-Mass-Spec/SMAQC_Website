@@ -81,7 +81,7 @@
     });
 
     $("#updatesettings").click(function() {
-        var newurl = '<?=site_url()?>/smaqc/qcart';
+        var newurl = '<?=site_url("smaqc/qcart")?>';
 
         newurl = newurl + "/inst/" + $("#instrumentlist").val();
 

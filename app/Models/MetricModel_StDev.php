@@ -174,7 +174,6 @@ class MetricModel extends Model
      */
     function __get($what)
     {
-        $CI =& get_instance();  // get a reference to the base class (CI_Model)
         switch($what)
         {
             case 'instrument':
@@ -206,7 +205,7 @@ class MetricModel extends Model
             case 'stddevlower':
                 return $this->$what;
             default:
-                return $CI->$what;  // check base class CI_Model for member
+                return parent::__get($what); // check base class BaseModel for member
         }
     }
 

@@ -144,7 +144,6 @@ class InstrumentModel extends Model
      */
     function __get($what)
     {
-        $CI =& get_instance();
         switch($what)
         {
             case 'instrument':
@@ -172,7 +171,7 @@ class InstrumentModel extends Model
             case 'stddevmetrics':
                 return $this->$what;
             default:
-                return $CI->$what;  // check base class CI_Model for member
+                return parent::__get($what); // check base class BaseModel for member
         }
     }
 

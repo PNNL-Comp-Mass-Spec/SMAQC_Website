@@ -88,7 +88,7 @@
     });
 
     $("#updatesettings").click(function() {
-        var newurl = '<?=site_url()?>/smaqc';
+        var newurl = '<?=site_url("smaqc")?>';
 
         if($("#metriclist").length)
         {

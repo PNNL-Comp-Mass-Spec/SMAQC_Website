@@ -12,7 +12,7 @@ class App extends BaseConfig
         // --------------------------- BEGIN DMS Customizations--------------------
         // Need to set the properties before we call the parent constructor
         $protocol = isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on" ? "https" : "http";
-        $this->baseURL = "{$protocol}://".$_SERVER["SERVER_NAME"].'/smaqc/';
+        $this->baseURL = "{$protocol}://".$_SERVER["SERVER_NAME"].'/smaqc';
         $this->uriProtocol = 'PATH_INFO';
         $this->appTimezone = 'America/Los_Angeles';
 
