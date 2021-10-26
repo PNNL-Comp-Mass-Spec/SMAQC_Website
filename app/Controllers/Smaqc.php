@@ -127,11 +127,11 @@ class Smaqc extends BaseController
         $data['datasetfilter']  = $this->datasetfilter;
         $data['includegraph']   = FALSE;
 
-        $this->load->view('headView.php', $data);
-        $this->load->view('leftMenuView', $data);
-        $this->load->view('topMenuView' , $data);
-        $this->load->view('mainView'    , $data);
-        $this->load->view('footView.php', $data);
+        echo view('headView.php', $data);
+        echo view('leftMenuView', $data);
+        echo view('topMenuView' , $data);
+        echo view('mainView'    , $data);
+        echo view('footView.php', $data);
     }
 
     public function instrument()
@@ -162,7 +162,7 @@ class Smaqc extends BaseController
         // make sure user supplied an instrument name, redirect to home page if not
         if($URI_array["instrument"] === FALSE)
         {
-            redirect(site_url());
+            return redirect()->to(site_url());
         }
 
         //TODO: check for valid instrument name (is it in the DB?)
@@ -198,7 +198,7 @@ class Smaqc extends BaseController
         // redirect if default values are to be used
         if($needRedirect)
         {
-            redirect('smaqc/' . $this->uri->assoc_to_uri($URI_array));
+            return redirect()->to(site_url('smaqc/' . $this->uri->assoc_to_uri($URI_array)));
         }
 
         // set the data that we will have access to in the view
@@ -236,7 +236,7 @@ class Smaqc extends BaseController
                 $error["value"]
             );
 
-            redirect(site_url(join('/', $redirecturlparts)));
+            return redirect()->to(site_url(join('/', $redirecturlparts)));
         }
 
         $data['metricnames']         = $this->InstrumentModel->metricnames;
@@ -251,8 +251,8 @@ class Smaqc extends BaseController
         $data['includegraph'] = FALSE;
 
         // load the views
-        $this->load->view('headView', $data);
-        $this->load->view('instrumentView', $data);
+        echo view('headView', $data);
+        echo view('instrumentView', $data);
     }
 
     public function metric()
@@ -288,7 +288,7 @@ class Smaqc extends BaseController
         // make sure user supplied a metric name, redirect to home page if not
         if(empty($URI_array["metric"]))
         {
-            redirect(site_url());
+            return redirect()->to(site_url());
         }
 
         //TODO: check for valid metric name (is it in the DB?)
@@ -296,7 +296,7 @@ class Smaqc extends BaseController
         // make sure user supplied an instrument name, redirect to home page if not
         if(empty($URI_array["inst"]))
         {
-            redirect(site_url());
+            return redirect()->to(site_url());
         }
 
         //TODO: check for valid instrument name (is it in the DB?)
@@ -339,7 +339,7 @@ class Smaqc extends BaseController
         // redirect if default values are to be used
         if($needRedirect)
         {
-            redirect('smaqc/' . $this->uri->assoc_to_uri($URI_array));
+            return redirect()->to(site_url('smaqc/' . $this->uri->assoc_to_uri($URI_array)));
         }
 
         $data['title'] = $URI_array["inst"] . ' - ' . $URI_array["metric"];
@@ -380,7 +380,7 @@ class Smaqc extends BaseController
                 $error["value"]
             );
 
-            redirect(site_url(join('/', $redirecturlparts)));
+            return redirect()->to(site_url(join('/', $redirecturlparts)));
         }
 
         $data['metrics']          = $this->MetricModel->data;
@@ -396,8 +396,8 @@ class Smaqc extends BaseController
         $data['includegraph'] = TRUE;
 
         // load the views
-        $this->load->view('headView.php', $data);
-        $this->load->view('metricView', $data);
+        echo view('headView.php', $data);
+        echo view('metricView', $data);
     }
 
     public function qcart()
@@ -430,7 +430,7 @@ class Smaqc extends BaseController
         // make sure user supplied an instrument name, redirect to home page if not
         if(empty($URI_array["inst"]))
         {
-            redirect(site_url() . "#InstNotDefined");
+            return redirect()->to(site_url("#InstNotDefined"));
         }
 
         // set default from and to dates if need be
@@ -450,7 +450,7 @@ class Smaqc extends BaseController
         // redirect if default values are to be used
         if($needRedirect)
         {
-            redirect('smaqc/qcart/' . $this->uri->assoc_to_uri($URI_array));
+            return redirect()->to(site_url('smaqc/qcart/' . $this->uri->assoc_to_uri($URI_array)));
         }
 
         // Note that metricplot.js is looking for a title of "QC-ART" to select the correct plot format for this data
@@ -485,7 +485,7 @@ class Smaqc extends BaseController
                 $error["value"]
             );
 
-            redirect(site_url(join('/', $redirecturlparts)));
+            return redirect()->to(site_url(join('/', $redirecturlparts)));
         }
 
         $data['metrics']          = $this->QCArtModel->data;
@@ -501,8 +501,8 @@ class Smaqc extends BaseController
         $data['includegraph'] = TRUE;
 
         // load the views
-        $this->load->view('headViewQCArt.php', $data);
-        $this->load->view('qcartView', $data);
+        echo view('headViewQCArt.php', $data);
+        echo view('qcartView', $data);
     }
 
     public function invaliditem($requesteditemtype = NULL, $name = NULL)
@@ -532,11 +532,11 @@ class Smaqc extends BaseController
             $data['message'] = "The page you requested was not found.";
         }
 
-        $this->load->view('headView.php', $data);
-        $this->load->view('leftMenuView', $data);
-        $this->load->view('topMenuView', $data);
-        $this->load->view('invaliditemView', $data);
-        $this->load->view('footView.php', $data);
+        echo view('headView.php', $data);
+        echo view('leftMenuView', $data);
+        echo view('topMenuView', $data);
+        echo view('invaliditemView', $data);
+        echo view('footView.php', $data);
     }
 }
 ?>
