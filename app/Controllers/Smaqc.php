@@ -155,7 +155,7 @@ class Smaqc extends BaseController
         // use an array of defaults for the uri-to-assoc() call, if not supplied in the URI, the value will be set to FALSE
         $defaultURI = array('instrument', 'window', 'unit');
 
-        $URI_array = $this->uri->uri_to_assoc(2, $defaultURI);
+        $URI_array = $this->uri_to_assoc(1, $defaultURI);
 
         $includedDatasets = array();
         $excludedDatasets = array();
@@ -199,7 +199,7 @@ class Smaqc extends BaseController
         // redirect if default values are to be used
         if($needRedirect)
         {
-            return redirect()->to(site_url('smaqc/' . $this->uri->assoc_to_uri($URI_array)));
+            return redirect()->to(site_url('smaqc/' . $this->assoc_to_uri($URI_array)));
         }
 
         // set the data that we will have access to in the view
@@ -279,7 +279,7 @@ class Smaqc extends BaseController
         // use an array of defaults for the uri-to-assoc() call, if not supplied in the URI, the value will be set to FALSE
         $defaultURI = array('metric', 'inst', 'from', 'to', 'window', 'unit');
 
-        $URI_array = $this->uri->uri_to_assoc(2, $defaultURI);
+        $URI_array = $this->uri_to_assoc(1, $defaultURI);
 
         $needRedirect = FALSE;
 
@@ -340,7 +340,7 @@ class Smaqc extends BaseController
         // redirect if default values are to be used
         if($needRedirect)
         {
-            return redirect()->to(site_url('smaqc/' . $this->uri->assoc_to_uri($URI_array)));
+            return redirect()->to(site_url('smaqc/' . $this->assoc_to_uri($URI_array)));
         }
 
         $data['title'] = $URI_array["inst"] . ' - ' . $URI_array["metric"];
@@ -421,7 +421,7 @@ class Smaqc extends BaseController
         // use an array of defaults for the uri-to-assoc() call, if not supplied in the URI, the value will be set to FALSE
         $defaultURI = array('inst', 'from', 'to');
 
-        $URI_array = $this->uri->uri_to_assoc(3, $defaultURI);
+        $URI_array = $this->uri_to_assoc(2, $defaultURI);
 
         $needRedirect = FALSE;
 
@@ -451,7 +451,7 @@ class Smaqc extends BaseController
         // redirect if default values are to be used
         if($needRedirect)
         {
-            return redirect()->to(site_url('smaqc/qcart/' . $this->uri->assoc_to_uri($URI_array)));
+            return redirect()->to(site_url('smaqc/qcart/' . $this->assoc_to_uri($URI_array)));
         }
 
         // Note that metricplot.js is looking for a title of "QC-ART" to select the correct plot format for this data
@@ -538,6 +538,63 @@ class Smaqc extends BaseController
         echo view('topMenuView', $data);
         echo view('invaliditemView', $data);
         echo view('footView.php', $data);
+    }
+
+    private function uri_to_assoc(int $skip = 3, array $defaultKeys = array()) : array
+    {
+        $segments = array_slice($this->request->uri->getSegments(), $skip);
+        $itemCount = max(count($segments), count($defaultKeys));
+        $values = array();
+        for ($i = 0; $i < count($segments); $i += 2)
+        {
+            $key = "";
+            $value = "";
+            if (array_key_exists($i, $segments))
+            {
+                $key = $segments[$i];
+            }
+            else if (array_key_exists($i, $defaultKeys))
+            {
+                $values[$defaultKeys[$i]] = false;
+            }
+
+            if (array_key_exists($i + 1, $segments))
+            {
+                $values[$key] = $segments[$i + 1];
+            }
+            else
+            {
+                $values[$key] = null;
+            }
+        }
+
+        foreach ($defaultKeys as $key)
+        {
+            if (!array_key_exists($key, $values))
+            {
+                $values[$key] = false;
+            }
+        }
+
+        return $values;
+    }
+
+    private function assoc_to_uri(array $items) : string
+    {
+        $uri = "";
+        foreach ($items as $key => $value)
+        {
+            if (mb_strlen($uri) == 0)
+            {
+                $uri = $key . "/" . $value;
+            }
+            else
+            {
+                $uri .= "/" . $key . "/" . $value;
+            }
+        }
+
+        return $uri;
     }
 }
 ?>
