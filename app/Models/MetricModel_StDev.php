@@ -1,4 +1,8 @@
 <?php
+namespace App\Models;
+
+use CodeIgniter\Model;
+
 /**
  * MetricModel.php
  *
@@ -21,7 +25,7 @@
  * @package SMAQC
  * @subpackage models
  */
-class MetricModel extends CI_Model
+class MetricModel extends Model
 {
     /**
      * The name of the instrument.

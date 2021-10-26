@@ -1,4 +1,8 @@
 <?php
+namespace App\Models;
+
+use CodeIgniter\Model;
+
 /**
  * qcartmodel.php
  *
@@ -6,7 +10,7 @@
  *
  */
 
-class QCArtModel extends CI_Model
+class QCArtModel extends Model
 {
     /**
      * The name of the instrument.

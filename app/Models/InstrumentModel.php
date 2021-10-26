@@ -1,4 +1,8 @@
 <?php
+namespace App\Models;
+
+use CodeIgniter\Model;
+
 /**
  * InstrumentModel.php
  *
@@ -21,7 +25,7 @@
  * @package SMAQC
  * @subpackage models
  */
-class InstrumentModel extends CI_Model
+class InstrumentModel extends Model
 {
     /**
      * The name of the instrument.

@@ -1,5 +1,7 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+namespace App\Controllers;
+
+use App\Controllers;
 
 /**
  * Smaqc.php
@@ -26,19 +28,35 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  * @subpackage controllers
  */
 
-class Smaqc extends CI_Controller
+class Smaqc extends BaseController
 {
+    /**
+     * An array of helpers to be loaded automatically upon
+     * class instantiation. These helpers will be available
+     * to all other controllers that extend BaseController.
+     *
+     * @var array
+     */
+    protected $helpers = ['url'];
+
     var $defaultstartdate;
     var $defaultenddate;
     var $DEFAULTWINDOWSIZE = 45;
     var $DEFAULTUNIT = "days";
 
-    function __construct()
+    /**
+     * Constructor.
+     */
+    public function initController(\CodeIgniter\HTTP\RequestInterface $request, \CodeIgniter\HTTP\ResponseInterface $response, \Psr\Log\LoggerInterface $logger)
     {
-        // Call the parent constructor
-        parent::__construct();
+        // Do Not Edit This Line
+        parent::initController($request, $response, $logger);
 
-        $this->load->helper('url');
+        //--------------------------------------------------------------------
+        // Preload any models, libraries, etc, here.
+        //--------------------------------------------------------------------
+        // E.g.:
+        // $this->session = \Config\Services::session();
 
         $this->defaultstartdate = date("m-d-Y", strtotime("-4 months"));
         $this->defaultenddate   = date("m-d-Y", time());
