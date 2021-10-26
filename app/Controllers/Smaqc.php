@@ -2,7 +2,7 @@
 defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
- * smaqc.php
+ * Smaqc.php
  *
  * File containing the default CodeIgniter controller for SMAQC.
  *
@@ -201,9 +201,9 @@ class Smaqc extends CI_Controller
 
         $data['windowsize'] = (int)$URI_array["window"];
 
-        $this->load->model('Instrumentmodel','',TRUE);
+        $this->load->model('InstrumentModel','',TRUE);
 
-        $error = $this->Instrumentmodel->initialize(
+        $error = $this->InstrumentModel->init(
             $URI_array["instrument"],
             $data['unit'],
             $data['windowsize']
@@ -221,14 +221,14 @@ class Smaqc extends CI_Controller
             redirect(site_url(join('/', $redirecturlparts)));
         }
 
-        $data['metricnames']         = $this->Instrumentmodel->metricnames;
-        $data['metricDescriptions']  = $this->Instrumentmodel->metricDescriptions;
-        $data['metricCategories']    = $this->Instrumentmodel->metricCategories;
-        $data['metricSources']       = $this->Instrumentmodel->metricSources;
-        $data['latestmetrics']       = $this->Instrumentmodel->latestmetrics;
-        $data['averagedmetrics']     = $this->Instrumentmodel->averagedmetrics;
-        $data['stddevmetrics']       = $this->Instrumentmodel->stddevmetrics;
-        $data['definition']          = $this->Instrumentmodel->definition;
+        $data['metricnames']         = $this->InstrumentModel->metricnames;
+        $data['metricDescriptions']  = $this->InstrumentModel->metricDescriptions;
+        $data['metricCategories']    = $this->InstrumentModel->metricCategories;
+        $data['metricSources']       = $this->InstrumentModel->metricSources;
+        $data['latestmetrics']       = $this->InstrumentModel->latestmetrics;
+        $data['averagedmetrics']     = $this->InstrumentModel->averagedmetrics;
+        $data['stddevmetrics']       = $this->InstrumentModel->stddevmetrics;
+        $data['definition']          = $this->InstrumentModel->definition;
 
         $data['includegraph'] = FALSE;
 
@@ -340,11 +340,11 @@ class Smaqc extends CI_Controller
 
         $data['windowsize'] = (int)$URI_array["window"];
 
-        $this->load->model('Metricmodel', '', TRUE);
+        $this->load->model('MetricModel', '', TRUE);
 
         // TODO: add support for excluded datasets
 
-        $error = $this->Metricmodel->initialize(
+        $error = $this->MetricModel->init(
             $URI_array["inst"],
             $URI_array["metric"],
             $data['startdate'],
@@ -365,15 +365,15 @@ class Smaqc extends CI_Controller
             redirect(site_url(join('/', $redirecturlparts)));
         }
 
-        $data['metrics']          = $this->Metricmodel->data;
-        $data['definition']       = $this->Metricmodel->definition;
-        $data['plotdata']         = $this->Metricmodel->plotdata;
-        $data['plotDataBad']      = $this->Metricmodel->plotDataBad;
-        $data['plotDataPoor']     = $this->Metricmodel->plotDataPoor;
-        $data['plotdata_average'] = $this->Metricmodel->plotdata_average;
-        $data['stddevupper']      = $this->Metricmodel->stddevupper;
-        $data['stddevlower']      = $this->Metricmodel->stddevlower;
-        $data['metric_units']     = $this->Metricmodel->metric_units;
+        $data['metrics']          = $this->MetricModel->data;
+        $data['definition']       = $this->MetricModel->definition;
+        $data['plotdata']         = $this->MetricModel->plotdata;
+        $data['plotDataBad']      = $this->MetricModel->plotDataBad;
+        $data['plotDataPoor']     = $this->MetricModel->plotDataPoor;
+        $data['plotdata_average'] = $this->MetricModel->plotdata_average;
+        $data['stddevupper']      = $this->MetricModel->stddevupper;
+        $data['stddevlower']      = $this->MetricModel->stddevlower;
+        $data['metric_units']     = $this->MetricModel->metric_units;
 
         $data['includegraph'] = TRUE;
 
@@ -450,7 +450,7 @@ class Smaqc extends CI_Controller
 
         // TODO: add support for excluded datasets
 
-        $error = $this->QCArtModel->initialize(
+        $error = $this->QCArtModel->init(
             $URI_array["inst"],
             'QCART',
             $data['startdate'],

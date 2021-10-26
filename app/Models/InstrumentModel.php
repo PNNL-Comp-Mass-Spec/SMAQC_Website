@@ -1,6 +1,6 @@
 <?php
 /**
- * instrumentmodel.php
+ * InstrumentModel.php
  *
  * File containing a CodeIgniter model for an instrument.
  *
@@ -21,7 +21,7 @@
  * @package SMAQC
  * @subpackage models
  */
-class Instrumentmodel extends CI_Model
+class InstrumentModel extends CI_Model
 {
     /**
      * The name of the instrument.
@@ -114,12 +114,12 @@ class Instrumentmodel extends CI_Model
     /**
      * Constructor
      *
-     * The contructor for Instrumentmodel simply calls the constructor for the
+     * The contructor for InstrumentModel simply calls the constructor for the
      * base class (CI_Model). All initialization of the class must be done
      * using the initialize function. The reasoning for this has to do with the
      * way CI uses loads models (they cannot take arguments).
      *
-     * @return Instrumentmodel
+     * @return InstrumentModel
      */
     function __construct()
     {
@@ -188,7 +188,7 @@ class Instrumentmodel extends CI_Model
      * an error, FALSE otherwise.
      * Error Array Format: ['type' => string, 'value' => string]
      */
-    public function initialize($instrument, $unit, $window)
+    public function init($instrument, $unit, $window)
     {
         $this->instrument = $instrument;
 

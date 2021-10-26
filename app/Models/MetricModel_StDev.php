@@ -1,6 +1,6 @@
 <?php
 /**
- * metricmodel.php
+ * MetricModel.php
  *
  * File containing a CodeIgniter model for a SMAQC metric.
  *
@@ -21,7 +21,7 @@
  * @package SMAQC
  * @subpackage models
  */
-class Metricmodel extends CI_Model
+class MetricModel extends CI_Model
 {
     /**
      * The name of the instrument.
@@ -144,12 +144,12 @@ class Metricmodel extends CI_Model
     /**
      * Constructor
      *
-     * The contructor for Metricmodel simply calls the constructor for the base
+     * The contructor for MetricModel simply calls the constructor for the base
      * class (CI_Model). All initialization of the class must be done using the
      * initialize function. The reasoning for this has to do with the way CI
      * loads models in the controller (they cannot take arguments).
      *
-     * @return Metricmodel
+     * @return MetricModel
      */
     function __construct()
     {
@@ -297,7 +297,7 @@ class Metricmodel extends CI_Model
      * an error, FALSE otherwise.
      * Error Array Format: ['type' => string, 'value' => string]
      */
-    public function initialize($instrument, $metric, $start, $end, $windowsize = 20, $datasetfilter = '')
+    public function init($instrument, $metric, $start, $end, $windowsize = 20, $datasetfilter = '')
     {
         // change the string format of the dates, as strtotime doesn't work
         // right with -'s

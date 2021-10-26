@@ -245,7 +245,7 @@ class QCArtModel extends CI_Model
      * an error, FALSE otherwise.
      * Error Array Format: ['type' => string, 'value' => string]
      */
-    public function initialize($instrument, $metric, $start, $end, $datasetfilter = '')
+    public function init($instrument, $metric, $start, $end, $datasetfilter = '')
     {
         // change the string format of the dates, since strtotime doesn't work
         // right with -'s
