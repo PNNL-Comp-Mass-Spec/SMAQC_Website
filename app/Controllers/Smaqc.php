@@ -65,10 +65,10 @@ class Smaqc extends BaseController
         $this->instrumentlist   = array();
         $this->datasetfilter    = '';
 
-        $this->load->database();
+        $this->db = \Config\Database::connect();
 
         // get a full list of the metric names
-        foreach($this->db->list_fields('V_Dataset_QC_Metrics_Export') as $field)
+        foreach($this->db->getFieldNames('V_Dataset_QC_Metrics_Export') as $field)
         {
             // exclude fields that aren't actually metrics
             $ignoredfields = array(
@@ -94,9 +94,10 @@ class Smaqc extends BaseController
         }
 
         // Get the Short Description for each metric
-        $this->db->select('Metric, Short_Description');
-        $this->db->order_by("Metric", "asc");
-        $result = $this->db->get('V_Dataset_QC_Metric_Definitions')->result();
+        $builder = $this->db->table('V_Dataset_QC_Metric_Definitions');
+        $builder->select('Metric, Short_Description');
+        $builder->orderBy("Metric", "asc");
+        $result = $builder->get()->getResult();
 
         foreach($result as $row)
         {
@@ -104,10 +105,10 @@ class Smaqc extends BaseController
         }
 
         // get a full list of the instruments
-        $this->db->select('Instrument');
-        $this->db->distinct();
-        $this->db->order_by("Instrument", "asc");
-        $result = $this->db->get('V_Dataset_QC_Metric_Instruments')->result();
+        $builder = $this->db->table('V_Dataset_QC_Metric_Instruments');
+        $builder->distinct();
+        $builder->orderBy("Instrument", "asc");
+        $result = $builder->get()->getResult();
 
         foreach($result as $row)
         {

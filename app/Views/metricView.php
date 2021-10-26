@@ -187,7 +187,7 @@
       <th>Rating</th>
       <th>Dataset</th>
     </tr>
-<?php foreach($metrics->result() as $row): ?>
+<?php foreach($metrics->getResult() as $row): ?>
     <tr>
       <td align="center"><?=$row->Dataset_ID?></td>
       <td><?=preg_replace('/:[0-9][0-9][0-9]/', '', $row->Acq_Time_Start)?></td>

@@ -274,35 +274,37 @@ class QCArtModel extends Model
         $this->datasetfilter  = $datasetfilter;
 
         // check to see that this is a valid instrument/metric
-        $this->db->where('Instrument', $instrument);
+        $builder = $this->db->table('V_Dataset_QC_Metrics_Export');
+        $builder->where('Instrument', $instrument);
 
-        $query = $this->db->get('V_Dataset_QC_Metrics_Export', 1);
+        $query = $builder->get(1);
 
-        if($query->num_rows() < 1)
+        if($query->getNumRows() < 1)
         {
             return array("type" => "instrument", "value" => $instrument);
         }
 
-        if(!$this->db->field_exists($metric, 'V_Dataset_QC_Metrics_Export'))
+        if(!$this->db->fieldExists($metric, 'V_Dataset_QC_Metrics_Export'))
         {
             return array("type" => "metric", "value" => $metric);
         }
 
         // Lookup the Description, purpose, units, and Source for this metric
-        $this->db->select('Description, Purpose, Units, Source');
-        $this->db->where('Metric', $metric);
-        $query = $this->db->get('V_Dataset_QC_Metric_Definitions', 1);
+        $builder = $this->db->table('V_Dataset_QC_Metric_Definitions');
+        $builder->select('Description, Purpose, Units, Source');
+        $builder->where('Metric', $metric);
+        $query = $builder->get(1);
 
-        if($query->num_rows() < 1)
+        if($query->getNumRows() < 1)
         {
             $this->definition = $metric . " (definition not found in DB)";
         }
         else
         {
-            $row = $query->row();
+            $row = $query->getRow();
             $this->definition = $metric . " (" . $row->Source . "): " . $row->Description . " <br>" . $row->Purpose;
 
-            $this->metric_units =$row->Units;
+            $this->metric_units = $row->Units;
         }
 
         // build the query to get all the metric points in the specified range
@@ -320,22 +322,22 @@ class QCArtModel extends Model
                          'QCDM'
                         );
 
-        $this->db->select(join(',', $columns));
-        $this->db->from('V_Dataset_QC_Metrics_Export');
-        $this->db->where('Instrument =', $this->instrument);
-        $this->db->where('Acq_Time_Start >=', $this->querystartdate);
-        $this->db->where('Acq_Time_Start <=', $this->queryenddate . 'T23:59:59.999');
+        $builder = $this->db->table('V_Dataset_QC_Metrics_Export');
+        $builder->select(join(',', $columns));
+        $builder->where('Instrument =', $this->instrument);
+        $builder->where('Acq_Time_Start >=', $this->querystartdate);
+        $builder->where('Acq_Time_Start <=', $this->queryenddate . 'T23:59:59.999');
 
         if (strlen($this->datasetfilter) > 0)
         {
-            $this->db->like('Dataset', $this->datasetfilter);
+            $builder->like('Dataset', $this->datasetfilter);
         }
 
-        $this->db->order_by('Acq_Time_Start', 'desc');
+        $builder->orderBy('Acq_Time_Start', 'desc');
 
         // run the query, we may not actually need to store this in the model,
         // but for now we will
-        $this->data = $this->db->get();
+        $this->data = $builder->get();
 
         // Initialize the data arrays so that we can append data
         $this->metricdata = array();
@@ -357,7 +359,7 @@ class QCArtModel extends Model
         $fractionSetList = array();
 
         // get just the data we want for plotting
-        foreach($this->data->result() as $row)
+        foreach($this->data->getResult() as $row)
         {
             // Skip the value if it's null
             // We unforunately cannot do this during the query, since codeigniter returns no rows
