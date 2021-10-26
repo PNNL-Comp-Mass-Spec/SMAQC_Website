@@ -220,7 +220,7 @@ class Smaqc extends BaseController
 
         $data['windowsize'] = (int)$URI_array["window"];
 
-        $this->load->model('InstrumentModel','',TRUE);
+        $this->InstrumentModel = new \App\Models\InstrumentModel();
 
         $error = $this->InstrumentModel->init(
             $URI_array["instrument"],
@@ -359,7 +359,7 @@ class Smaqc extends BaseController
 
         $data['windowsize'] = (int)$URI_array["window"];
 
-        $this->load->model('MetricModel', '', TRUE);
+        $this->MetricModel = new \App\Models\MetricModel();
 
         // TODO: add support for excluded datasets
 
@@ -465,7 +465,7 @@ class Smaqc extends BaseController
         $data['startdate'] = date("m-d-Y", strtotime(str_replace('-', '/', $URI_array["from"])));
         $data['enddate']   = date("m-d-Y", strtotime(str_replace('-', '/', $URI_array["to"])));
 
-        $this->load->model('QCArtModel', '', TRUE);
+        $this->QCArtModel = new \App\Models\QCArtModel();
 
         // TODO: add support for excluded datasets
 
