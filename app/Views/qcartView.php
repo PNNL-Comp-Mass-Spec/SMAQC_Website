@@ -29,18 +29,18 @@
         return number_format($metric, 0);
     }
 
-    function link_to_instrument_dash($instrument, $filterDS = FALSE, $ignoreDS = FALSE)
+    function link_to_instrument_dash($instrument, $filterDS = false, $ignoreDS = false)
     {
 
         $URI_elements = array('smaqc', 'instrument', $instrument);
 
-        if($filterDS != FALSE)
+        if($filterDS != false)
         {
             $URI_elements[] = "filterDS";
             $URI_elements[] = $filterDS;
         }
 
-        if($ignoreDS != FALSE)
+        if($ignoreDS != false)
         {
             $URI_elements[] = "ignoreDS";
             $URI_elements[] = $ignoreDS;
@@ -49,7 +49,7 @@
         return site_url(join("/", $URI_elements));
     }
 
-    function link_to_metric_dash($metricname, $instrument, $filterDS = FALSE, $ignoreDS = FALSE)
+    function link_to_metric_dash($metricname, $instrument, $filterDS = false, $ignoreDS = false)
     {
         // Required URL parameters:
         // metric: the name of the metric
@@ -61,13 +61,13 @@
 
         $URI_elements = array('smaqc', 'qcart', 'inst', $instrument);
 
-        if($filterDS != FALSE)
+        if($filterDS != false)
         {
             $URI_elements[] = "filterDS";
             $URI_elements[] = $filterDS;
         }
 
-        if($ignoreDS != FALSE)
+        if($ignoreDS != false)
         {
             $URI_elements[] = "ignoreDS";
             $URI_elements[] = $ignoreDS;

@@ -50,7 +50,7 @@
         return $result;
     }
 
-    function link_to_metric_dash($metricname, $instrument, $windowsize = FALSE, $unit = FALSE, $filterDS = FALSE, $ignoreDS = FALSE)
+    function link_to_metric_dash($metricname, $instrument, $windowsize = false, $unit = false, $filterDS = false, $ignoreDS = false)
     {
         // Required URL parameters:
         // metric: the name of the metric
@@ -62,25 +62,25 @@
 
         $URI_elements = array('smaqc', 'metric', $metricname, 'inst', $instrument);
 
-        if($windowsize != FALSE)
+        if($windowsize != false)
         {
             $URI_elements[] = "window";
             $URI_elements[] = $windowsize;
         }
 
-        if($unit != FALSE)
+        if($unit != false)
         {
             $URI_elements[] = "unit";
             $URI_elements[] = $unit;
         }
 
-        if($filterDS != FALSE)
+        if($filterDS != false)
         {
             $URI_elements[] = "filterDS";
             $URI_elements[] = $filterDS;
         }
 
-        if($ignoreDS != FALSE)
+        if($ignoreDS != false)
         {
             $URI_elements[] = "ignoreDS";
             $URI_elements[] = $ignoreDS;

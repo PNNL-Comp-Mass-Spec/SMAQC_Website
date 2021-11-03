@@ -21,7 +21,7 @@ class App extends BaseConfig
         // Call the parent constructor
         parent::__construct();
     }
-    
+
     /**
      * --------------------------------------------------------------------------
      * Base Site URL

@@ -126,7 +126,7 @@ class Smaqc extends BaseController
         $data['instrumentlist'] = $this->instrumentlist;
         $data['windowsize']     = $this->DEFAULTWINDOWSIZE;
         $data['datasetfilter']  = $this->datasetfilter;
-        $data['includegraph']   = FALSE;
+        $data['includegraph']   = false;
 
         echo view('headView.php', $data);
         echo view('leftMenuView', $data);
@@ -150,9 +150,9 @@ class Smaqc extends BaseController
         // filterDS: used to select datasets based on a SQL 'LIKE' match
         // ignoreDS: used to exclude datasets based on a SQL 'LIKE' match
 
-        $needRedirect = FALSE;  // use this variable to redirect to new URL if default parameters are used
+        $needRedirect = false;  // use this variable to redirect to new URL if default parameters are used
 
-        // use an array of defaults for the uri-to-assoc() call, if not supplied in the URI, the value will be set to FALSE
+        // use an array of defaults for the uri-to-assoc() call, if not supplied in the URI, the value will be set to false
         $defaultURI = array('instrument', 'window', 'unit');
 
         $URI_array = $this->uri_to_assoc(1, $defaultURI);
@@ -161,7 +161,7 @@ class Smaqc extends BaseController
         $excludedDatasets = array();
 
         // make sure user supplied an instrument name, redirect to home page if not
-        if($URI_array["instrument"] === FALSE)
+        if($URI_array["instrument"] === false)
         {
             return redirect()->to(site_url());
         }
@@ -169,16 +169,16 @@ class Smaqc extends BaseController
         //TODO: check for valid instrument name (is it in the DB?)
 
         // set default window size if need be
-        if($URI_array["window"] === FALSE)
+        if($URI_array["window"] === false)
         {
-            $needRedirect = TRUE;
+            $needRedirect = true;
             $URI_array["window"] = $this->DEFAULTWINDOWSIZE;
         }
 
         // set default unit if need be
-        if($URI_array["unit"] === FALSE)
+        if($URI_array["unit"] === false)
         {
-            $needRedirect = TRUE;
+            $needRedirect = true;
             $URI_array["unit"] = "datasets";
         }
 
@@ -249,7 +249,7 @@ class Smaqc extends BaseController
         $data['stddevmetrics']       = $this->InstrumentModel->stddevmetrics;
         $data['definition']          = $this->InstrumentModel->definition;
 
-        $data['includegraph'] = FALSE;
+        $data['includegraph'] = false;
 
         // load the views
         echo view('headView', $data);
@@ -276,12 +276,12 @@ class Smaqc extends BaseController
         // filterDS: used to select datasets based on a SQL 'LIKE' match
         // ignoreDS: used to exclude datasets based on a SQL 'LIKE' match
 
-        // use an array of defaults for the uri-to-assoc() call, if not supplied in the URI, the value will be set to FALSE
+        // use an array of defaults for the uri-to-assoc() call, if not supplied in the URI, the value will be set to false
         $defaultURI = array('metric', 'inst', 'from', 'to', 'window', 'unit');
 
         $URI_array = $this->uri_to_assoc(1, $defaultURI);
 
-        $needRedirect = FALSE;
+        $needRedirect = false;
 
         $datasetFilter = "";
         $excludedDatasets = "";
@@ -305,7 +305,7 @@ class Smaqc extends BaseController
         // set default from and to dates if need be
         if(empty($URI_array["from"]) || empty($URI_array["to"]))
         {
-            $needRedirect = TRUE;
+            $needRedirect = true;
             $URI_array["from"] = $this->defaultstartdate;
             $URI_array["to"]   = $this->defaultenddate;
         }
@@ -313,14 +313,14 @@ class Smaqc extends BaseController
         // set default window size if need be
         if(empty($URI_array["window"]))
         {
-            $needRedirect = TRUE;
+            $needRedirect = true;
             $URI_array["window"] = $this->DEFAULTWINDOWSIZE;
         }
 
         // set default unit if need be
         if(empty($URI_array["unit"]))
         {
-            $needRedirect = TRUE;
+            $needRedirect = true;
             $URI_array["unit"] = "datasets";
         }
 
@@ -395,7 +395,7 @@ class Smaqc extends BaseController
         $data['stddevlower']      = $this->MetricModel->stddevlower;
         $data['metric_units']     = $this->MetricModel->metric_units;
 
-        $data['includegraph'] = TRUE;
+        $data['includegraph'] = true;
 
         // load the views
         echo view('headView.php', $data);
@@ -419,12 +419,12 @@ class Smaqc extends BaseController
         // filterDS: used to select datasets based on a SQL 'LIKE' match
         // ignoreDS: used to exclude datasets based on a SQL 'LIKE' match
 
-        // use an array of defaults for the uri-to-assoc() call, if not supplied in the URI, the value will be set to FALSE
+        // use an array of defaults for the uri-to-assoc() call, if not supplied in the URI, the value will be set to false
         $defaultURI = array('inst', 'from', 'to');
 
         $URI_array = $this->uri_to_assoc(2, $defaultURI);
 
-        $needRedirect = FALSE;
+        $needRedirect = false;
 
         $datasetFilter = "";
         $excludedDatasets = "";
@@ -438,7 +438,7 @@ class Smaqc extends BaseController
         // set default from and to dates if need be
         if(empty($URI_array["from"]) || empty($URI_array["to"]))
         {
-            $needRedirect = TRUE;
+            $needRedirect = true;
             $URI_array["from"] = $this->defaultstartdate;
             $URI_array["to"]   = $this->defaultenddate;
         }
@@ -500,7 +500,7 @@ class Smaqc extends BaseController
         $data['stddevlower']      = $this->QCArtModel->stddevlower;
         $data['metric_units']     = $this->QCArtModel->metric_units;
 
-        $data['includegraph'] = TRUE;
+        $data['includegraph'] = true;
 
         // load the views
         echo view('headViewQCArt.php', $data);
@@ -513,7 +513,7 @@ class Smaqc extends BaseController
         $data['startdate']  = $this->defaultstartdate;
         $data['enddate']    = $this->defaultenddate;
 
-        $data['includegraph'] = FALSE;
+        $data['includegraph'] = false;
 
         $data['metriclist']     = $this->metriclist;
         $data['metricShortDescription']     = $this->metricShortDescription;
