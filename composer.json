@@ -1,5 +1,5 @@
 {
-    "name": "SMAQC_Website",
+    "name": "pnnl-comp-mass-spec/smaqc_website",
     "type": "project",
     "description": "PNNL Omics SMAQC Site",
     "homepage": "https://prismsupport.pnl.gov/smaqc/",
@@ -15,6 +15,14 @@
         },
         "exclude-from-classmap": [
             "**/Database/Migrations/**"
+        ]
+    },
+    "scripts": {
+        "post-install-cmd": [
+            "@composer dump-autoload"
+        ],
+        "post-update-cmd": [
+            "@composer dump-autoload"
         ]
     }
 }
