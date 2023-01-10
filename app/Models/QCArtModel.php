@@ -274,7 +274,7 @@ class QCArtModel extends Model
 
         // check to see that this is a valid instrument/metric
         $builder = $this->db->table('V_Dataset_QC_Metrics_Export');
-        $builder->where('Instrument', $instrument);
+        $builder->where('instrument', $instrument);
 
         $query = $builder->get(1);
 
@@ -290,8 +290,8 @@ class QCArtModel extends Model
 
         // Lookup the Description, purpose, units, and Source for this metric
         $builder = $this->db->table('V_Dataset_QC_Metric_Definitions');
-        $builder->select('Description, Purpose, Units, Source');
-        $builder->where('Metric', $metric);
+        $builder->select('description, purpose, units, source');
+        $builder->where('metric', $metric);
         $query = $builder->get(1);
 
         if($query->getNumRows() < 1)
@@ -301,38 +301,38 @@ class QCArtModel extends Model
         else
         {
             $row = $query->getRow();
-            $this->definition = $metric . " (" . $row->Source . "): " . $row->Description . " <br>" . $row->Purpose;
+            $this->definition = $metric . " (" . $row->source . "): " . $row->description . " <br>" . $row->purpose;
 
-            $this->metric_units = $row->Units;
+            $this->metric_units = $row->units;
         }
 
         // build the query to get all the metric points in the specified range
         $columns = array(
-                         'Acq_Time_Start',
-                         'Dataset_ID',
-                         'Dataset',
-                         'Quameter_Job',
-                         'SMAQC_Job',
-                         'Quameter_Last_Affected',
-                         'Smaqc_Last_Affected',
-                         'Dataset_Rating',
-                         'Dataset_Rating_ID',
-                          $metric,
-                         'QCDM'
+                         'acq_time_start',
+                         'dataset_id',
+                         'dataset',
+                         'quameter_job',
+                         'smaqc_job',
+                         'quameter_last_affected',
+                         'smaqc_last_affected',
+                         'dataset_rating',
+                         'dataset_rating_id',
+                         $metric,
+                         'qcdm'
                         );
 
         $builder = $this->db->table('V_Dataset_QC_Metrics_Export');
         $builder->select(join(',', $columns));
-        $builder->where('Instrument =', $this->instrument);
-        $builder->where('Acq_Time_Start >=', $this->querystartdate);
-        $builder->where('Acq_Time_Start <=', $this->queryenddate . 'T23:59:59.999');
+        $builder->where('instrument =', $this->instrument);
+        $builder->where('acq_time_start >=', $this->querystartdate);
+        $builder->where('acq_time_start <=', $this->queryenddate . 'T23:59:59.999');
 
         if (strlen($this->datasetfilter) > 0)
         {
-            $builder->like('Dataset', $this->datasetfilter);
+            $builder->like('dataset', $this->datasetfilter);
         }
 
-        $builder->orderBy('Acq_Time_Start', 'desc');
+        $builder->orderBy('acq_time_start', 'desc');
 
         // run the query, we may not actually need to store this in the model,
         // but for now we will
@@ -372,18 +372,18 @@ class QCArtModel extends Model
 
             // cutoff fractional seconds, leaving only the date data we want
             $pattern = '/:[0-9][0-9][0-9]/';
-            $date = preg_replace($pattern, '', $row->Acq_Time_Start);
+            $date = preg_replace($pattern, '', $row->acq_time_start);
 
             $date = strtotime($date);
 
             $datasetIsBad = 0;
 
-            if (!is_null($row->QCART) && $row->QCART >= $qcArtRedThreshold)
+            if (!is_null($row->qcart) && $row->qcart >= $qcArtRedThreshold)
             {
                 $datasetIsBad = 1;
             }
 
-            if ($row->Dataset_Rating_ID >= -5 && $row->Dataset_Rating_ID <= 1)
+            if ($row->dataset_rating_id >= -5 && $row->dataset_rating_id <= 1)
             {
                 $datasetIsBad = 2;
             }
@@ -393,7 +393,7 @@ class QCArtModel extends Model
 
             $fractionSetForDataset = 0;
             $patternSetNumber = '/_SET_([0-9]+)_/';
-            if (preg_match($patternSetNumber, $row->Dataset, $matches)) {
+            if (preg_match($patternSetNumber, $row->dataset, $matches)) {
                 $fractionSetForDataset = (int)$matches[1];
             }
 
@@ -404,7 +404,7 @@ class QCArtModel extends Model
             if ($datasetIsBad == 0 || $datasetIsBad == 1)
             {
                 // add the value to the metricdata array
-                $this->metricdata[] =      array($date, $row->$metric, $fractionSetForDataset);
+                $this->metricdata[] = array($date, $row->$metric, $fractionSetForDataset);
             }
 
             // add the value to the plotdata array if it is within the user-specified plotting range
@@ -416,19 +416,19 @@ class QCArtModel extends Model
                     {
                         // Dataset with QC-ART score over the threshold
                         // javascript likes milliseconds, so multiply $date by 1000 when appending to the array
-                        $this->plotDataPoor[] = array($date * 1000, $row->$metric, $row->Dataset);
+                        $this->plotDataPoor[] = array($date * 1000, $row->$metric, $row->dataset);
                     }
                     if($datasetIsBad == 2)
                     {
                         // Not Released dataset
                         // javascript likes milliseconds, so multiply $date by 1000 when appending to the array
-                        $this->plotDataBad[] = array($date * 1000, $row->$metric, $row->Dataset);
+                        $this->plotDataBad[] = array($date * 1000, $row->$metric, $row->dataset);
                     }
                 }
                 else
                 {
                     // javascript likes milliseconds, so multiply $date by 1000 when appending to the array
-                    $this->plotdata[] = array($date * 1000, $row->$metric, $row->Dataset);
+                    $this->plotdata[] = array($date * 1000, $row->$metric, $row->dataset);
                 }
 
                 // Append to $fractionSetList

@@ -189,11 +189,11 @@
     </tr>
 <?php foreach($metrics->getResult() as $row): ?>
     <tr>
-      <td align="center"><?=$row->Dataset_ID?></td>
-      <td><?=preg_replace('/:[0-9][0-9][0-9]/', '', $row->Acq_Time_Start)?></td>
+      <td align="center"><?=$row->dataset_id?></td>
+      <td><?=preg_replace('/:[0-9][0-9][0-9]/', '', $row->acq_time_start)?></td>
       <td align="center"><?=format_metric($row->$metric)?></td>
-      <td><?=$row->Dataset_Rating?></td>
-      <td><a href="http://dms2.pnl.gov/dataset/show/<?=$row->Dataset?>" target="_Dataset"><?=$row->Dataset?></a></td>
+      <td><?=$row->dataset_rating?></td>
+      <td><a href="http://dms2.pnl.gov/dataset/show/<?=$row->dataset?>" target="_Dataset"><?=$row->dataset?></a></td>
     </tr>
 <?php endforeach; ?>
   </table>

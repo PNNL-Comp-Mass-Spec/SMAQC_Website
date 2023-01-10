@@ -210,8 +210,8 @@ class InstrumentModel extends Model
 
         // Obtain the metric descriptions
         $builder = $this->db->table('V_Dataset_QC_Metric_Definitions');
-        $builder->select('Metric, Source, Category, Description, Short_Description');
-        $builder->orderBy('SortKey');
+        $builder->select('metric, source, category, description, short_description');
+        $builder->orderBy('sort_key');
         $query = $builder->get();
 
         $this->metricDescriptions = array();
@@ -221,9 +221,9 @@ class InstrumentModel extends Model
         // Populate the metric arrays
         foreach($query->getResult() as $row)
         {
-            $this->metricDescriptions[$row->Metric] = $row->Description;
-            $this->metricCategories[$row->Metric] = $row->Category;
-            $this->metricSources[$row->Metric] = $row->Source;
+            $this->metricDescriptions[$row->metric] = $row->description;
+            $this->metricCategories[$row->metric] = $row->category;
+            $this->metricSources[$row->metric] = $row->source;
         }
 
         return false;
@@ -231,8 +231,8 @@ class InstrumentModel extends Model
         // attempt to get the latest data (retrieve just 1 row from V_Dataset_QC_Metrics_Export)
         $builder = $this->db->table('V_Dataset_QC_Metrics_Export');
         $builder->select();
-        $builder->where('Instrument', $instrument);
-        $builder->orderBy('Acq_Time_Start', 'desc');
+        $builder->where('instrument', $instrument);
+        $builder->orderBy('acq_time_start', 'desc');
         $this->latestmetrics = $builder->get(1);
 
         // Check that the instrument even exists (did we get a result?)

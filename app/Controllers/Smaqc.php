@@ -72,19 +72,19 @@ class Smaqc extends BaseController
         {
             // exclude fields that aren't actually metrics
             $ignoredfields = array(
-                                    "Instrument Group",
-                                    "Instrument",
-                                    "Acq_Time_Start",
-                                    "Dataset_ID",
-                                    "Dataset",
-                                    "Dataset_Rating",
-                                    "Dataset_Rating_ID",
-                                    "Quameter_Job",
-                                    "Quameter_Last_Affected",
-                                    "SMAQC_Job",
-                                    "PSM_Source_Job",
-                                    "Smaqc_Last_Affected",
-                                    "QCDM_Last_Affected"
+                                    "instrument_group",
+                                    "instrument",
+                                    "acq_time_start",
+                                    "dataset_id",
+                                    "dataset",
+                                    "dataset_rating",
+                                    "dataset_rating_id",
+                                    "quameter_job",
+                                    "quameter_last_affected",
+                                    "smaqc_job",
+                                    "psm_source_job",
+                                    "smaqc_last_affected",
+                                    "qcdm_last_affected"
                                   );
 
             if(!in_array($field, $ignoredfields))
@@ -95,24 +95,25 @@ class Smaqc extends BaseController
 
         // Get the Short Description for each metric
         $builder = $this->db->table('V_Dataset_QC_Metric_Definitions');
-        $builder->select('Metric, Short_Description');
-        $builder->orderBy("Metric", "asc");
+        $builder->select('metric, short_description');
+        $builder->orderBy("metric", "asc");
         $result = $builder->get()->getResult();
 
         foreach($result as $row)
         {
-            $this->metricShortDescription[$row->Metric] = $row->Short_Description;
+            $this->metricShortDescription[$row->metric] = $row->short_description;
         }
 
         // get a full list of the instruments
         $builder = $this->db->table('V_Dataset_QC_Metric_Instruments');
+        $builder->select('instrument');
         $builder->distinct();
-        $builder->orderBy("Instrument", "asc");
+        $builder->orderBy("instrument", "asc");
         $result = $builder->get()->getResult();
 
         foreach($result as $row)
         {
-            $this->instrumentlist[] = $row->Instrument;
+            $this->instrumentlist[] = $row->instrument;
         }
     }
 
@@ -344,7 +345,7 @@ class Smaqc extends BaseController
         }
 
         $data['title'] = $URI_array["inst"] . ' - ' . $URI_array["metric"];
-        $data['metric']     = $URI_array["metric"];
+        $data['metric'] = $URI_array["metric"];
         $data['instrument'] = $URI_array["inst"];
         $data['datasetfilter'] = $datasetFilter;
         $data['filterDS'] = $datasetFilter;

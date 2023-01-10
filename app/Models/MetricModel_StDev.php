@@ -343,7 +343,7 @@ class MetricModel extends Model
 
         // check to see that this is a valid instrument/metric
         $builder = $this->db->table('V_Dataset_QC_Metrics_Export');
-        $builder->where('Instrument', $instrument);
+        $builder->where('instrument', $instrument);
 
         $query = $builder->get(1);
 
@@ -359,8 +359,8 @@ class MetricModel extends Model
 
         // Lookup the Description, purpose, units, and Source for this metric
         $builder = $this->db->table('V_Dataset_QC_Metric_Definitions');
-        $builder->select('Description, Purpose, Units, Source');
-        $builder->where('Metric', $metric);
+        $builder->select('description, purpose, units, source');
+        $builder->where('metric', $metric);
         $query = $builder->get(1);
 
         if($query->getNumRows() < 1)
@@ -369,66 +369,66 @@ class MetricModel extends Model
         }
         else
         {
-            if(strstr($metric,'QCDM') !== FALSE)
+            if(strstr($metric,'qcdm') !== FALSE)
             {
                 if(strstr($instrument,'Exact') !== FALSE)
                 {
                     $row = $query->getRow();
-                    $this->definition = $metric . " (" . $row->Source . "): " . $row->Description . "; " . $row->Purpose . "Metrics used: MS1_TIC_Q2, MS1_Density_Q1";
+                    $this->definition = $metric . " (" . $row->source . "): " . $row->description . "; " . $row->purpose . "Metrics used: MS1_TIC_Q2, MS1_Density_Q1";
                 }
                 if(strstr($instrument,'LTQ_2') !== FALSE || strstr($instrument,'LTQ_3') !== FALSE || strstr($instrument,'LTQ_4') !== FALSE || strstr($instrument,'LTQ_FB1') !== FALSE || strstr($instrument,'LTQ_ETD_1') !== FALSE)
                 {
                     $row = $query->getRow();
-                    $this->definition = $metric . " (" . $row->Source . "): " . $row->Description . "; " . $row->Purpose . "Metrics used: XIC_WideFrac, MS2_Density_Q1, P_2C";
+                    $this->definition = $metric . " (" . $row->source . "): " . $row->description . "; " . $row->purpose . "Metrics used: XIC_WideFrac, MS2_Density_Q1, P_2C";
                 }
                 if(strstr($instrument,'LTQ_Orb') !== FALSE || strstr($instrument,'Orbi_FB1') !== FALSE || strstr($instrument,'LTQ_FT1') !== FALSE)
                 {
                     $row = $query->getRow();
-                    $this->definition = $metric . " (" . $row->Source . "): " . $row->Description . "; " . $row->Purpose . "Metrics used: XIC_WideFrac, MS1_TIC_Change_Q2, MS1_Density_Q1, MS1_Density_Q2, DS_2A, P_2B, P_2A, DS_2B";
+                    $this->definition = $metric . " (" . $row->source . "): " . $row->description . "; " . $row->purpose . "Metrics used: XIC_WideFrac, MS1_TIC_Change_Q2, MS1_Density_Q1, MS1_Density_Q2, DS_2A, P_2B, P_2A, DS_2B";
                 }
                 if(strstr($instrument,'VOrbi') !== FALSE || strstr($instrument,'VPro') !== FALSE || strstr($instrument,'External_Orb') !== FALSE)
                 {
                     $row = $query->getRow();
-                    $this->definition = $metric . " (" . $row->Source . "): " . $row->Description . "; " . $row->Purpose . "Metrics used: XIC_WideFrac, MS2_Density_Q1, MS1_2B, P_2B, P_2A, DS_2B";
+                    $this->definition = $metric . " (" . $row->source . "): " . $row->description . "; " . $row->purpose . "Metrics used: XIC_WideFrac, MS2_Density_Q1, MS1_2B, P_2B, P_2A, DS_2B";
                 }
-                $this->metric_units =$row->Units;
+                $this->metric_units =$row->units;
             }
             else
             {
                 $row = $query->getRow();
-                $this->definition = $metric . " (" . $row->Source . "): " . $row->Description . "; " . $row->Purpose;
+                $this->definition = $metric . " (" . $row->source . "): " . $row->description . "; " . $row->purpose;
 
-                $this->metric_units =$row->Units;
+                $this->metric_units =$row->units;
             }
         }
 
         // build the query to get all the metric points in the specified range
         $columns = array(
-                         'Acq_Time_Start',
-                         'Dataset_ID',
-                         'Dataset',
-                         'Quameter_Job',
-                         'SMAQC_Job',
-                         'Quameter_Last_Affected',
-                         'Smaqc_Last_Affected',
-                         'Dataset_Rating',
-                         'Dataset_Rating_ID',
+                         'acq_time_start',
+                         'dataset_id',
+                         'dataset',
+                         'quameter_job',
+                         'smaqc_job',
+                         'quameter_last_affected',
+                         'smaqc_last_affected',
+                         'dataset_rating',
+                         'dataset_rating_id',
                          $metric,
-                         'QCDM'
+                         'qcdm'
                         );
 
         $builder = $this->db->table('V_Dataset_QC_Metrics_Export');
         $builder->select(join(',', $columns));
-        $builder->where('Instrument =', $this->instrument);
-        $builder->where('Acq_Time_Start >=', $this->querystartdate);
-        $builder->where('Acq_Time_Start <=', $this->queryenddate . 'T23:59:59.999');
+        $builder->where('instrument =', $this->instrument);
+        $builder->where('acq_time_start >=', $this->querystartdate);
+        $builder->where('acq_time_start <=', $this->queryenddate . 'T23:59:59.999');
 
         if (strlen($this->datasetfilter) > 0)
         {
-            $builder->like('Dataset', $this->datasetfilter);
+            $builder->like('dataset', $this->datasetfilter);
         }
 
-        $builder->orderBy('Acq_Time_Start', 'desc');
+        $builder->orderBy('acq_time_start', 'desc');
 
         // run the query, we may not actually need to store this in the model,
         // but for now we will
@@ -456,17 +456,18 @@ class MetricModel extends Model
 
             // cutoff fractional seconds, leaving only the date data we want
             $pattern = '/:[0-9][0-9][0-9]/';
-            $date = preg_replace($pattern, '', $row->Acq_Time_Start);
+            $date = preg_replace($pattern, '', $row->acq_time_start);
 
             $date = strtotime($date);
 
             $datasetIsBad = 0;
 
-            if ($row->QCDM > $limit)
+            if ($row->qcdm > $limit)
             {
                 $datasetIsBad = 1;
             }
-            if ($row->Dataset_Rating_ID >= -5 && $row->Dataset_Rating_ID <= 1)
+
+            if ($row->dataset_rating_id >= -5 && $row->dataset_rating_id <= 1)
             {
                 $datasetIsBad = 2;
             }
@@ -485,18 +486,18 @@ class MetricModel extends Model
                     if($datasetIsBad == 1)
                     {
                          // javascript likes milliseconds, so multiply $date by 1000
-                        $this->plotDataPoor[] = array($date * 1000, $row->$metric, $row->Dataset);
+                        $this->plotDataPoor[] = array($date * 1000, $row->$metric, $row->dataset);
                     }
                     if($datasetIsBad == 2)
                     {
                         // javascript likes milliseconds, so multiply $date by 1000
-                        $this->plotDataBad[] = array($date * 1000, $row->$metric, $row->Dataset);
+                        $this->plotDataBad[] = array($date * 1000, $row->$metric, $row->dataset);
                     }
                 }
                 else
                 {
                     // javascript likes milliseconds, so multiply $date by 1000
-                    $this->plotdata[] = array($date * 1000, $row->$metric, $row->Dataset);
+                    $this->plotdata[] = array($date * 1000, $row->$metric, $row->dataset);
                 }
             }
         }
@@ -565,7 +566,7 @@ class MetricModel extends Model
 
                 if (!is_null($avg))
                 {
-                    if(strstr($metric,'QCDM') !== FALSE)
+                    if(strstr($metric,'qcdm') !== FALSE)
                     {
                         // Gives the limit depending on the instrument that is being run
                         $stddev = $this->compute_windowed_stdev($sqlDateTimeLeftUnix, $sqlDateTimeRightUnix, $avg);
