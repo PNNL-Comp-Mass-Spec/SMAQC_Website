@@ -345,7 +345,7 @@ class Smaqc extends BaseController
         }
 
         $data['title'] = $URI_array["inst"] . ' - ' . $URI_array["metric"];
-        $data['metric'] = $URI_array["metric"];
+        $data['metric'] = strtolower($URI_array["metric"]);
         $data['instrument'] = $URI_array["inst"];
         $data['datasetfilter'] = $datasetFilter;
         $data['filterDS'] = $datasetFilter;
@@ -367,7 +367,7 @@ class Smaqc extends BaseController
 
         $error = $this->MetricModel->init(
             $URI_array["inst"],
-            $URI_array["metric"],
+            strtolower($URI_array["metric"]),
             $data['startdate'],
             $data['enddate'],
             $data['windowsize'],
