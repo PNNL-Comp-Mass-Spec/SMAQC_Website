@@ -273,7 +273,7 @@ class QCArtModel extends Model
         $this->datasetfilter  = $datasetfilter;
 
         // check to see that this is a valid instrument/metric
-        $builder = $this->db->table('V_Dataset_QC_Metrics_Export');
+        $builder = $this->db->table('v_dataset_qc_metrics_export');
         $builder->where('instrument', $instrument);
 
         $query = $builder->get(1);
@@ -283,13 +283,13 @@ class QCArtModel extends Model
             return array("type" => "instrument", "value" => $instrument);
         }
 
-        if(!$this->db->fieldExists($metric, 'V_Dataset_QC_Metrics_Export'))
+        if(!$this->db->fieldExists($metric, 'v_dataset_qc_metrics_export'))
         {
             return array("type" => "metric", "value" => $metric);
         }
 
         // Lookup the Description, purpose, units, and Source for this metric
-        $builder = $this->db->table('V_Dataset_QC_Metric_Definitions');
+        $builder = $this->db->table('v_dataset_qc_metric_definitions');
         $builder->select('description, purpose, units, source');
         $builder->where('metric', $metric);
         $query = $builder->get(1);
@@ -321,7 +321,7 @@ class QCArtModel extends Model
                          'qcdm'
                         );
 
-        $builder = $this->db->table('V_Dataset_QC_Metrics_Export');
+        $builder = $this->db->table('v_dataset_qc_metrics_export');
         $builder->select(join(',', $columns));
         $builder->where('instrument =', $this->instrument);
         $builder->where('acq_time_start >=', $this->querystartdate);

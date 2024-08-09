@@ -68,7 +68,7 @@ class Smaqc extends BaseController
         $this->db = \Config\Database::connect();
 
         // get a full list of the metric names
-        foreach($this->db->getFieldNames('V_Dataset_QC_Metrics_Export') as $field)
+        foreach($this->db->getFieldNames('v_dataset_qc_metrics_export') as $field)
         {
             // exclude fields that aren't actually metrics
             $ignoredfields = array(
@@ -94,7 +94,7 @@ class Smaqc extends BaseController
         }
 
         // Get the Short Description for each metric
-        $builder = $this->db->table('V_Dataset_QC_Metric_Definitions');
+        $builder = $this->db->table('v_dataset_qc_metric_definitions');
         $builder->select('metric, short_description');
         $builder->orderBy("metric", "asc");
         $result = $builder->get()->getResult();
@@ -105,7 +105,7 @@ class Smaqc extends BaseController
         }
 
         // get a full list of the instruments
-        $builder = $this->db->table('V_Dataset_QC_Metric_Instruments');
+        $builder = $this->db->table('v_dataset_qc_metric_instruments');
         $builder->select('instrument');
         $builder->distinct();
         $builder->orderBy("instrument", "asc");

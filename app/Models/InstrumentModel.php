@@ -209,7 +209,7 @@ class InstrumentModel extends Model
         $this->status = "green";
 
         // Obtain the metric descriptions
-        $builder = $this->db->table('V_Dataset_QC_Metric_Definitions');
+        $builder = $this->db->table('v_dataset_qc_metric_definitions');
         $builder->select('metric, source, category, description, short_description');
         $builder->orderBy('sort_key');
         $query = $builder->get();
@@ -228,8 +228,8 @@ class InstrumentModel extends Model
 
         return false;
 
-        // attempt to get the latest data (retrieve just 1 row from V_Dataset_QC_Metrics_Export)
-        $builder = $this->db->table('V_Dataset_QC_Metrics_Export');
+        // attempt to get the latest data (retrieve just 1 row from v_dataset_qc_metrics_export)
+        $builder = $this->db->table('v_dataset_qc_metrics_export');
         $builder->select();
         $builder->where('instrument', $instrument);
         $builder->orderBy('acq_time_start', 'desc');
