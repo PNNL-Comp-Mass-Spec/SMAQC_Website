@@ -84,7 +84,8 @@ class Smaqc extends BaseController
                                     "smaqc_job",
                                     "psm_source_job",
                                     "smaqc_last_affected",
-                                    "qcdm_last_affected"
+                                    "qcdm_last_affected",
+                                    "separation_type"
                                   );
 
             if(!in_array($field, $ignoredfields))
