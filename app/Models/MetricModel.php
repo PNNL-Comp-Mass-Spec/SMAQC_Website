@@ -482,7 +482,25 @@ class MetricModel extends Model
             }
         }
 
-        // build the query to get all the metric points in the specified range
+        // Build the query to get all the metric points in the specified range, for example
+        // SELECT dataset_id,
+        //        acq_time_start,
+        //        ms1_1,
+        //        dataset_rating,
+        //        dataset,
+        //        quameter_job,
+        //        smaqc_job,
+        //        quameter_last_affected,
+        //        smaqc_last_affected,
+        //        dataset_rating_id,
+        //        qcdm
+        // FROM v_dataset_qc_metrics_export
+        // WHERE instrument = 'Exploris04' AND
+        //       acq_time_start >= '2025-02-02' AND
+        //       acq_time_start <= '2025-06-03' AND
+        //       ms1_1 IS NOT NULL
+        // ORDER BY acq_time_start DESC;
+
         $columns = array(
                          'acq_time_start',
                          'dataset_id',
