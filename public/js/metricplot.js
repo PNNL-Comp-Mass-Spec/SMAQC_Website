@@ -134,251 +134,250 @@ if(test.indexOf("QC-ART") > 0)
         });
     });
 
-} else {
-    if(test.indexOf("QCDM") == -1)
-    {
-        // Standard metric (not QCDM or QCART)
-        $(document).ready(function() {
-            $.jqplot.config.enablePlugins = true;
-            plot = $.jqplot('chartdiv', [Settings.plotdata, Settings.plotdata_average, Settings.stddevupper, Settings.stddevlower, Settings.plotDataPoor, Settings.plotDataBad], {
-                title:Settings.title,
-                axes: {
-                    xaxis:{
-                        renderer:$.jqplot.DateAxisRenderer,
-                        tickRenderer:$.jqplot.CanvasAxisTickRenderer,
-                        min:Settings.startdate,
-                        max:Settings.enddate,
-                        tickOptions: {
-                            angle: -60,
-                            fontSize: '8pt',
-                            formatString: '%b %#d, %Y'
-                        }
-                    },
-                    yaxis:{
-                        label:Settings.metric_units,
-                        labelRenderer: $.jqplot.CanvasAxisLabelRenderer
+}
+else if(test.indexOf("QCDM") == -1)
+{
+    // Standard metric (not QCDM or QCART)
+    $(document).ready(function() {
+        $.jqplot.config.enablePlugins = true;
+        plot = $.jqplot('chartdiv', [Settings.plotdata, Settings.plotdata_average, Settings.stddevupper, Settings.stddevlower, Settings.plotDataPoor, Settings.plotDataBad], {
+            title:Settings.title,
+            axes: {
+                xaxis:{
+                    renderer:$.jqplot.DateAxisRenderer,
+                    tickRenderer:$.jqplot.CanvasAxisTickRenderer,
+                    min:Settings.startdate,
+                    max:Settings.enddate,
+                    tickOptions: {
+                        angle: -60,
+                        fontSize: '8pt',
+                        formatString: '%b %#d, %Y'
                     }
                 },
-                legend: {
-                    show: true,
-                    location: 'e',
-                    placement: 'outsideGrid'
+                yaxis:{
+                    label:Settings.metric_units,
+                    labelRenderer: $.jqplot.CanvasAxisLabelRenderer
+                }
+            },
+            legend: {
+                show: true,
+                location: 'e',
+                placement: 'outsideGrid'
+            },
+            cursor: {
+                show: true,
+                zoom: true,
+                clickReset: true,
+                showTooltip: false
+            },
+            seriesDefaults: {
+                showLine: true,
+                showMarker: false,
+                trendline: {
+                    show: false
+                }
+            },
+            series:[
+                {
+                    // Settings.plotdata
+                    label:'Data',
+                    lineWidth: 2,
+                    showLine: false,
+                    showMarker: true,
+                    markerOptions: {
+                        size: 5
+                    },
+                    highlighter: {
+                        show: true,
+                        showTooltip: true,
+                        tooltipAxes: 'y',
+                        tooltipLocation: 'se',
+                        yvalues:2
+                    }                
                 },
-                cursor: {
-                    show: true,
-                    zoom: true,
-                    clickReset: true,
-                    showTooltip: false
-                },
-                seriesDefaults: {
-                    showLine: true,
-                    showMarker: false,
+                {
+                    // Settings.plotdata_average
+                    label:'Median',
+                    linewidth: 1,
+                    markerOptions: { size: 4 },
+                    color: '#01818A',
                     trendline: {
-                        show: false
+                        show: false,
+                        color: '#FFEA00'
+                    }
+                    
+                },
+                {
+                    // Settings.stddevupper
+                    label:'1.5x MAD',
+                    lineWidth: 3,
+                    color: '#BB0000'                
+                },
+                {
+                    // Settings.stddevlower
+                    label:'1.5x MAD',
+                    lineWidth: 3,
+                    color: '#BB0000',
+                    showLabel: false
+                },
+                {
+                    // Settings.plotDataPoor (QCDM value out-of-range)
+                    label:'Bad QCDM Score',
+                    lineWidth: 2,
+                    showLine: false,
+                    showMarker: true,
+                    color: '#FA8100',
+                    markerOptions: {
+                        size: 5,
+                        color: '#FA8100'
+                    },
+                    highlighter: {
+                        show: true,
+                        showTooltip: true,
+                        tooltipAxes: 'y',
+                        tooltipLocation: 'se',
+                        yvalues:2
                     }
                 },
-                series:[
-                    {
-                        // Settings.plotdata
-                        label:'Data',
-                        lineWidth: 2,
-                        showLine: false,
-                        showMarker: true,
-                        markerOptions: {
-                            size: 5
-                        },
-                        highlighter: {
-                            show: true,
-                            showTooltip: true,
-                            tooltipAxes: 'y',
-                            tooltipLocation: 'se',
-                            yvalues:2
-                        }                
+                {
+                    // Settings.plotDataBad (dataset not released)
+                    label:'Bad Dataset',
+                    lineWidth: 2,
+                    showLine: false,
+                    showMarker: true,
+                    color: '#551A8B',
+                    markerOptions: {
+                        size: 5,
+                        color: '#551A8B'
                     },
-                    {
-                        // Settings.plotdata_average
-                        label:'Median',
-                        linewidth: 1,
-                        markerOptions: { size: 4 },
-                        color: '#01818A',
-                        trendline: {
-                            show: false,
-                            color: '#FFEA00'
-                        }
-                        
-                    },
-                    {
-                        // Settings.stddevupper
-                        label:'1.5x MAD',
-                        lineWidth: 3,
-                        color: '#BB0000'                
-                    },
-                    {
-                        // Settings.stddevlower
-                        label:'1.5x MAD',
-                        lineWidth: 3,
-                        color: '#BB0000',
-                        showLabel: false
-                    },
-                    {
-                        // Settings.plotDataPoor (QCDM value out-of-range)
-                        label:'Bad QCDM Score',
-                        lineWidth: 2,
-                        showLine: false,
-                        showMarker: true,
-                        color: '#FA8100',
-                        markerOptions: {
-                            size: 5,
-                            color: '#FA8100'
-                        },
-                        highlighter: {
-                            show: true,
-                            showTooltip: true,
-                            tooltipAxes: 'y',
-                            tooltipLocation: 'se',
-                            yvalues:2
-                        }
-                    },
-                    {
-                        // Settings.plotDataBad (dataset not released)
-                        label:'Bad Dataset',
-                        lineWidth: 2,
-                        showLine: false,
-                        showMarker: true,
-                        color: '#551A8B',
-                        markerOptions: {
-                            size: 5,
-                            color: '#551A8B'
-                        },
-                        highlighter: {
-                            show: true,
-                            showTooltip: true,
-                            tooltipAxes: 'y',
-                            tooltipLocation: 'se',
-                            yvalues:2
-                        }
+                    highlighter: {
+                        show: true,
+                        showTooltip: true,
+                        tooltipAxes: 'y',
+                        tooltipLocation: 'se',
+                        yvalues:2
                     }
-                ]
-            });
+                }
+            ]
         });
-    }
-    else
-    {
-        // QCDM metric
-        $(document).ready(function() {
-            $.jqplot.config.enablePlugins = true;
-            plot = $.jqplot('chartdiv', [Settings.plotdata, Settings.plotdata_average, Settings.stddevlower, Settings.plotDataPoor, Settings.plotDataBad], {
-                title:Settings.title,
-                axes: {
-                    xaxis:{
-                        renderer:$.jqplot.DateAxisRenderer,
-                        tickRenderer:$.jqplot.CanvasAxisTickRenderer,
-                        min:Settings.startdate,
-                        max:Settings.enddate,
-                        tickOptions: {
-                            angle: -60,
-                            fontSize: '8pt',
-                            formatString: '%b %#d, %Y'
-                        }
-                    },
-                    yaxis:{
-                        label:Settings.metric_units,
-                        labelRenderer: $.jqplot.CanvasAxisLabelRenderer
+    });
+}
+else
+{
+    // QCDM metric
+    $(document).ready(function() {
+        $.jqplot.config.enablePlugins = true;
+        plot = $.jqplot('chartdiv', [Settings.plotdata, Settings.plotdata_average, Settings.stddevlower, Settings.plotDataPoor, Settings.plotDataBad], {
+            title:Settings.title,
+            axes: {
+                xaxis:{
+                    renderer:$.jqplot.DateAxisRenderer,
+                    tickRenderer:$.jqplot.CanvasAxisTickRenderer,
+                    min:Settings.startdate,
+                    max:Settings.enddate,
+                    tickOptions: {
+                        angle: -60,
+                        fontSize: '8pt',
+                        formatString: '%b %#d, %Y'
                     }
                 },
-                legend: {
-                    show: true,
-                    location: 'e',
-                    placement: 'outsideGrid'
+                yaxis:{
+                    label:Settings.metric_units,
+                    labelRenderer: $.jqplot.CanvasAxisLabelRenderer
+                }
+            },
+            legend: {
+                show: true,
+                location: 'e',
+                placement: 'outsideGrid'
+            },
+            cursor: {
+                show: true,
+                zoom: true,
+                clickReset: true,
+                showTooltip: false
+            },
+            seriesDefaults: {
+                showLine: true,
+                showMarker: false,
+                trendline: {
+                    show: false
+                }
+            },
+            series:[
+                {
+                    // Settings.plotdata
+                    label:'Data',
+                    lineWidth: 2,
+                    showLine: false,
+                    showMarker: true,
+                    markerOptions: {
+                        size: 5
+                    },
+                    highlighter: {
+                        show: true,
+                        showTooltip: true,
+                        tooltipAxes: 'y',
+                        tooltipLocation: 'se',
+                        yvalues:2
+                    }                
                 },
-                cursor: {
-                    show: true,
-                    zoom: true,
-                    clickReset: true,
-                    showTooltip: false
-                },
-                seriesDefaults: {
-                    showLine: true,
-                    showMarker: false,
+                {
+                    // Settings.plotdata_average
+                    label:'Median',
+                    linewidth: 1,
+                    markerOptions: { size: 4 },
+                    color: '#01818A',
                     trendline: {
-                        show: false
+                        show: false,
+                        color: '#FFEA00'
                     }
                 },
-                series:[
-                    {
-                        // Settings.plotdata
-                        label:'Data',
-                        lineWidth: 2,
-                        showLine: false,
-                        showMarker: true,
-                        markerOptions: {
-                            size: 5
-                        },
-                        highlighter: {
-                            show: true,
-                            showTooltip: true,
-                            tooltipAxes: 'y',
-                            tooltipLocation: 'se',
-                            yvalues:2
-                        }                
+                {
+                    // Settings.stddevlower
+                    label:'Limit',
+                    lineWidth: 3,
+                    color: '#66CD00'                
+                },
+                {
+                    // Settings.plotDataPoor (QCDM value out-of-range)
+                    label:'Bad QCDM Score',
+                    lineWidth: 2,
+                    showLine: false,
+                    showMarker: true,
+                    color: '#FA8100',
+                    markerOptions: {
+                        size: 5,
+                        color: '#FA8100'
                     },
-                    {
-                        // Settings.plotdata_average
-                        label:'Median',
-                        linewidth: 1,
-                        markerOptions: { size: 4 },
-                        color: '#01818A',
-                        trendline: {
-                            show: false,
-                            color: '#FFEA00'
-                        }
-                    },
-                    {
-                        // Settings.stddevlower
-                        label:'Limit',
-                        lineWidth: 3,
-                        color: '#66CD00'                
-                    },
-                    {
-                        // Settings.plotDataPoor (QCDM value out-of-range)
-                        label:'Bad QCDM Score',
-                        lineWidth: 2,
-                        showLine: false,
-                        showMarker: true,
-                        color: '#FA8100',
-                        markerOptions: {
-                            size: 5,
-                            color: '#FA8100'
-                        },
-                        highlighter: {
-                            show: true,
-                            showTooltip: true,
-                            tooltipAxes: 'y',
-                            tooltipLocation: 'se',
-                            yvalues:2
-                        }
-                    },
-                    {
-                        // Settings.plotDataBad (dataset not released)
-                        label:'Bad Dataset',
-                        lineWidth: 2,
-                        showLine: false,
-                        showMarker: true,
-                        color: '#551A8B',
-                        markerOptions: {
-                            size: 5,
-                            color: '#551A8B'
-                        },
-                        highlighter: {
-                            show: true,
-                            showTooltip: true,
-                            tooltipAxes: 'y',
-                            tooltipLocation: 'se',
-                            yvalues:2
-                        }
+                    highlighter: {
+                        show: true,
+                        showTooltip: true,
+                        tooltipAxes: 'y',
+                        tooltipLocation: 'se',
+                        yvalues:2
                     }
-                ]
-            });
+                },
+                {
+                    // Settings.plotDataBad (dataset not released)
+                    label:'Bad Dataset',
+                    lineWidth: 2,
+                    showLine: false,
+                    showMarker: true,
+                    color: '#551A8B',
+                    markerOptions: {
+                        size: 5,
+                        color: '#551A8B'
+                    },
+                    highlighter: {
+                        show: true,
+                        showTooltip: true,
+                        tooltipAxes: 'y',
+                        tooltipLocation: 'se',
+                        yvalues:2
+                    }
+                }
+            ]
         });
-    }
+    });
 }
