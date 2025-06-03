@@ -205,7 +205,7 @@ class MetricModel extends Model
             case 'stddevlower':
                 return $this->$what;
             default:
-                return parent::__get($what); // check base class BaseModel for member
+                return parent::__get($what); // Check base class BaseModel for member
         }
     }
 
@@ -372,18 +372,17 @@ class MetricModel extends Model
      */
     public function init($instrument, $metric, $start, $end, $windowsize = 20, $datasetfilter = '')
     {
-        // change the string format of the dates, as strtotime doesn't work
-        // right with -'s
+        // Change the string format of the dates, as strtotime doesn't work right with -'s
         $start = str_replace('-', '/', $start);
         $end   = str_replace('-', '/', $end);
 
-        // windowradius is how many days to the left/right to average around
+        // Windowradius is how many days to the left/right to average around
         $windowradius = (int)($windowsize / 2);
 
         if ($windowradius < 1)
             $windowradius = 1;
 
-        // set all the proper values
+        // Set all the proper values
         $this->instrument = $instrument;
         $this->metric     = $metric;
 
@@ -420,7 +419,7 @@ class MetricModel extends Model
 
         $this->datasetfilter  = $datasetfilter;
 
-        // check to see that this is a valid instrument/metric
+        // Check to see that this is a valid instrument/metric
         $builder = $this->db->table('v_dataset_qc_metrics_export');
         $builder->where('instrument', $instrument);
 
@@ -530,32 +529,29 @@ class MetricModel extends Model
 
         $builder->orderBy('acq_time_start', 'desc');
 
-        // run the query, we may not actually need to store this in the model,
-        // but for now we will
+        // Run the query, we may not actually need to store this in the model, but for now we will
         $this->data = $builder->get();
 
         // Initialize the data arrays so that we can append data
         $this->metricdata = array();
         $this->plotdata = array();
-        $this->plotDataBad = array();            // Not Released (aka bad)
-        $this->plotDataPoor = array();            // QCDM value out-of-range (aka low quality)
+        $this->plotDataBad = array();           // Not Released (aka bad)
+        $this->plotDataPoor = array();          // QCDM value out-of-range (aka low quality)
 
         $dateList = array();                    // List of dates for which metric data exists
 
-        // get just the data we want for plotting
+        // Get just the data we want for plotting
         foreach($this->data->getResult() as $row)
         {
-            // Skip the value if it's null
-            // We unforunately cannot do this during the query, since codeigniter returns no rows
+            // Skip the value if it's null (no longer necessary in June 2025 since we now filter out null values using the where clause)
             if(is_null($row->$metric))
             {
                 continue;
             }
 
-            // need to convert the date from the mssql format to one that
-            // jqplot will like
+            // Need to convert the date from the mssql format to one that jqplot will like
 
-            // cutoff fractional seconds, leaving only the date data we want
+            // Cutoff fractional seconds, leaving only the date data we want
             $pattern = '/:[0-9][0-9][0-9]/';
             $date = preg_replace($pattern, '', $row->acq_time_start);
 
@@ -579,11 +575,11 @@ class MetricModel extends Model
 
             if ($datasetIsBad == 0 || $datasetIsBad == 1)
             {
-                // add the value to the metricdata array
+                // Add the value to the metricdata array
                 $this->metricdata[] = array($date, $row->$metric);
             }
 
-            // add the value to the plotdata array if it is within the user-specified plotting range
+            // Add the value to the plotdata array if it is within the user-specified plotting range
             if ($date >= $this->unixstartdate && $date <= $this->unixenddate)
             {
                 if ($datasetIsBad != 0)
@@ -591,19 +587,19 @@ class MetricModel extends Model
                     if($datasetIsBad == 1)
                     {
                         // Dataset with poor QCDM score
-                        // javascript likes milliseconds, so multiply $date by 1000 when appending to the array
+                        // JavaScript likes milliseconds, so multiply $date by 1000 when appending to the array
                         $this->plotDataPoor[] = array($date * 1000, $row->$metric, $row->dataset);
                     }
                     if($datasetIsBad == 2)
                     {
                         // Not Released dataset
-                        // javascript likes milliseconds, so multiply $date by 1000 when appending to the array
+                        // JavaScript likes milliseconds, so multiply $date by 1000 when appending to the array
                         $this->plotDataBad[] = array($date * 1000, $row->$metric, $row->dataset);
                     }
                 }
                 else
                 {
-                    // javascript likes milliseconds, so multiply $date by 1000 when appending to the array
+                    // JavaScript likes milliseconds, so multiply $date by 1000 when appending to the array
                     $this->plotdata[] = array($date * 1000, $row->$metric, $row->dataset);
                 }
 
@@ -630,7 +626,7 @@ class MetricModel extends Model
 
         $s0 = count($dateList);
 
-        // calculate median absolute deviation using the provided window size
+        // Calculate median absolute deviation using the provided window size
         if($s0 > 0)
         {
             $medianInWindow = 0.0;
@@ -658,10 +654,10 @@ class MetricModel extends Model
                 // The metric is not QCDM
                 // Compute the median value within a time period
 
-                // get the date to the left by the window radius
+                // Get the date to the left by the window radius
                 $sqlDateTimeLeftUnix = strtotime('-' . $windowradius . ' day', $dateList[$dateIndex]);
 
-                // get the date to the right by the window radius
+                // Get the date to the right by the window radius
                 $sqlDateTimeRightUnix = strtotime($windowradius . ' day', $dateList[$dateIndex]);
 
                 // Compute the median of the metric values over the date range (using both good and "low quality" datasets)
@@ -699,32 +695,32 @@ class MetricModel extends Model
                 // Uncomment to debug
                 // echo date('m/d/Y H:i:s', $dateList[$dateIndex]) . ", " . $medianInWindow . ", " . $mad . ", " . $lowerBoundMAD . ", " . $upperBoundMAD . "<br>";
 
-            } // end of loop
-        } // end of calculating stddev
+            } // End of for loop
+        } // End of calculating stddev
 
-        // check to see if there were any data points in the date range
+        // Check to see if there were any data points in the date range
         if(count($this->plotdata) < 1)
         {
-            // put an empty array in there so that jqplot will display
-            // properly, and not break javascript on the page
+            // Put an empty array in there so that jqplot will display properly,
+            // and not break JavaScript on the page
             $this->plotdata[] = array();
         }
 
         if(count($this->plotDataBad) < 1)
         {
-            // put an empty array in there so that jqplot will display
-            // properly, and not break javascript on the page
+            // Put an empty array in there so that jqplot will display properly,
+            // and not break JavaScript on the page
             $this->plotDataBad[] = array();
         }
 
         if(count($this->plotDataPoor) < 1)
         {
-            // put an empty array in there so that jqplot will display
-            // properly, and not break javascript on the page
+            // Put an empty array in there so that jqplot will display properly,
+            // and not break JavaScript on the page
             $this->plotDataPoor[] = array();
         }
 
-        // put everything for jqplot into a json encoded array
+        // Put everything for jqplot into a json encoded array
         $this->plotdata = json_encode($this->plotdata);
         $this->plotdata_average = json_encode($this->plotdata_average);
         $this->stddevupper = json_encode($this->stddevupper);
@@ -746,7 +742,7 @@ class MetricModel extends Model
         $this->average = $this->db->get('v_dataset_qc_metrics_export')->row()->avg;
         */
 
-        return FALSE; // no errors, so return false
+        return FALSE; // No errors, so return false
     }
 }
 ?>
