@@ -502,6 +502,8 @@ class MetricModel extends Model
         $builder->where('instrument =', $this->instrument);
         $builder->where('acq_time_start >=', $this->querystartdate);
         $builder->where('acq_time_start <=', $this->queryenddate . 'T23:59:59.999');
+        $valueNotNull = $metric . " IS NOT NULL";
+        $builder->where($valueNotNull);
 
         if (strlen($this->datasetfilter) > 0)
         {
