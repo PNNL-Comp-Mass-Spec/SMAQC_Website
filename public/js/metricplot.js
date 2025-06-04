@@ -3,7 +3,7 @@ $(document).ready(function() {
     $.jqplot.config.enablePlugins = true;
 
     var isQCART = Settings.title.indexOf("QC-ART") > 0; // QC-ART specific plot (similar to the standard metric view but with custom colors and labels)
-    var isQCDM = Settings.title.indexOf("QCDM") > 0; // QCDM metric
+    var isQCDM = !isQCART && Settings.title.indexOf("QCDM") > 0; // QCDM metric
 
     var plotDataSeries = {
         // Settings.plotdata
