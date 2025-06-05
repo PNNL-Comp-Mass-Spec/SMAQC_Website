@@ -447,37 +447,33 @@ class MetricModel extends Model
         }
         else
         {
+            $row = $query->getRow();
+            $this->definition = $metric . " (" . $row->source . "): " . $row->description . " <br>" . $row->purpose;
+            $this->metric_units = $row->units;
+
             if(strstr($metric,'qcdm') !== FALSE)
             {
                 // QCDM metric
                 if(strstr($instrument,'Exact') !== FALSE)
                 {
-                    $row = $query->getRow();
-                    $this->definition = $metric . " (" . $row->source . "): " . $row->description . " <br>" . $row->purpose . "Metrics used: MS1_TIC_Q2, MS1_Density_Q1";
+                    $this->definition .= "Metrics used: MS1_TIC_Q2, MS1_Density_Q1";
                 }
-                if(strstr($instrument,'LTQ_2') !== FALSE || strstr($instrument,'LTQ_3') !== FALSE || strstr($instrument,'LTQ_4') !== FALSE || strstr($instrument,'LTQ_FB1') !== FALSE || strstr($instrument,'LTQ_ETD_1') !== FALSE)
+                else if(strstr($instrument,'LTQ_2') !== FALSE || strstr($instrument,'LTQ_3') !== FALSE || strstr($instrument,'LTQ_4') !== FALSE || strstr($instrument,'LTQ_FB1') !== FALSE || strstr($instrument,'LTQ_ETD_1') !== FALSE)
                 {
-                    $row = $query->getRow();
-                    $this->definition = $metric . " (" . $row->source . "): " . $row->description . " <br>" . $row->purpose . "Metrics used: XIC_WideFrac, MS2_Density_Q1, P_2C";
+                    $this->definition .= "Metrics used: XIC_WideFrac, MS2_Density_Q1, P_2C";
                 }
-                if(strstr($instrument,'LTQ_Orb') !== FALSE || strstr($instrument,'Orbi_FB1') !== FALSE || strstr($instrument,'LTQ_FT1') !== FALSE)
+                else if(strstr($instrument,'LTQ_Orb') !== FALSE || strstr($instrument,'Orbi_FB1') !== FALSE || strstr($instrument,'LTQ_FT1') !== FALSE)
                 {
-                    $row = $query->getRow();
-                    $this->definition = $metric . " (" . $row->source . "): " . $row->description . " <br>" . $row->purpose . "Metrics used: XIC_WideFrac, MS1_TIC_Change_Q2, MS1_Density_Q1, MS1_Density_Q2, DS_2A, P_2B, P_2A, DS_2B";
+                    $this->definition .= "Metrics used: XIC_WideFrac, MS1_TIC_Change_Q2, MS1_Density_Q1, MS1_Density_Q2, DS_2A, P_2B, P_2A, DS_2B";
                 }
-                if(strstr($instrument,'VOrbi') !== FALSE || strstr($instrument,'VPro') !== FALSE || strstr($instrument,'External_Orb') !== FALSE)
+                else if(strstr($instrument,'VOrbi') !== FALSE || strstr($instrument,'VPro') !== FALSE || strstr($instrument,'External_Orb') !== FALSE)
                 {
-                    $row = $query->getRow();
-                    $this->definition = $metric . " (" . $row->source . "): " . $row->description . " <br>" . $row->purpose . "Metrics used: XIC_WideFrac, MS2_Density_Q1, MS1_2B, P_2B, P_2A, DS_2B";
+                    $this->definition .= "Metrics used: XIC_WideFrac, MS2_Density_Q1, MS1_2B, P_2B, P_2A, DS_2B";
                 }
-                $this->metric_units =$row->units;
-            }
-            else
-            {
-                $row = $query->getRow();
-                $this->definition = $metric . " (" . $row->source . "): " . $row->description . " <br>" . $row->purpose;
-
-                $this->metric_units =$row->units;
+                else
+                {
+                    $this->definition .= "Metrics used: Not defined";
+                }
             }
         }
 
