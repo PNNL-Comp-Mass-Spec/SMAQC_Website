@@ -72,6 +72,7 @@ color: #B00;
 {
   width: 100%;
   text-align: center;
+  box-sizing: border-box;
 }
 
 #left-menu form
