@@ -389,15 +389,17 @@ class Smaqc extends BaseController
             return redirect()->to(site_url(join('/', $redirecturlparts)));
         }
 
-        $data['metrics']          = $metricModel->data;
-        $data['definition']       = $metricModel->definition;
-        $data['plotdata']         = $metricModel->plotdata;
-        $data['plotDataBad']      = $metricModel->plotDataBad;
-        $data['plotDataPoor']     = $metricModel->plotDataPoor;
-        $data['plotdata_average'] = $metricModel->plotdata_average;
-        $data['stddevupper']      = $metricModel->stddevupper;
-        $data['stddevlower']      = $metricModel->stddevlower;
-        $data['metric_units']     = $metricModel->metric_units;
+        $results = $metricModel->getData();
+
+        $data['metrics']          = $results->queryResults;
+        $data['definition']       = $results->definition;
+        $data['plotdata']         = $results->plotData;
+        $data['plotDataBad']      = $results->plotDataBad;
+        $data['plotDataPoor']     = $results->plotDataPoor;
+        $data['plotdata_average'] = $results->plotDataAverage;
+        $data['stddevupper']      = $results->stdDevUpper;
+        $data['stddevlower']      = $results->stdDevLower;
+        $data['metric_units']     = $results->metricUnits;
 
         $data['includegraph'] = true;
 
@@ -494,15 +496,17 @@ class Smaqc extends BaseController
             return redirect()->to(site_url(join('/', $redirecturlparts)));
         }
 
-        $data['metrics']          = $qcArtModel->data;
-        $data['definition']       = $qcArtModel->definition;
-        $data['plotdata']         = $qcArtModel->plotdata;
-        $data['plotDataBad']      = $qcArtModel->plotDataBad;
-        $data['plotDataPoor']     = $qcArtModel->plotDataPoor;
-        $data['plotdata_average'] = $qcArtModel->plotdata_average;
-        $data['stddevupper']      = $qcArtModel->stddevupper;
-        $data['stddevlower']      = $qcArtModel->stddevlower;
-        $data['metric_units']     = $qcArtModel->metric_units;
+        $results = $qcArtModel->getData();
+
+        $data['metrics']          = $results->queryResults;
+        $data['definition']       = $results->definition;
+        $data['plotdata']         = $results->plotData;
+        $data['plotDataBad']      = $results->plotDataBad;
+        $data['plotDataPoor']     = $results->plotDataPoor;
+        $data['plotdata_average'] = $results->plotDataAverage;
+        $data['stddevupper']      = $results->stdDevUpper;
+        $data['stddevlower']      = $results->stdDevLower;
+        $data['metric_units']     = $results->metricUnits;
 
         $data['includegraph'] = true;
 

@@ -560,29 +560,44 @@ abstract class MetricBase extends Model
             $this->plotDataPoor[] = array();
         }
 
-        // Put everything for jqplot into a json encoded array
-        $this->plotdata = json_encode($this->plotdata);
-        $this->plotdata_average = json_encode($this->plotdata_average);
-        $this->stddevupper = json_encode($this->stddevupper);
-        $this->stddevlower = json_encode($this->stddevlower);
-        $this->plotDataBad = json_encode($this->plotDataBad);
-        $this->plotDataPoor = json_encode($this->plotDataPoor);
-        $this->metric_units = json_encode($this->metric_units);
-
-        /* get the average (we'll use the select_avg() call for now, as it
+        /* get the average (we'll use the selectAvg() call for now, as it
            deals with nulls, but we may want to do this in php instead of using
            the db */
         /*
         ** Not used
         **
-        $this->db->select_avg($metric, 'avg');
-        $this->db->where('acq_time_start >=', $this->querystartdate);
-        $this->db->where('acq_time_start <=', $this->queryenddate . 'T23:59:59.999');
-        $this->db->where('instrument', $instrument);
-        $this->average = $this->db->get('v_dataset_qc_metrics_export')->row()->avg;
+        $builder = $this->db->table('v_dataset_qc_metrics_export');
+        $builder->selectAvg($metric, 'avg');
+        $builder->where('acq_time_start >=', $this->querystartdate);
+        $builder->where('acq_time_start <=', $this->queryenddate . 'T23:59:59.999');
+        $builder->where('instrument', $instrument);
+        $this->average = $builder->get()->getRow()->avg;
         */
 
         return FALSE; // No errors, so return false
+    }
+
+    /**
+     * Bundles the results of the processing into a single object and returns it
+     *
+     * @return \App\Libraries\MetricData
+     */
+    public function getData()
+    {
+        $data = new \App\Libraries\MetricData();
+        $data->queryResults = $this->data;
+        $data->definition = $this->definition;
+
+        // Put everything for javascript plotting into json encoded arrays
+        $data->plotData = json_encode($this->plotdata);
+        $data->plotDataAverage = json_encode($this->plotdata_average);
+        $data->stdDevUpper = json_encode($this->stddevupper);
+        $data->stdDevLower = json_encode($this->stddevlower);
+        $data->plotDataBad = json_encode($this->plotDataBad);
+        $data->plotDataPoor = json_encode($this->plotDataPoor);
+        $data->metricUnits = json_encode($this->metric_units);
+
+        return $data;
     }
 }
 ?>
