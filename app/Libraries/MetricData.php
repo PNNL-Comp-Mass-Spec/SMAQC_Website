@@ -11,7 +11,7 @@ class MetricData
      * The results of querying the database for the metric values.
      * @var object
      */
-    public $queryResults = '';
+    public $queryResults;
 
     /**
      * The definition of the metric.

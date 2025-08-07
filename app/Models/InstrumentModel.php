@@ -58,35 +58,35 @@ class InstrumentModel extends Model
     /**
      * A list (php array) of the metric descriptions
      * The type is what is returned by a call to CI's Active Record db->get().
-     * @var object
+     * @var array
      */
     private $metricDescriptions;
 
     /**
      * A list (php array) of the category of each metric
      * The type is what is returned by a call to CI's Active Record db->get().
-     * @var object
+     * @var array
      */
     private $metricCategories;
 
     /**
      * A list (php array) of the source of each metric
      * The type is what is returned by a call to CI's Active Record db->get().
-     * @var object
+     * @var array
      */
     private $metricSources;
 
     /**
      * The latest metrics for the instrument.
      * The type is what is returned by a call to CI's Active Record db->get().
-     * @var object
+     * @var array
      */
     private $latestmetrics;
 
     /**
      * The averaged metrics for the instrument over the provided date range.
      * The type is what is returned by a call to CI's Active Record db->get().
-     * @var object
+     * @var array
      */
     private $averagedmetrics;
 
@@ -94,7 +94,7 @@ class InstrumentModel extends Model
      * The standard deviation for each of the metrics for the instrument over the
      * provided date range.
      * The type is what is returned by a call to CI's Active Record db->get().
-     * @var object
+     * @var array
      */
     private $stddevmetrics;
 

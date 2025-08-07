@@ -30,7 +30,7 @@ abstract class MetricBase extends Model
 
     /**
      * The QCDM threshold for flagging data as bad
-     * @var string
+     * @var float
      */
     protected $limit;
 
@@ -49,18 +49,31 @@ abstract class MetricBase extends Model
     protected $definition;
 
     /**
-     * The start/end date for grabbing metrics.
+     * The start date for grabbing metrics.
      * This should be a human readable string of the format m-d-Y.
      * (Example: 11-11-2011)
      * @var string
      */
     protected $querystartdate;
+
+    /**
+     * The end date for grabbing metrics.
+     * This should be a human readable string of the format m-d-Y.
+     * (Example: 11-11-2011)
+     * @var string
+     */
     protected $queryenddate;
 
     /**
-     * The start/end date for plotting metrics.; unix datetime
+     * The start date for plotting metrics.; unix datetime
+     * @var int
      */
     protected $unixstartdate;
+
+    /**
+     * The end date for plotting metrics.; unix datetime
+     * @var int
+     */
     protected $unixenddate;
 
     /**
