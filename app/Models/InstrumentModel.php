@@ -100,7 +100,7 @@ class InstrumentModel extends Model
      *
      * @param string $instrument The name of the instrument.
      * @param string $unit A period of time unit, usually 'days'
-     * @param string $window Size of the window for $unit
+     * @param int $window Size of the window for $unit
      *
      * @return array|boolean An array containing error information if there is
      * an error, FALSE otherwise.
