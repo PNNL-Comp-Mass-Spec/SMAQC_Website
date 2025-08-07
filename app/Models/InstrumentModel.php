@@ -50,12 +50,6 @@ class InstrumentModel extends Model
     private $status;
 
     /**
-     * A list (php array) of the metrics available in the database.
-     * @var array
-     */
-    private $metricnames;
-
-    /**
      * A list (php array) of the metric descriptions
      * The type is what is returned by a call to CI's Active Record db->get().
      * @var array
@@ -76,27 +70,12 @@ class InstrumentModel extends Model
      */
     private $metricSources;
 
-    /**
-     * The latest metrics for the instrument.
-     * The type is what is returned by a call to CI's Active Record db->get().
-     * @var array
-     */
-    private $latestmetrics;
-
-    /**
-     * The averaged metrics for the instrument over the provided date range.
-     * The type is what is returned by a call to CI's Active Record db->get().
-     * @var array
-     */
-    private $averagedmetrics;
-
-    /**
-     * The standard deviation for each of the metrics for the instrument over the
-     * provided date range.
-     * The type is what is returned by a call to CI's Active Record db->get().
-     * @var array
-     */
-    private $stddevmetrics;
+    ///**
+    // * The latest metrics for the instrument.
+    // * The type is what is returned by a call to CI's Active Record db->get().
+    // * @var array
+    // */
+    //private $latestmetrics;
 
     /**
      * Constructor
@@ -165,19 +144,19 @@ class InstrumentModel extends Model
         return false;
 
         // attempt to get the latest data (retrieve just 1 row from v_dataset_qc_metrics_export)
-        $builder = $this->db->table('v_dataset_qc_metrics_export');
-        $builder->select();
-        $builder->where('instrument', $instrument);
-        $builder->orderBy('acq_time_start', 'desc');
-        $this->latestmetrics = $builder->get(1);
-
-        // Check that the instrument even exists (did we get a result?)
-        if($this->latestmetrics->getNumRows() < 1)
-        {
-            return array("type" => "instrument", "value" => $instrument);
-        }
-
-        return FALSE; // no errors, so return false
+        //$builder = $this->db->table('v_dataset_qc_metrics_export');
+        //$builder->select();
+        //$builder->where('instrument', $instrument);
+        //$builder->orderBy('acq_time_start', 'desc');
+        //$this->latestmetrics = $builder->get(1);
+        //
+        //// Check that the instrument even exists (did we get a result?)
+        //if($this->latestmetrics->getNumRows() < 1)
+        //{
+        //    return array("type" => "instrument", "value" => $instrument);
+        //}
+        //
+        //return FALSE; // no errors, so return false
     }
 
     /**
@@ -189,13 +168,11 @@ class InstrumentModel extends Model
     {
         $data = new \stdClass();
 
-        $data->metricNames        = $this->metricnames;
+        $data->instrument         = $this->instrument;
         $data->metricDescriptions = $this->metricDescriptions;
         $data->metricCategories   = $this->metricCategories;
         $data->metricSources      = $this->metricSources;
-        $data->latestMetrics      = $this->latestmetrics;
-        $data->averagedMetrics    = $this->averagedmetrics;
-        $data->stdDevMetrics      = $this->stddevmetrics;
+        //$data->latestMetrics      = $this->latestmetrics;
         $data->definition         = $this->definition;
 
         return $data;

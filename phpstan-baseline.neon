@@ -1,2 +1,25 @@
 parameters:
 	ignoreErrors:
+		-
+			message: '#^Property App\\Models\\InstrumentModel\:\:\$enddate is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: app/Models/InstrumentModel.php
+
+		-
+			message: '#^Property App\\Models\\InstrumentModel\:\:\$startdate is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: app/Models/InstrumentModel.php
+
+		-
+			message: '#^Property App\\Models\\InstrumentModel\:\:\$status is never read, only written\.$#'
+			identifier: property.onlyWritten
+			count: 1
+			path: app/Models/InstrumentModel.php
+
+		-
+			message: '#^Comparison operation "\<" between 0 and 1 is always true\.$#'
+			identifier: smaller.alwaysTrue
+			count: 3
+			path: app/Models/MetricBase.php

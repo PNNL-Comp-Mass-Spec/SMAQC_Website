@@ -246,13 +246,10 @@ class Smaqc extends BaseController
 
         $results = $instrumentModel->getData();
 
-        $data['metricnames']         = $results->metricNames;
         $data['metricDescriptions']  = $results->metricDescriptions;
         $data['metricCategories']    = $results->metricCategories;
         $data['metricSources']       = $results->metricSources;
-        $data['latestmetrics']       = $results->latestMetrics;
-        $data['averagedmetrics']     = $results->averagedMetrics;
-        $data['stddevmetrics']       = $results->stdDevMetrics;
+        //$data['latestmetrics']       = $results->latestMetrics;
         $data['definition']          = $results->definition;
 
         $data['includegraph'] = false;
