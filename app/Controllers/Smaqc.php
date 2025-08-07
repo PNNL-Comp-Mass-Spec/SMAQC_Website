@@ -244,14 +244,16 @@ class Smaqc extends BaseController
             return redirect()->to(site_url(join('/', $redirecturlparts)));
         }
 
-        $data['metricnames']         = $instrumentModel->metricnames;
-        $data['metricDescriptions']  = $instrumentModel->metricDescriptions;
-        $data['metricCategories']    = $instrumentModel->metricCategories;
-        $data['metricSources']       = $instrumentModel->metricSources;
-        $data['latestmetrics']       = $instrumentModel->latestmetrics;
-        $data['averagedmetrics']     = $instrumentModel->averagedmetrics;
-        $data['stddevmetrics']       = $instrumentModel->stddevmetrics;
-        $data['definition']          = $instrumentModel->definition;
+        $results = $instrumentModel->getData();
+
+        $data['metricnames']         = $results->metricNames;
+        $data['metricDescriptions']  = $results->metricDescriptions;
+        $data['metricCategories']    = $results->metricCategories;
+        $data['metricSources']       = $results->metricSources;
+        $data['latestmetrics']       = $results->latestMetrics;
+        $data['averagedmetrics']     = $results->averagedMetrics;
+        $data['stddevmetrics']       = $results->stdDevMetrics;
+        $data['definition']          = $results->definition;
 
         $data['includegraph'] = false;
 
@@ -551,7 +553,7 @@ class Smaqc extends BaseController
 
     private function uri_to_assoc(int $skip = 3, array $defaultKeys = array()) : array
     {
-        $segments = array_slice($this->request->uri->getSegments(), $skip);
+        $segments = array_slice($this->request->getUri()->getSegments(), $skip);
         $itemCount = max(count($segments), count($defaultKeys));
         $values = array();
         for ($i = 0; $i < count($segments); $i += 2)

@@ -114,61 +114,14 @@ class InstrumentModel extends Model
     }
 
     /**
-     * __get
-     *
-     * The custom __get() function is essentially a getter for our private
-     * members in the class. The use of the variable $CI and get_instance()
-     * allows us to access CI's loaded classes using the same syntax as in the
-     * controller.
-     *
-     * @param string $what The member of the class that we are looking for.
-     *
-     * @return mixed Whatever member was requested.
-     */
-    function __get($what)
-    {
-        switch($what)
-        {
-            case 'instrument':
-                return $this->$what;
-            case 'definition':
-                return $this->$what;
-            case 'startdate':
-                return $this->$what;
-            case 'enddate':
-                return $this->$what;
-            case 'status':
-                return $this->$what;
-            case 'metricnames':
-                return $this->$what;
-            case 'metricDescriptions':
-                return $this->$what;
-            case 'metricCategories':
-                   return $this->$what;
-            case 'metricSources':
-                   return $this->$what;
-            case 'latestmetrics':
-                return $this->$what;
-            case 'averagedmetrics':
-                return $this->$what;
-            case 'stddevmetrics':
-                return $this->$what;
-            default:
-                return parent::__get($what); // check base class BaseModel for member
-        }
-    }
-
-    /**
      * Initializer for the Instrument model
      *
      * Gets all of the needed values for the class/model from the database.
      * Calculates any values that need calculating.
      *
      * @param string $instrument The name of the instrument.
-     * @param string $start A human readable string for the start of the date
-     * range. Assumed to be in m-d-Y format. (Example: 11-11-2011)
-     * @param string $end A human readable string for the end of the date
-     * range. Assumed to be in m-d-Y format. (Example: 12-12-2012)
+     * @param string $unit A period of time unit, usually 'days'
+     * @param string $window Size of the window for $unit
      *
      * @return array|boolean An array containing error information if there is
      * an error, FALSE otherwise.
@@ -225,6 +178,27 @@ class InstrumentModel extends Model
         }
 
         return FALSE; // no errors, so return false
+    }
+
+    /**
+     * Return the data from this model
+     *
+     * @return \stdClass
+     */
+    public function getData()
+    {
+        $data = new \stdClass();
+
+        $data->metricNames        = $this->metricnames;
+        $data->metricDescriptions = $this->metricDescriptions;
+        $data->metricCategories   = $this->metricCategories;
+        $data->metricSources      = $this->metricSources;
+        $data->latestMetrics      = $this->latestmetrics;
+        $data->averagedMetrics    = $this->averagedmetrics;
+        $data->stdDevMetrics      = $this->stddevmetrics;
+        $data->definition         = $this->definition;
+
+        return $data;
     }
 }
 ?>

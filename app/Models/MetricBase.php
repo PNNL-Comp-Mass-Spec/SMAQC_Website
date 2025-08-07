@@ -162,59 +162,6 @@ abstract class MetricBase extends Model
         parent::__construct();
     }
 
-    /**
-     * __get
-     *
-     * The custom __get() function is essentially a getter for our private
-     * members in the class. The use of the variable $CI and get_instance()
-     * allows us to access CI's loaded classes using the same syntax as in the
-     * controller.
-     *
-     * @param string $what The member of the class that we are looking for.
-     *
-     * @return mixed Returns whatever member was requested.
-     */
-    function __get($what)
-    {
-        switch($what)
-        {
-            case 'instrument':
-                return $this->$what;
-            case 'datasetfilter':
-                return $this->$what;
-            case 'metric':
-                return $this->$what;
-            case 'metric_units':
-                return $this->$what;
-            case 'definition':
-                return $this->$what;
-            case 'querystartdate':
-                return $this->$what;
-            case 'queryenddate':
-                return $this->$what;
-            case 'unixstartdate':
-                return $this->$what;
-            case 'unixenddate':
-                return $this->$what;
-            case 'data':
-                return $this->$what;
-            case 'plotdata':
-                return $this->$what;
-            case 'plotDataBad':
-                return $this->$what;
-            case 'plotDataPoor':
-                return $this->$what;
-            case 'plotdata_average':
-                return $this->$what;
-            case 'stddevupper':
-                return $this->$what;
-            case 'stddevlower':
-                return $this->$what;
-            default:
-                return parent::__get($what); // Check base class BaseModel for member
-        }
-    }
-
     /*
      * Uses $windowSize and $this->unixstartdate/$this->unixenddate to set appropriate values for $this->querystartdate and $this->queryenddate
      *
