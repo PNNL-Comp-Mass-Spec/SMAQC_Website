@@ -21,6 +21,27 @@ class Smaqc extends BaseController
      */
     protected $helpers = ['url'];
 
+    /**
+     * List of instrument names that have QC metrics
+     *
+     * @var list<string>
+     */
+    private array $instrumentlist;
+
+    /**
+     * List of metric names
+     *
+     * @var list<string>
+     */
+    private array $metriclist;
+
+    /**
+     * Metric names and short descriptions
+     *
+     * @var array<string, string>
+     */
+    private array $metricShortDescription;
+
     var $defaultstartdate;
     var $defaultenddate;
     var $DEFAULTWINDOWSIZE = 45;
@@ -45,12 +66,11 @@ class Smaqc extends BaseController
         $this->metriclist       = array();
         $this->metricShortDescription = array();
         $this->instrumentlist   = array();
-        $this->datasetfilter    = '';
 
-        $this->db = \Config\Database::connect();
+        $db = \Config\Database::connect();
 
         // get a full list of the metric names
-        foreach($this->db->getFieldNames('v_dataset_qc_metrics_export') as $field)
+        foreach($db->getFieldNames('v_dataset_qc_metrics_export') as $field)
         {
             // exclude fields that aren't actually metrics
             $ignoredfields = array(
@@ -77,7 +97,7 @@ class Smaqc extends BaseController
         }
 
         // Get the Short Description for each metric
-        $builder = $this->db->table('v_dataset_qc_metric_definitions');
+        $builder = $db->table('v_dataset_qc_metric_definitions');
         $builder->select('metric, short_description');
         $builder->orderBy("metric", "asc");
         $result = $builder->get()->getResult();
@@ -88,7 +108,7 @@ class Smaqc extends BaseController
         }
 
         // get a full list of the instruments
-        $builder = $this->db->table('v_dataset_qc_metric_instruments');
+        $builder = $db->table('v_dataset_qc_metric_instruments');
         $builder->select('instrument');
         $builder->distinct();
         $builder->orderBy("instrument", "asc");
@@ -109,7 +129,7 @@ class Smaqc extends BaseController
         $data['metricShortDescription'] = $this->metricShortDescription;
         $data['instrumentlist'] = $this->instrumentlist;
         $data['windowsize']     = $this->DEFAULTWINDOWSIZE;
-        $data['datasetfilter']  = $this->datasetfilter;
+        $data['datasetfilter']  = '';
         $data['includegraph']   = false;
 
         echo view('headView.php', $data);
@@ -204,9 +224,9 @@ class Smaqc extends BaseController
 
         $data['windowsize'] = (int)$URI_array["window"];
 
-        $this->InstrumentModel = new \App\Models\InstrumentModel();
+        $instrumentModel = new \App\Models\InstrumentModel();
 
-        $error = $this->InstrumentModel->init(
+        $error = $instrumentModel->init(
             $URI_array["instrument"],
             $data['unit'],
             $data['windowsize']
@@ -224,14 +244,14 @@ class Smaqc extends BaseController
             return redirect()->to(site_url(join('/', $redirecturlparts)));
         }
 
-        $data['metricnames']         = $this->InstrumentModel->metricnames;
-        $data['metricDescriptions']  = $this->InstrumentModel->metricDescriptions;
-        $data['metricCategories']    = $this->InstrumentModel->metricCategories;
-        $data['metricSources']       = $this->InstrumentModel->metricSources;
-        $data['latestmetrics']       = $this->InstrumentModel->latestmetrics;
-        $data['averagedmetrics']     = $this->InstrumentModel->averagedmetrics;
-        $data['stddevmetrics']       = $this->InstrumentModel->stddevmetrics;
-        $data['definition']          = $this->InstrumentModel->definition;
+        $data['metricnames']         = $instrumentModel->metricnames;
+        $data['metricDescriptions']  = $instrumentModel->metricDescriptions;
+        $data['metricCategories']    = $instrumentModel->metricCategories;
+        $data['metricSources']       = $instrumentModel->metricSources;
+        $data['latestmetrics']       = $instrumentModel->latestmetrics;
+        $data['averagedmetrics']     = $instrumentModel->averagedmetrics;
+        $data['stddevmetrics']       = $instrumentModel->stddevmetrics;
+        $data['definition']          = $instrumentModel->definition;
 
         $data['includegraph'] = false;
 
@@ -344,11 +364,11 @@ class Smaqc extends BaseController
         $data['windowsize'] = (int)$URI_array["window"];
         $data['unit'] = $URI_array["unit"];
 
-        $this->MetricModel = new \App\Models\MetricModel();
+        $metricModel = new \App\Models\MetricModel();
 
         // TODO: add support for excluded datasets
 
-        $error = $this->MetricModel->init(
+        $error = $metricModel->init(
             $URI_array["inst"],
             strtolower($URI_array["metric"]),
             $data['startdate'],
@@ -369,15 +389,15 @@ class Smaqc extends BaseController
             return redirect()->to(site_url(join('/', $redirecturlparts)));
         }
 
-        $data['metrics']          = $this->MetricModel->data;
-        $data['definition']       = $this->MetricModel->definition;
-        $data['plotdata']         = $this->MetricModel->plotdata;
-        $data['plotDataBad']      = $this->MetricModel->plotDataBad;
-        $data['plotDataPoor']     = $this->MetricModel->plotDataPoor;
-        $data['plotdata_average'] = $this->MetricModel->plotdata_average;
-        $data['stddevupper']      = $this->MetricModel->stddevupper;
-        $data['stddevlower']      = $this->MetricModel->stddevlower;
-        $data['metric_units']     = $this->MetricModel->metric_units;
+        $data['metrics']          = $metricModel->data;
+        $data['definition']       = $metricModel->definition;
+        $data['plotdata']         = $metricModel->plotdata;
+        $data['plotDataBad']      = $metricModel->plotDataBad;
+        $data['plotDataPoor']     = $metricModel->plotDataPoor;
+        $data['plotdata_average'] = $metricModel->plotdata_average;
+        $data['stddevupper']      = $metricModel->stddevupper;
+        $data['stddevlower']      = $metricModel->stddevlower;
+        $data['metric_units']     = $metricModel->metric_units;
 
         $data['includegraph'] = true;
 
@@ -450,11 +470,11 @@ class Smaqc extends BaseController
         $data['startdate'] = date("m-d-Y", strtotime(str_replace('-', '/', $URI_array["from"])));
         $data['enddate']   = date("m-d-Y", strtotime(str_replace('-', '/', $URI_array["to"])));
 
-        $this->QCArtModel = new \App\Models\QCArtModel();
+        $qcArtModel = new \App\Models\QCArtModel();
 
         // TODO: add support for excluded datasets
 
-        $error = $this->QCArtModel->init(
+        $error = $qcArtModel->init(
             $URI_array["inst"],
             'QCART',
             $data['startdate'],
@@ -474,15 +494,15 @@ class Smaqc extends BaseController
             return redirect()->to(site_url(join('/', $redirecturlparts)));
         }
 
-        $data['metrics']          = $this->QCArtModel->data;
-        $data['definition']       = $this->QCArtModel->definition;
-        $data['plotdata']         = $this->QCArtModel->plotdata;
-        $data['plotDataBad']      = $this->QCArtModel->plotDataBad;
-        $data['plotDataPoor']     = $this->QCArtModel->plotDataPoor;
-        $data['plotdata_average'] = $this->QCArtModel->plotdata_average;
-        $data['stddevupper']      = $this->QCArtModel->stddevupper;
-        $data['stddevlower']      = $this->QCArtModel->stddevlower;
-        $data['metric_units']     = $this->QCArtModel->metric_units;
+        $data['metrics']          = $qcArtModel->data;
+        $data['definition']       = $qcArtModel->definition;
+        $data['plotdata']         = $qcArtModel->plotdata;
+        $data['plotDataBad']      = $qcArtModel->plotDataBad;
+        $data['plotDataPoor']     = $qcArtModel->plotDataPoor;
+        $data['plotdata_average'] = $qcArtModel->plotdata_average;
+        $data['stddevupper']      = $qcArtModel->stddevupper;
+        $data['stddevlower']      = $qcArtModel->stddevlower;
+        $data['metric_units']     = $qcArtModel->metric_units;
 
         $data['includegraph'] = true;
 

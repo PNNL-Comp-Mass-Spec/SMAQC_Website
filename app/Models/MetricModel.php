@@ -169,9 +169,13 @@ class MetricModel extends Model
                 return $this->$what;
             case 'definition':
                 return $this->$what;
-            case 'startdate':
+            case 'querystartdate':
                 return $this->$what;
-            case 'enddate':
+            case 'queryenddate':
+                return $this->$what;
+            case 'unixstartdate':
+                return $this->$what;
+            case 'unixenddate':
                 return $this->$what;
             case 'data':
                 return $this->$what;
@@ -715,8 +719,8 @@ class MetricModel extends Model
         ** Not used
         **
         $this->db->select_avg($metric, 'avg');
-        $this->db->where('acq_time_start >=', $this->startdate);
-        $this->db->where('acq_time_start <=', $this->enddate . 'T23:59:59.999');
+        $this->db->where('acq_time_start >=', $this->querystartdate);
+        $this->db->where('acq_time_start <=', $this->queryenddate . 'T23:59:59.999');
         $this->db->where('instrument', $instrument);
         $this->average = $this->db->get('v_dataset_qc_metrics_export')->row()->avg;
         */

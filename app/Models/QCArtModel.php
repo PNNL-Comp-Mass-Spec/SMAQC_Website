@@ -163,9 +163,13 @@ class QCArtModel extends Model
                 return $this->$what;
             case 'definition':
                 return $this->$what;
-            case 'startdate':
+            case 'querystartdate':
                 return $this->$what;
-            case 'enddate':
+            case 'queryenddate':
+                return $this->$what;
+            case 'unixstartdate':
+                return $this->$what;
+            case 'unixenddate':
                 return $this->$what;
             case 'data':
                 return $this->$what;
@@ -444,7 +448,7 @@ class QCArtModel extends Model
         {
             $cachedFractionSet = 0;
             $cachedAverage = 0.0;
-            $cachedFractionSetDateSeconds;
+            $cachedFractionSetDateSeconds = 0;
 
             // Uncomment to debug
             // echo "DataIndex, Date, FractionSet, FractionSetAverage<br>";
