@@ -20,9 +20,9 @@
 <meta charset="UTF-8">
 <link rel="stylesheet" type="text/css" href="<?= base_url("css/layout.css") ?>" />
 <link rel="stylesheet" type="text/css" href="<?= base_url("css/present.css") ?>" />
-<link rel="stylesheet" type="text/css" href="<?= base_url("jquery-ui-1.13.2/jquery-ui.min.css") ?>" />
-<script type="text/javascript" src="<?= base_url("js/jquery/jquery-3.6.0.min.js") ?>"></script>
-<script type="text/javascript" src="<?= base_url("jquery-ui-1.13.2/jquery-ui.min.js") ?>"></script>
+<link rel="stylesheet" type="text/css" href="<?= base_url("jquery-ui-1.14.1/jquery-ui.min.css") ?>" />
+<script type="text/javascript" src="<?= base_url("js/jquery/jquery-3.7.1.min.js") ?>"></script>
+<script type="text/javascript" src="<?= base_url("jquery-ui-1.14.1/jquery-ui.min.js") ?>"></script>
 <script type="text/javascript" src="<?= base_url("js/calendar_pop.js") ?>"></script>
 
 <?php if( $includegraph ) :?>
