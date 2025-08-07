@@ -5,8 +5,8 @@
     "homepage": "https://prismsupport.pnl.gov/smaqc/",
     "license": "MIT",
     "require": {
-        "php": "^7.3 || ^8.0",
-        "codeigniter4/framework": "^4"
+        "php": "^8.2",
+        "codeigniter4/framework": "^4.6.3"
     },
     "require-dev": {
         "phpstan/phpstan": "^2.1",
