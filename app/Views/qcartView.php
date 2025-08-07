@@ -1,9 +1,6 @@
 <?php
 /**
- * qcartView.php
- *
- * File containing the code for the qcartView.
- *
+ * Code for the qcartView.
  */
 
     function format_metric($metric)

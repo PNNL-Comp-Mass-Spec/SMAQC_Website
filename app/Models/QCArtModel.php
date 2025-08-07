@@ -4,12 +4,8 @@ namespace App\Models;
 use CodeIgniter\Model;
 
 /**
- * qcartmodel.php
- *
- * File containing a CodeIgniter model for the QC-ART metric.
- *
+ * CodeIgniter model for the QC-ART metric.
  */
-
 class QCArtModel extends Model
 {
     /**

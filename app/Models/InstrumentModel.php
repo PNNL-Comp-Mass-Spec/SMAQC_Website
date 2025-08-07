@@ -4,26 +4,9 @@ namespace App\Models;
 use CodeIgniter\Model;
 
 /**
- * InstrumentModel.php
- *
- * File containing a CodeIgniter model for an instrument.
- *
- * @author Trevor Owen <trevor.owen@email.wsu.edu>
- * @version 1.0
- * @copyright TODO
- * @license TODO
- * @package SMAQC
- * @subpackage models
- */
-
-/**
  * CodeIgniter model for an instrument
  *
  * @author Trevor Owen <trevor.owen@email.wsu.edu>
- * @version 1.0
- *
- * @package SMAQC
- * @subpackage models
  */
 class InstrumentModel extends Model
 {

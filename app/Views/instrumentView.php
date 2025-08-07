@@ -1,15 +1,8 @@
 <?php
 /**
- * instrumentView.php
- *
- * File containing the code for the instrumentView.
+ * Code for the instrumentView.
  *
  * @author Trevor Owen <trevor.owen@email.wsu.edu>
- * @version 1.0
- * @copyright TODO
- * @license TODO
- * @package SMAQC
- * @subpackage views
  */
 
     function format_metric($metric)

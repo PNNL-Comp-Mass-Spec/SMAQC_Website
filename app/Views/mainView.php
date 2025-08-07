@@ -1,16 +1,9 @@
 <?php
 /**
- * mainView.php
- *
- * File containing the code for the default view for SMAQC.
+ * Code for the default view for SMAQC.
  *
  * @author Trevor Owen <trevor.owen@email.wsu.edu>
  * @author Aaron Cain
- * @version 1.0
- * @copyright TODO
- * @license TODO
- * @package SMAQC
- * @subpackage views
  */
 ?>
 <div id="main-page">

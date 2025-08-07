@@ -4,26 +4,9 @@ namespace App\Models;
 use CodeIgniter\Model;
 
 /**
- * MetricModel.php
- *
- * File containing a CodeIgniter model for a SMAQC metric.
- *
- * @author Trevor Owen <trevor.owen@email.wsu.edu>
- * @version 1.0
- * @copyright TODO
- * @license TODO
- * @package SMAQC
- * @subpackage models
- */
-
-/**
  * CodeIgniter model for a SMAQC metric
  *
  * @author Trevor Owen <trevor.owen@email.wsu.edu>
- * @version 1.0
- *
- * @package SMAQC
- * @subpackage models
  */
 class MetricModel extends Model
 {

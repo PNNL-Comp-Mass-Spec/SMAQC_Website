@@ -1,15 +1,8 @@
 <?php
 /**
- * metricView.php
- *
- * File containing the code for the metricView.
+ * Code for the metricView.
  *
  * @author Trevor Owen <trevor.owen@email.wsu.edu>
- * @version 1.0
- * @copyright TODO
- * @license TODO
- * @package SMAQC
- * @subpackage views
  */
 
     function format_metric($metric)

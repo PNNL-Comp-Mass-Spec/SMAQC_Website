@@ -4,28 +4,10 @@ namespace App\Controllers;
 use App\Controllers;
 
 /**
- * Smaqc.php
- *
- * File containing the default CodeIgniter controller for SMAQC.
+ * Default CodeIgniter controller for SMAQC.
  *
  * @author Trevor Owen <trevor.owen@email.wsu.edu>
  * @author Aaron Cain
- * @version 1.0
- * @copyright TODO
- * @license TODO
- * @package SMAQC
- * @subpackage controllers
- */
-
-/**
- * CodeIgniter model for a SMAQC metric
- *
- * @author Trevor Owen <trevor.owen@email.wsu.edu>
- * @author Aaron Cain
- * @version 1.1
- *
- * @package SMAQC
- * @subpackage controllers
  */
 
 class Smaqc extends BaseController
